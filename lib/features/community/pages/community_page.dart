@@ -36,7 +36,7 @@ class CommunityPage extends ConsumerWidget {
                 title: Text(club.name),
                 subtitle: Text(club.category),
                 trailing: Text('${club.followerCount} takipci'),
-                onTap: () => context.go('/community/${club.id}'),
+                onTap: () => context.go('/home/community/${club.id}'),
               ),
             );
           },

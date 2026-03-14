@@ -26,9 +26,14 @@ class HomePage extends ConsumerWidget {
             label: 'Ana Sayfa',
           ),
           NavigationDestination(
-            icon: Icon(Icons.groups_outlined),
-            selectedIcon: Icon(Icons.groups),
-            label: 'Kulupler',
+            icon: Icon(Icons.restaurant_outlined),
+            selectedIcon: Icon(Icons.restaurant),
+            label: 'Yemekhane',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.directions_bus_outlined),
+            selectedIcon: Icon(Icons.directions_bus),
+            label: 'Ring',
           ),
           NavigationDestination(
             icon: Icon(Icons.event_outlined),
@@ -36,13 +41,9 @@ class HomePage extends ConsumerWidget {
             label: 'Etkinlikler',
           ),
           NavigationDestination(
-            icon: Icon(Icons.restaurant_outlined),
-            selectedIcon: Icon(Icons.restaurant),
-            label: 'Yemekhane',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.more_horiz),
-            label: 'Daha Fazla',
+            icon: Icon(Icons.map_outlined),
+            selectedIcon: Icon(Icons.map),
+            label: 'Harita',
           ),
         ],
       ),
@@ -74,14 +75,24 @@ class HomeContentPage extends ConsumerWidget {
             onTap: () => context.go('/ring'),
           ),
           _QuickAccessCard(
-            title: 'Kampus Haritasi',
-            icon: Icons.map,
-            onTap: () => context.go('/map'),
+            title: 'Ogrenci Etkinlikleri',
+            icon: Icons.event,
+            onTap: () => context.go('/student-events'),
+          ),
+          _QuickAccessCard(
+            title: 'Kulupler',
+            icon: Icons.groups,
+            onTap: () => context.go('/home/community'),
           ),
           _QuickAccessCard(
             title: 'Ilan Panosu',
             icon: Icons.dashboard,
-            onTap: () => context.go('/board'),
+            onTap: () => context.go('/home/board'),
+          ),
+          _QuickAccessCard(
+            title: 'Kampus Haritasi',
+            icon: Icons.map,
+            onTap: () => context.go('/map'),
           ),
         ],
       ),

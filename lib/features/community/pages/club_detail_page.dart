@@ -104,7 +104,7 @@ class ClubDetailPage extends ConsumerWidget {
                             title: Text(event.title),
                             subtitle: Text(event.location),
                             onTap: () => context.go(
-                                '/community/$clubId/event/${event.id}'),
+                                '/home/community/$clubId/event/${event.id}'),
                           ),
                         );
                       },
