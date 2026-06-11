@@ -15,6 +15,9 @@ import 'package:flutter/foundation.dart'
 /// );
 /// ```
 class DefaultFirebaseOptions {
+  static const databaseURL =
+      'https://akdeniz-cep-36d3f-default-rtdb.europe-west1.firebasedatabase.app';
+
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
       return web;
@@ -46,6 +49,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '288927703186',
     projectId: 'akdeniz-cep-36d3f',
     authDomain: 'akdeniz-cep-36d3f.firebaseapp.com',
+    databaseURL: databaseURL,
     storageBucket: 'akdeniz-cep-36d3f.firebasestorage.app',
     measurementId: 'G-YNX3KGEW8P',
   );
@@ -55,6 +59,7 @@ class DefaultFirebaseOptions {
     appId: '1:288927703186:android:ee431f40b3d5da684c464b',
     messagingSenderId: '288927703186',
     projectId: 'akdeniz-cep-36d3f',
+    databaseURL: databaseURL,
     storageBucket: 'akdeniz-cep-36d3f.firebasestorage.app',
   );
 
@@ -63,6 +68,7 @@ class DefaultFirebaseOptions {
     appId: '1:288927703186:ios:af3cd491a468568e4c464b',
     messagingSenderId: '288927703186',
     projectId: 'akdeniz-cep-36d3f',
+    databaseURL: databaseURL,
     storageBucket: 'akdeniz-cep-36d3f.firebasestorage.app',
     iosBundleId: 'com.akdenizcep.akdenizcep',
   );
@@ -72,6 +78,7 @@ class DefaultFirebaseOptions {
     appId: '1:288927703186:ios:af3cd491a468568e4c464b',
     messagingSenderId: '288927703186',
     projectId: 'akdeniz-cep-36d3f',
+    databaseURL: databaseURL,
     storageBucket: 'akdeniz-cep-36d3f.firebasestorage.app',
     iosBundleId: 'com.akdenizcep.akdenizcep',
   );
@@ -82,6 +89,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '288927703186',
     projectId: 'akdeniz-cep-36d3f',
     authDomain: 'akdeniz-cep-36d3f.firebaseapp.com',
+    databaseURL: databaseURL,
     storageBucket: 'akdeniz-cep-36d3f.firebasestorage.app',
     measurementId: 'G-3H6ZX2DKVD',
   );
