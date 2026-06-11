@@ -246,6 +246,12 @@ clubs/{clubId}
     description: string
     createdAt: timestamp
 
+announcements/{announcementId}
+  imageUrl: string
+  title: string
+  context: string
+  createdAt: timestamp
+
 student-events/{seventId}
   title: string
   authorUid: string

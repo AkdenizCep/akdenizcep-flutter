@@ -17,6 +17,13 @@ import '../features/student_events/pages/create_event_page.dart';
 import '../features/student_events/pages/student_event_detail_page.dart';
 import '../features/student_events/pages/student_events_page.dart';
 
+// Shell branch navigator keys — birden fazla branch aynı yolu paylaşmasın
+final _shellHomeKey = GlobalKey<NavigatorState>(debugLabel: 'shellHome');
+final _shellCafeteriaKey = GlobalKey<NavigatorState>(debugLabel: 'shellCafeteria');
+final _shellRingKey = GlobalKey<NavigatorState>(debugLabel: 'shellRing');
+final _shellEventsKey = GlobalKey<NavigatorState>(debugLabel: 'shellEvents');
+final _shellMapKey = GlobalKey<NavigatorState>(debugLabel: 'shellMap');
+
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -47,40 +54,66 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state, navigationShell) =>
             HomePage(navigationShell: navigationShell),
         branches: [
+          // 0 — Ana Sayfa
           StatefulShellBranch(
+            navigatorKey: _shellHomeKey,
             routes: [
               GoRoute(
                 path: '/home',
                 builder: (context, state) => const HomeContentPage(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/community',
-                builder: (context, state) => const CommunityPage(),
                 routes: [
                   GoRoute(
-                    path: ':clubId',
-                    builder: (context, state) => ClubDetailPage(
-                      clubId: state.pathParameters['clubId']!,
-                    ),
+                    path: 'community',
+                    builder: (context, state) => const CommunityPage(),
                     routes: [
                       GoRoute(
-                        path: 'event/:eventId',
-                        builder: (context, state) => EventDetailPage(
+                        path: ':clubId',
+                        builder: (context, state) => ClubDetailPage(
                           clubId: state.pathParameters['clubId']!,
-                          eventId: state.pathParameters['eventId']!,
                         ),
+                        routes: [
+                          GoRoute(
+                            path: 'event/:eventId',
+                            builder: (context, state) => EventDetailPage(
+                              clubId: state.pathParameters['clubId']!,
+                              eventId: state.pathParameters['eventId']!,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
+                  ),
+                  GoRoute(
+                    path: 'board',
+                    builder: (context, state) => const BoardPage(),
                   ),
                 ],
               ),
             ],
           ),
+          // 1 — Yemekhane
           StatefulShellBranch(
+            navigatorKey: _shellCafeteriaKey,
+            routes: [
+              GoRoute(
+                path: '/cafeteria',
+                builder: (context, state) => const CafeteriaPage(),
+              ),
+            ],
+          ),
+          // 2 — Ring
+          StatefulShellBranch(
+            navigatorKey: _shellRingKey,
+            routes: [
+              GoRoute(
+                path: '/ring',
+                builder: (context, state) => const RingPage(),
+              ),
+            ],
+          ),
+          // 3 — Etkinlikler
+          StatefulShellBranch(
+            navigatorKey: _shellEventsKey,
             routes: [
               GoRoute(
                 path: '/student-events',
@@ -100,66 +133,19 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // 4 — Harita
           StatefulShellBranch(
+            navigatorKey: _shellMapKey,
             routes: [
               GoRoute(
-                path: '/cafeteria',
-                builder: (context, state) => const CafeteriaPage(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/more',
-                builder: (context, state) => const _MorePage(),
+                path: '/map',
+                builder: (context, state) => const MapPage(),
               ),
             ],
           ),
         ],
-      ),
-      GoRoute(
-        path: '/ring',
-        builder: (context, state) => const RingPage(),
-      ),
-      GoRoute(
-        path: '/map',
-        builder: (context, state) => const MapPage(),
-      ),
-      GoRoute(
-        path: '/board',
-        builder: (context, state) => const BoardPage(),
       ),
     ],
   );
 });
 
-class _MorePage extends StatelessWidget {
-  const _MorePage();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Daha Fazla')),
-      body: ListView(
-        children: [
-          ListTile(
-            leading: const Icon(Icons.directions_bus),
-            title: const Text('Ring Saatleri'),
-            onTap: () => context.go('/ring'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.map),
-            title: const Text('Kampus Haritasi'),
-            onTap: () => context.go('/map'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.dashboard),
-            title: const Text('Ilan Panosu'),
-            onTap: () => context.go('/board'),
-          ),
-        ],
-      ),
-    );
-  }
-}

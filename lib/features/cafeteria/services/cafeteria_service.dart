@@ -1,12 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
+import '../../../firebase_options.dart';
 import '../models/meal_rating.dart';
 import '../models/menu_item.dart';
 
 class CafeteriaService {
   final _db = FirebaseFirestore.instance;
-  final _rtdb = FirebaseDatabase.instance.ref();
+  final _rtdb = FirebaseDatabase.instanceFor(
+    app: Firebase.app(),
+    databaseURL: DefaultFirebaseOptions.databaseURL,
+  ).ref();
 
   Stream<List<MenuItem>> getMenu(String date) {
     return _rtdb.child('cafeteria_menu').child(date).onValue.map((event) {
@@ -71,16 +76,12 @@ class CafeteriaService {
         final newCount = currentCount + 1;
         final newAvg = ((currentAvg * currentCount) + rating) / newCount;
 
-        transaction.set(
-          mealRef,
-          {
-            'mealName': mealName,
-            'date': date,
-            'avgRating': newAvg,
-            'ratingCount': newCount,
-          },
-          SetOptions(merge: true),
-        );
+        transaction.set(mealRef, {
+          'mealName': mealName,
+          'date': date,
+          'avgRating': newAvg,
+          'ratingCount': newCount,
+        }, SetOptions(merge: true));
 
         transaction.set(ratingDocRef, {
           'rating': rating,

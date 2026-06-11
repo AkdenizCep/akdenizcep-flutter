@@ -1,9 +1,14 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
+import '../../../firebase_options.dart';
 import '../models/ring_schedule.dart';
 
 class RingService {
-  final _rtdb = FirebaseDatabase.instance.ref();
+  final _rtdb = FirebaseDatabase.instanceFor(
+    app: Firebase.app(),
+    databaseURL: DefaultFirebaseOptions.databaseURL,
+  ).ref();
 
   Stream<List<RingSchedule>> getSchedules() {
     return _rtdb.child('ring_schedule').onValue.map((event) {
