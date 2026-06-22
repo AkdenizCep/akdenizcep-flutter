@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../shared/components/error_view.dart';
 import '../../../shared/components/loading_overlay.dart';
+import '../../../shared/providers/nav_visibility_provider.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../providers/home_provider.dart';
 import 'components/announcement_slider.dart';
@@ -16,17 +17,24 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final navBarVisible = ref.watch(bottomNavVisibleProvider);
+
     return Scaffold(
       extendBody: true,
       body: navigationShell,
-      bottomNavigationBar: _FloatingNavBar(
-        currentIndex: navigationShell.currentIndex,
-        onDestinationSelected: (index) {
-          navigationShell.goBranch(
-            index,
-            initialLocation: index == navigationShell.currentIndex,
-          );
-        },
+      bottomNavigationBar: AnimatedSlide(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOut,
+        offset: navBarVisible ? Offset.zero : const Offset(0, 1),
+        child: _FloatingNavBar(
+          currentIndex: navigationShell.currentIndex,
+          onDestinationSelected: (index) {
+            navigationShell.goBranch(
+              index,
+              initialLocation: index == navigationShell.currentIndex,
+            );
+          },
+        ),
       ),
     );
   }
