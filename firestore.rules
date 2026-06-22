@@ -1,0 +1,82 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAkdenizStudent() {
+      return isSignedIn() &&
+        request.auth.token.email.matches('.*@ogr[.]akdeniz[.]edu[.]tr$');
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // "votes" haritasında SADECE çağıranın kendi anahtarı eklenmiş/silinmiş/
+    // değiştirilmiş olabilir ve varsa değeri 1 (faydalı) ya da -1 (faydasız)
+    // olmak zorunda. Başkasının oyu bu yoldan değiştirilemez.
+    function isValidVoteChange(uid) {
+      let beforeVotes = resource.data.votes is map ? resource.data.votes : {};
+      let afterVotes = request.resource.data.votes is map ? request.resource.data.votes : {};
+      let voteDiff = afterVotes.diff(beforeVotes);
+      return voteDiff.affectedKeys().hasOnly([uid]) &&
+        (!(uid in afterVotes) || afterVotes[uid] in [1, -1]);
+    }
+
+    match /users/{uid} {
+      allow read: if isAkdenizStudent();
+      allow create, update: if isOwner(uid);
+      allow delete: if false;
+    }
+
+    match /clubs/{clubId} {
+      allow read: if isAkdenizStudent();
+      allow create, delete: if false;
+      // Sadece "takip et/etme" akışında followerCount güncellenir.
+      allow update: if isAkdenizStudent() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followerCount']);
+
+      match /club-events/{ceventId} {
+        allow read: if isAkdenizStudent();
+        allow write: if isAkdenizStudent() &&
+          request.auth.uid == get(/databases/$(database)/documents/clubs/$(clubId)).data.adminUid;
+      }
+    }
+
+    match /announcements/{announcementId} {
+      allow read: if isAkdenizStudent();
+      allow write: if false;
+    }
+
+    match /student-events/{seventId} {
+      allow read: if isAkdenizStudent();
+      allow create: if isAkdenizStudent() &&
+        request.auth.uid == request.resource.data.authorUid;
+      allow update, delete: if isAkdenizStudent() &&
+        request.auth.uid == resource.data.authorUid;
+    }
+
+    match /cafeteria_ratings/{ratingId} {
+      allow read: if isAkdenizStudent();
+      allow write: if isAkdenizStudent();
+
+      match /ratings/{uid} {
+        allow read: if isAkdenizStudent();
+        allow create: if isOwner(uid);
+        allow delete: if false;
+
+        // Yorum sahibi kendi rating/comment alanlarını değiştiremez (mevcut
+        // davranış korunur); başka bir öğrenci ise sadece "votes" haritasında
+        // kendi oyunu ekleyebilir/değiştirebilir/geri alabilir.
+        allow update: if isAkdenizStudent() &&
+          request.auth.uid != uid &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['votes']) &&
+          isValidVoteChange(request.auth.uid);
+      }
+    }
+  }
+}

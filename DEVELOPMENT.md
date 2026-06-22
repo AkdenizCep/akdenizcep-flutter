@@ -268,6 +268,8 @@ cafeteria_ratings/{date_mealKey}        # örn: "2024-01-15_tavuk-sis"
 
   ratings/{uid}                         # alt koleksiyon — kullanıcı başına 1 döküman
     rating: number                      # 1–5
+    comment: string                     # opsiyonel, boş string olabilir
+    authorName: string                  # yazma anında AppUser.name'den denormalize edilir
     createdAt: timestamp
 ```
 
@@ -362,4 +364,4 @@ dependencies:
 - Yemekhane menüsü ve ring saatleri üniversite tarafından manuel olarak Realtime DB'ye girilir.
 - Kulüp etkinliği oluşturma yetkisi yalnızca `adminUid` eşleşen kullanıcılara Firestore Security Rules ile korunur.
 - Öğrenci etkinlikleri (`student-events`) tüm giriş yapmış öğrenciler tarafından oluşturulabilir; silme ve düzenleme yalnızca `authorUid` eşleşen kullanıcıya açıktır.
-- Yemek rating'leri Firestore'da tutulur (`cafeteria_ratings`). Her öğrenci bir yemeğe günde yalnızca 1 kez oy verebilir; bu kural `ratings/{uid}` dökümanının varlığı kontrol edilerek `cafeteria_service.dart` içinde uygulanır. `avgRating` ve `ratingCount` Firestore transaction ile atomik güncellenir.
+- Yemek rating'leri Firestore'da tutulur (`cafeteria_ratings`). Her öğrenci bir yemeğe günde yalnızca 1 kez oy verebilir; bu kural `ratings/{uid}` dökümanının varlığı kontrol edilerek `cafeteria_service.dart` içinde uygulanır. `avgRating` ve `ratingCount` Firestore transaction ile atomik güncellenir. Puanla birlikte isteğe bağlı bir yorum (`comment`) ve yazarın o anki adı (`authorName`, `AppUser.name`'den denormalize) kaydedilir; diğer öğrenciler bu yorumları yemek kartının altında görebilir.
