@@ -15,8 +15,14 @@ class RateMealSheet extends StatefulWidget {
 }
 
 class _RateMealSheetState extends State<RateMealSheet> {
-  late int _rating = widget.initialRating;
+  late int _rating;
   final _commentController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _rating = widget.initialRating;
+  }
 
   @override
   void dispose() {
