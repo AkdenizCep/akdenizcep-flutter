@@ -60,6 +60,15 @@ service cloud.firestore {
         request.auth.uid == resource.data.authorUid;
     }
 
+    // Geri bildirimler sadece Firebase Console'dan okunur; uygulama
+    // icinde kimse (yazan dahil) kendi veya baskasinin feedback'ini
+    // okuyamaz/degistiremez, sadece gonderebilir.
+    match /feedback/{feedbackId} {
+      allow create: if isAkdenizStudent() &&
+        request.auth.uid == request.resource.data.uid;
+      allow read, update, delete: if false;
+    }
+
     match /cafeteria_ratings/{ratingId} {
       allow read: if isAkdenizStudent();
       allow write: if isAkdenizStudent();

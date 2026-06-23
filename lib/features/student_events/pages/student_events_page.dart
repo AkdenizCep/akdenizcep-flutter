@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../shared/components/error_view.dart';
 import '../../../shared/components/loading_overlay.dart';
+import '../../../shared/utils/error_message.dart';
 import '../models/student_event.dart';
 import '../providers/student_events_provider.dart';
 import 'components/student_event_card.dart';
@@ -76,7 +77,7 @@ class _StudentEventsPageState extends ConsumerState<StudentEventsPage> {
             );
           },
           loading: () => const LoadingOverlay(),
-          error: (e, _) => ErrorView(message: e.toString()),
+          error: (e, _) => ErrorView(message: errorMessage(e)),
         ),
       ),
       floatingActionButton: Padding(

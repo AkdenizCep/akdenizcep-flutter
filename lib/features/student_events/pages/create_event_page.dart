@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../shared/providers/user_provider.dart';
+import '../../../shared/utils/error_message.dart';
 import '../providers/student_events_provider.dart';
 
 class CreateEventPage extends ConsumerStatefulWidget {
@@ -61,7 +62,9 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage> {
 
     setState(() => _loading = true);
     try {
-      await ref.read(studentEventsServiceProvider).createEvent(
+      await ref
+          .read(studentEventsServiceProvider)
+          .createEvent(
             authorUid: user.id,
             title: _titleController.text.trim(),
             date: _selectedDate,
@@ -71,9 +74,9 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage> {
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage(e))));
       }
     } finally {
       if (mounted) setState(() => _loading = false);

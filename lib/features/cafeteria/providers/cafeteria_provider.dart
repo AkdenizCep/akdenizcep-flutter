@@ -27,8 +27,10 @@ final ratingsProvider = StreamProvider<List<MealRating>>((ref) {
 
 final selectedMealTypeProvider = StateProvider<String?>((_) => null);
 
-final mealReviewsProvider =
-    StreamProvider.family<List<MealReview>, String>((ref, mealType) {
+final mealReviewsProvider = StreamProvider.family<List<MealReview>, String>((
+  ref,
+  mealType,
+) {
   final date = ref.watch(formattedDateProvider);
   return ref.watch(cafeteriaServiceProvider).getReviews(date, mealType);
 });

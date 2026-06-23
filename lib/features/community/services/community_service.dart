@@ -7,7 +7,10 @@ class CommunityService {
   final _db = FirebaseFirestore.instance;
 
   Stream<List<Club>> getClubs() {
-    return _db.collection('clubs').snapshots().map(
+    return _db
+        .collection('clubs')
+        .snapshots()
+        .map(
           (snap) => snap.docs
               .map((d) => Club.fromJson(d.data()..['id'] = d.id))
               .toList(),
@@ -15,9 +18,11 @@ class CommunityService {
   }
 
   Stream<Club> getClub(String clubId) {
-    return _db.collection('clubs').doc(clubId).snapshots().map(
-          (snap) => Club.fromJson(snap.data()!..['id'] = snap.id),
-        );
+    return _db
+        .collection('clubs')
+        .doc(clubId)
+        .snapshots()
+        .map((snap) => Club.fromJson(snap.data()!..['id'] = snap.id));
   }
 
   Stream<List<ClubEvent>> getClubEvents(String clubId) {

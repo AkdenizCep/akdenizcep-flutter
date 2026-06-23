@@ -16,19 +16,15 @@ class RingSchedule {
         weekend: List<String>.from(json['weekend'] ?? []),
       );
 
-  Map<String, dynamic> toJson() => {
-        'weekday': weekday,
-        'weekend': weekend,
-      };
+  Map<String, dynamic> toJson() => {'weekday': weekday, 'weekend': weekend};
 
   RingSchedule copyWith({
     String? lineId,
     List<String>? weekday,
     List<String>? weekend,
-  }) =>
-      RingSchedule(
-        lineId: lineId ?? this.lineId,
-        weekday: weekday ?? this.weekday,
-        weekend: weekend ?? this.weekend,
-      );
+  }) => RingSchedule(
+    lineId: lineId ?? this.lineId,
+    weekday: weekday ?? this.weekday,
+    weekend: weekend ?? this.weekend,
+  );
 }

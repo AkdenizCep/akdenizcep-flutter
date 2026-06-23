@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/components/error_view.dart';
 import '../../../shared/components/loading_overlay.dart';
 import '../../../shared/providers/user_provider.dart';
+import '../../../shared/utils/error_message.dart';
 import 'components/change_password_button.dart';
+import 'components/feedback_button.dart';
 import 'components/followed_clubs_section.dart';
 import 'components/my_events_section.dart';
 import 'components/profile_info_card.dart';
@@ -53,6 +55,10 @@ class ProfilePage extends ConsumerWidget {
                 const SizedBox(height: 12),
                 const RatedMealsSection(),
                 const SizedBox(height: 28),
+                _SectionTitle(title: 'Geri Bildirim'),
+                const SizedBox(height: 12),
+                FeedbackButton(user: user),
+                const SizedBox(height: 28),
                 ChangePasswordButton(email: user.email),
                 const SizedBox(height: 12),
                 const SignOutButton(),
@@ -61,7 +67,7 @@ class ProfilePage extends ConsumerWidget {
           );
         },
         loading: () => const LoadingOverlay(),
-        error: (e, _) => ErrorView(message: e.toString()),
+        error: (e, _) => ErrorView(message: errorMessage(e)),
       ),
     );
   }

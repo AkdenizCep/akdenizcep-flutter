@@ -4,8 +4,10 @@ import 'package:intl/intl.dart';
 
 import '../../../shared/components/error_view.dart';
 import '../../../shared/components/loading_overlay.dart';
+import '../../../shared/components/progress_snackbar.dart';
 import '../../../shared/providers/nav_visibility_provider.dart';
 import '../../../shared/providers/user_provider.dart';
+import '../../../shared/utils/error_message.dart';
 import '../../auth/models/app_user.dart';
 import '../models/meal_rating.dart';
 import '../models/menu_item.dart';
@@ -72,7 +74,7 @@ class CafeteriaPage extends ConsumerWidget {
             );
           },
           loading: () => const LoadingOverlay(),
-          error: (e, _) => ErrorView(message: e.toString()),
+          error: (e, _) => ErrorView(message: errorMessage(e)),
         ),
       ),
     );
@@ -224,15 +226,19 @@ class CafeteriaPage extends ConsumerWidget {
             comment: comment,
           );
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Teşekkürler! Oyunuz kaydedildi.')),
+        showProgressSnackBar(
+          context,
+          message: 'Teşekkürler! Oyunuz kaydedildi.',
         );
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
+        showProgressSnackBar(
           context,
-        ).showSnackBar(SnackBar(content: Text(e.toString())));
+          message: errorMessage(e),
+          icon: Icons.info_rounded,
+          accentColor: Theme.of(context).colorScheme.secondary,
+        );
       }
     }
   }

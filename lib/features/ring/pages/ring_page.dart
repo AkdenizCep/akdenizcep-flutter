@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/components/error_view.dart';
 import '../../../shared/components/loading_overlay.dart';
+import '../../../shared/utils/error_message.dart';
 import '../models/ring_schedule.dart';
 import '../providers/ring_provider.dart';
 
@@ -94,7 +95,7 @@ class _RingPageState extends ConsumerState<RingPage> {
                             _DayToggle(
                               showWeekend: _showWeekend,
                               onChanged: (value) {
-                                  setState(() => _showWeekend = value);
+                                setState(() => _showWeekend = value);
                               },
                             ),
                           ],
@@ -118,7 +119,7 @@ class _RingPageState extends ConsumerState<RingPage> {
             );
           },
           loading: () => const LoadingOverlay(),
-          error: (e, _) => ErrorView(message: e.toString()),
+          error: (e, _) => ErrorView(message: errorMessage(e)),
         ),
       ),
     );
@@ -231,11 +232,7 @@ class _RingHeader extends StatelessWidget {
               color: colorScheme.primaryContainer.withValues(alpha: 0.45),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Icon(
-              Icons.school,
-              color: colorScheme.primary,
-              size: 30,
-            ),
+            child: Icon(Icons.school, color: colorScheme.primary, size: 30),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -264,10 +261,7 @@ class _RingHeader extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications),
-          ),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.notifications)),
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.account_circle_outlined),
@@ -304,10 +298,7 @@ class _LineSelector extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onChanged;
 
-  const _LineSelector({
-    required this.selectedIndex,
-    required this.onChanged,
-  });
+  const _LineSelector({required this.selectedIndex, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -327,10 +318,7 @@ class _DayToggle extends StatelessWidget {
   final bool showWeekend;
   final ValueChanged<bool> onChanged;
 
-  const _DayToggle({
-    required this.showWeekend,
-    required this.onChanged,
-  });
+  const _DayToggle({required this.showWeekend, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -355,11 +343,7 @@ class _DayToggle extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.calendar_month,
-              size: 16,
-              color: textColor,
-            ),
+            Icon(Icons.calendar_month, size: 16, color: textColor),
             const SizedBox(width: 4),
             Text(
               isWeekend ? 'H.Sonu' : 'H.İçi',
@@ -380,16 +364,11 @@ class _DirectionToggle extends StatelessWidget {
   final bool isDonus;
   final ValueChanged<bool> onChanged;
 
-  const _DirectionToggle({
-    required this.isDonus,
-    required this.onChanged,
-  });
+  const _DirectionToggle({required this.isDonus, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = isDonus
-        ? const Color(0xFFE0F2F1)
-        : const Color(0xFFE3F2FD);
+    final bgColor = isDonus ? const Color(0xFFE0F2F1) : const Color(0xFFE3F2FD);
     final textColor = isDonus
         ? const Color(0xFF00695C)
         : const Color(0xFF1565C0);
@@ -407,11 +386,7 @@ class _DirectionToggle extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.swap_horiz,
-              size: 16,
-              color: textColor,
-            ),
+            Icon(Icons.swap_horiz, size: 16, color: textColor),
             const SizedBox(width: 4),
             Text(
               isDonus ? 'Dönüş' : 'Gidiş',
@@ -504,20 +479,14 @@ class _SegmentItem<T> {
   final T value;
   final String label;
 
-  const _SegmentItem({
-    required this.value,
-    required this.label,
-  });
+  const _SegmentItem({required this.value, required this.label});
 }
 
 class _LiveRingCard extends StatelessWidget {
   final RingSchedule schedule;
   final bool showWeekend;
 
-  const _LiveRingCard({
-    required this.schedule,
-    required this.showWeekend,
-  });
+  const _LiveRingCard({required this.schedule, required this.showWeekend});
 
   @override
   Widget build(BuildContext context) {
@@ -636,10 +605,7 @@ class _SearchField extends StatelessWidget {
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
 
-  const _SearchField({
-    required this.controller,
-    required this.onChanged,
-  });
+  const _SearchField({required this.controller, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -651,10 +617,7 @@ class _SearchField extends StatelessWidget {
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
         hintText: 'Durak veya ring ara...',
-        prefixIcon: Icon(
-          Icons.search,
-          color: colorScheme.onSurfaceVariant,
-        ),
+        prefixIcon: Icon(Icons.search, color: colorScheme.onSurfaceVariant),
         filled: true,
         fillColor: colorScheme.surface,
         contentPadding: const EdgeInsets.symmetric(
@@ -682,10 +645,7 @@ class _StopScheduleCard extends StatelessWidget {
   final RingSchedule schedule;
   final bool showWeekend;
 
-  const _StopScheduleCard({
-    required this.schedule,
-    required this.showWeekend,
-  });
+  const _StopScheduleCard({required this.schedule, required this.showWeekend});
 
   @override
   Widget build(BuildContext context) {
@@ -815,8 +775,9 @@ class _StopScheduleCard extends StatelessWidget {
               style: FilledButton.styleFrom(
                 elevation: 0,
                 foregroundColor: colorScheme.primary,
-                backgroundColor:
-                    colorScheme.primaryContainer.withValues(alpha: 0.30),
+                backgroundColor: colorScheme.primaryContainer.withValues(
+                  alpha: 0.30,
+                ),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
@@ -858,9 +819,9 @@ class _StopScheduleCard extends StatelessWidget {
               children: [
                 Text(
                   '${meta.lineLabel} Tam Tarife',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 6),
                 Text(showWeekend ? 'Hafta Sonu' : 'Hafta İçi'),
@@ -953,9 +914,9 @@ class _MapPlaceholder extends StatelessWidget {
             const SizedBox(height: 18),
             Text(
               '${meta.lineLabel} haritası',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 8),
             Padding(
@@ -964,8 +925,8 @@ class _MapPlaceholder extends StatelessWidget {
                 'Ring güzergahı koordinatları eklendiğinde bu alanda canlı harita gösterilecek.',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
           ],
@@ -997,9 +958,9 @@ class _RingEmptyState extends StatelessWidget {
             Text(
               'Ring tarifesi bulunamadı.',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
             ),
           ],
         ),
@@ -1055,7 +1016,9 @@ class _RingLineMeta {
       return _RingLineMeta(
         lineLabel: isDonus ? 'AÜ102 (Dönüş)' : 'AÜ102 (Gidiş)',
         stopName: isDonus ? 'Rektörlük' : 'Meltem Kapısı',
-        routeLabel: isDonus ? 'Meltem Yönü · Kuzey Ring' : 'Rektörlük Yönü · Kuzey Ring',
+        routeLabel: isDonus
+            ? 'Meltem Yönü · Kuzey Ring'
+            : 'Rektörlük Yönü · Kuzey Ring',
       );
     }
 

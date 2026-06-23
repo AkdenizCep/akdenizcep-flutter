@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../shared/components/error_view.dart';
 import '../../../shared/components/loading_overlay.dart';
+import '../../../shared/utils/error_message.dart';
 import '../providers/community_provider.dart';
 
 class EventDetailPage extends ConsumerWidget {
@@ -55,8 +56,12 @@ class EventDetailPage extends ConsumerWidget {
                   children: [
                     const Icon(Icons.calendar_today, size: 18),
                     const SizedBox(width: 8),
-                    Text(DateFormat('dd MMMM yyyy, HH:mm', 'tr')
-                        .format(event.date)),
+                    Text(
+                      DateFormat(
+                        'dd MMMM yyyy, HH:mm',
+                        'tr',
+                      ).format(event.date),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -77,7 +82,7 @@ class EventDetailPage extends ConsumerWidget {
           );
         },
         loading: () => const LoadingOverlay(),
-        error: (e, _) => ErrorView(message: e.toString()),
+        error: (e, _) => ErrorView(message: errorMessage(e)),
       ),
     );
   }

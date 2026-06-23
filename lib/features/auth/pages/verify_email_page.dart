@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/providers/user_provider.dart' hide authStateProvider;
+import '../../../shared/utils/error_message.dart';
 import '../providers/auth_provider.dart';
 
 class VerifyEmailPage extends ConsumerStatefulWidget {
@@ -41,7 +42,7 @@ class _VerifyEmailPageState extends ConsumerState<VerifyEmailPage> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(e.toString())));
+        ).showSnackBar(SnackBar(content: Text(errorMessage(e))));
       }
     } finally {
       if (mounted) setState(() => _checking = false);
@@ -63,7 +64,7 @@ class _VerifyEmailPageState extends ConsumerState<VerifyEmailPage> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(e.toString())));
+        ).showSnackBar(SnackBar(content: Text(errorMessage(e))));
       }
     }
   }

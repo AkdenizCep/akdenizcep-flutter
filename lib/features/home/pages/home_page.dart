@@ -6,6 +6,7 @@ import '../../../shared/components/error_view.dart';
 import '../../../shared/components/loading_overlay.dart';
 import '../../../shared/providers/nav_visibility_provider.dart';
 import '../../../shared/providers/user_provider.dart';
+import '../../../shared/utils/error_message.dart';
 import '../providers/home_provider.dart';
 import 'components/announcement_slider.dart';
 import 'components/event_card.dart';
@@ -382,7 +383,7 @@ class HomeContentPage extends ConsumerWidget {
                     const SizedBox(height: 200, child: LoadingOverlay()),
                 error: (e, _) => Padding(
                   padding: const EdgeInsets.all(20),
-                  child: ErrorView(message: e.toString()),
+                  child: ErrorView(message: errorMessage(e)),
                 ),
               ),
 
@@ -520,7 +521,7 @@ class HomeContentPage extends ConsumerWidget {
                 ),
                 error: (e, _) => Padding(
                   padding: const EdgeInsets.all(20),
-                  child: ErrorView(message: e.toString()),
+                  child: ErrorView(message: errorMessage(e)),
                 ),
               ),
             ],

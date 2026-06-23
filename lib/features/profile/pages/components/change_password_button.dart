@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../shared/providers/user_provider.dart';
+import '../../../../shared/utils/error_message.dart';
 
 class ChangePasswordButton extends StatefulWidget {
   final String email;
@@ -65,7 +66,7 @@ class _ChangePasswordButtonState extends State<ChangePasswordButton> {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(e.toString())));
+        ).showSnackBar(SnackBar(content: Text(errorMessage(e))));
       }
     } finally {
       if (mounted) setState(() => _sending = false);
