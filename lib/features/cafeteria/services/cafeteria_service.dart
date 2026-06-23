@@ -139,11 +139,18 @@ class CafeteriaService {
         }, SetOptions(merge: true));
 
         transaction.set(ratingDocRef, {
+          'uid': uid,
+          'date': date,
+          'mealName': mealName,
           'rating': rating,
           'comment': comment,
           'authorName': authorName,
           'createdAt': FieldValue.serverTimestamp(),
         });
+
+        transaction.set(_db.collection('users').doc(uid), {
+          'ratedMealIds': FieldValue.arrayUnion([docId]),
+        }, SetOptions(merge: true));
       });
     } on FirebaseException catch (e) {
       throw Exception('Oy verilemedi: ${e.message}');
