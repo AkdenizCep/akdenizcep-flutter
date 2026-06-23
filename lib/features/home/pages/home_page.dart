@@ -53,7 +53,8 @@ class _FloatingNavBar extends StatefulWidget {
   State<_FloatingNavBar> createState() => _FloatingNavBarState();
 }
 
-class _FloatingNavBarState extends State<_FloatingNavBar> with SingleTickerProviderStateMixin {
+class _FloatingNavBarState extends State<_FloatingNavBar>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   double _previousIndex = 0.0;
   double _currentIndex = 0.0;
@@ -107,7 +108,9 @@ class _FloatingNavBarState extends State<_FloatingNavBar> with SingleTickerProvi
         child: Container(
           height: 68,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.98),
+            color: Theme.of(
+              context,
+            ).colorScheme.surface.withValues(alpha: 0.98),
             borderRadius: BorderRadius.circular(36),
             boxShadow: [
               BoxShadow(
@@ -119,70 +122,94 @@ class _FloatingNavBarState extends State<_FloatingNavBar> with SingleTickerProvi
           ),
           child: LayoutBuilder(
             builder: (context, constraints) {
-            final totalWidth = constraints.maxWidth;
-            const itemCount = 5;
-            final slotWidth = totalWidth / itemCount;
-            const baseIndicatorWidth = 56.0;
-            const indicatorHeight = 48.0;
+              final totalWidth = constraints.maxWidth;
+              const itemCount = 5;
+              final slotWidth = totalWidth / itemCount;
+              const baseIndicatorWidth = 56.0;
+              const indicatorHeight = 48.0;
 
-            return AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) {
-                final t = CurvedAnimation(
-                  parent: _controller,
-                  curve: Curves.easeInOutCubic,
-                ).value;
+              return AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  final t = CurvedAnimation(
+                    parent: _controller,
+                    curve: Curves.easeInOutCubic,
+                  ).value;
 
-                final currentPos = Tween<double>(
-                  begin: _previousIndex,
-                  end: _currentIndex,
-                ).transform(t);
+                  final currentPos = Tween<double>(
+                    begin: _previousIndex,
+                    end: _currentIndex,
+                  ).transform(t);
 
-                final distance = (_currentIndex - _previousIndex).abs();
-                final maxStretch = distance * 0.28;
-                final stretch = 1.0 + maxStretch * (4 * t * (1 - t));
+                  final distance = (_currentIndex - _previousIndex).abs();
+                  final maxStretch = distance * 0.28;
+                  final stretch = 1.0 + maxStretch * (4 * t * (1 - t));
 
-                final width = baseIndicatorWidth * stretch;
-                final leftOffset = currentPos * slotWidth + (slotWidth - width) / 2;
-                final topOffset = (constraints.maxHeight - indicatorHeight) / 2;
+                  final width = baseIndicatorWidth * stretch;
+                  final leftOffset =
+                      currentPos * slotWidth + (slotWidth - width) / 2;
+                  final topOffset =
+                      (constraints.maxHeight - indicatorHeight) / 2;
 
-                return Stack(
-                  children: [
-                    // Sliding and stretching active indicator background
-                    Positioned(
-                      left: leftOffset,
-                      top: topOffset,
-                      width: width,
-                      height: indicatorHeight,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(24),
+                  return Stack(
+                    children: [
+                      // Sliding and stretching active indicator background
+                      Positioned(
+                        left: leftOffset,
+                        top: topOffset,
+                        width: width,
+                        height: indicatorHeight,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(24),
+                          ),
                         ),
                       ),
-                    ),
-                    // Interactive items layer
-                    Row(
-                      children: [
-                        _navItem(context, Icons.home, Icons.home_outlined, 0),
-                        _navItem(context, Icons.restaurant, Icons.restaurant_outlined, 1),
-                        _navItem(context, Icons.directions_bus, Icons.directions_bus_outlined, 2),
-                        _navItem(context, Icons.calendar_month, Icons.calendar_month_outlined, 3),
-                        _navItem(context, Icons.map, Icons.map_outlined, 4),
-                      ],
-                    ),
-                  ],
-                );
-              },
-            );
-          },
+                      // Interactive items layer
+                      Row(
+                        children: [
+                          _navItem(context, Icons.home, Icons.home_outlined, 0),
+                          _navItem(
+                            context,
+                            Icons.restaurant,
+                            Icons.restaurant_outlined,
+                            1,
+                          ),
+                          _navItem(
+                            context,
+                            Icons.directions_bus,
+                            Icons.directions_bus_outlined,
+                            2,
+                          ),
+                          _navItem(
+                            context,
+                            Icons.calendar_month,
+                            Icons.calendar_month_outlined,
+                            3,
+                          ),
+                          _navItem(context, Icons.map, Icons.map_outlined, 4),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-  Widget _navItem(BuildContext context, IconData selectedIcon, IconData icon, int index) {
+  Widget _navItem(
+    BuildContext context,
+    IconData selectedIcon,
+    IconData icon,
+    int index,
+  ) {
     final isSelected = widget.currentIndex == index;
     return Expanded(
       child: GestureDetector(
@@ -218,6 +245,9 @@ class HomeContentPage extends ConsumerWidget {
     final userAsync = ref.watch(currentUserProvider);
     final announcementsAsync = ref.watch(announcementsProvider);
     final eventsAsync = ref.watch(upcomingEventsProvider);
+    final userInitial = userAsync.valueOrNull?.name.isNotEmpty == true
+        ? userAsync.valueOrNull!.name[0].toUpperCase()
+        : '?';
 
     return Scaffold(
       body: SafeArea(
@@ -253,19 +283,19 @@ class HomeContentPage extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    IconButton(
-                      onPressed: () {},
-                      style: IconButton.styleFrom(
+                    GestureDetector(
+                      onTap: () => context.go('/home/profile'),
+                      child: CircleAvatar(
+                        radius: 20,
                         backgroundColor: Theme.of(
                           context,
-                        ).colorScheme.surfaceContainerHighest,
-                        shape: const CircleBorder(),
-                      ),
-                      icon: Badge(
-                        smallSize: 8,
-                        child: Icon(
-                          Icons.notifications_outlined,
-                          color: Theme.of(context).colorScheme.onSurface,
+                        ).colorScheme.primaryContainer,
+                        child: Text(
+                          userInitial,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ),
                     ),
@@ -474,7 +504,8 @@ class HomeContentPage extends ConsumerWidget {
                         final event = events[index];
                         return EventCard(
                           event: event,
-                          onTap: () => context.go('/student-events/${event.id}'),
+                          onTap: () =>
+                              context.go('/student-events/${event.id}'),
                         );
                       },
                     ),

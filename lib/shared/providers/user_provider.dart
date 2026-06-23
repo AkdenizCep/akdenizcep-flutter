@@ -6,6 +6,11 @@ import '../../features/auth/models/app_user.dart';
 
 final firebaseAuthProvider = Provider((_) => FirebaseAuth.instance);
 
+Future<void> signOut() => FirebaseAuth.instance.signOut();
+
+Future<void> sendPasswordResetEmail(String email) =>
+    FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+
 final authStateProvider = StreamProvider<User?>((ref) {
   return ref.watch(firebaseAuthProvider).authStateChanges();
 });
@@ -20,9 +25,9 @@ final currentUserProvider = StreamProvider<AppUser?>((ref) {
           .doc(user.uid)
           .snapshots()
           .map((snap) {
-        if (!snap.exists) return null;
-        return AppUser.fromJson(snap.data()!..['id'] = snap.id);
-      });
+            if (!snap.exists) return null;
+            return AppUser.fromJson(snap.data()!..['id'] = snap.id);
+          });
     },
     loading: () => Stream.value(null),
     error: (e, st) => Stream.value(null),

@@ -103,7 +103,12 @@ class CafeteriaPage extends ConsumerWidget {
     final selectedDate = ref.read(selectedDateProvider);
 
     return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(22, 26, 22, 110),
+      padding: EdgeInsets.fromLTRB(
+        22,
+        26,
+        22,
+        132 + MediaQuery.of(context).padding.bottom,
+      ),
       sliver: SliverList.list(
         children: [
           Text(
