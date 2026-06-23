@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../shared/providers/user_provider.dart';
+import '../../../../shared/utils/error_message.dart';
 import '../../models/meal_review.dart';
 import '../../providers/cafeteria_provider.dart';
 
@@ -185,7 +186,7 @@ class _ReviewRow extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(e.toString())));
+        ).showSnackBar(SnackBar(content: Text(errorMessage(e))));
       }
     }
   }

@@ -35,7 +35,9 @@ class CafeteriaEmptyState extends StatelessWidget {
             Text(
               'Menü henüz girilmemiş',
               textAlign: TextAlign.center,
-              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -51,7 +53,9 @@ class CafeteriaEmptyState extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
+                ),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(

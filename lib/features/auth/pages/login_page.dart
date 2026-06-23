@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../shared/utils/error_message.dart';
 import '../providers/auth_provider.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -39,7 +40,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(e.toString())));
+        ).showSnackBar(SnackBar(content: Text(errorMessage(e))));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -56,7 +57,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.emailAddress,
-          autofocus: true,
           decoration: const InputDecoration(
             labelText: 'E-posta',
             hintText: 'ogrenci@ogr.akdeniz.edu.tr',
@@ -74,7 +74,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ],
       ),
     );
-    controller.dispose();
 
     if (email == null || email.isEmpty || !mounted) return;
 
@@ -93,7 +92,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(e.toString())));
+        ).showSnackBar(SnackBar(content: Text(errorMessage(e))));
       }
     }
   }

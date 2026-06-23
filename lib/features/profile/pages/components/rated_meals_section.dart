@@ -2,8 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../shared/utils/error_message.dart';
 import '../../models/profile_rated_meal.dart';
 import '../../providers/profile_provider.dart';
+
+String _formatMealName(String raw) {
+  switch (raw.toLowerCase()) {
+    case 'lunch':
+      return 'Öğle Yemeği';
+    case 'dinner':
+      return 'Akşam Yemeği';
+    case 'breakfast':
+      return 'Kahvaltı';
+  }
+  return raw;
+}
 
 class RatedMealsSection extends ConsumerWidget {
   const RatedMealsSection({super.key});
@@ -40,7 +53,7 @@ class RatedMealsSection extends ConsumerWidget {
         child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
       ),
       error: (e, _) => Text(
-        e.toString(),
+        errorMessage(e),
         style: TextStyle(color: colorScheme.error, fontSize: 12),
       ),
     );
@@ -78,7 +91,7 @@ class _RatedMealTile extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  meal.mealName,
+                  _formatMealName(meal.mealName),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(

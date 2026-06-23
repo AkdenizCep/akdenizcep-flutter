@@ -62,4 +62,23 @@ class ProfileService {
     meals.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return meals;
   }
+
+  Future<void> sendFeedback({
+    required String uid,
+    required String authorName,
+    required String email,
+    required String message,
+  }) async {
+    try {
+      await _db.collection('feedback').add({
+        'uid': uid,
+        'authorName': authorName,
+        'email': email,
+        'message': message,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    } on FirebaseException catch (e) {
+      throw Exception('Geri bildirim gönderilemedi: ${e.message}');
+    }
+  }
 }

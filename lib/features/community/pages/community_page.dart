@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../shared/components/error_view.dart';
 import '../../../shared/components/loading_overlay.dart';
+import '../../../shared/utils/error_message.dart';
 import '../providers/community_provider.dart';
 
 class CommunityPage extends ConsumerWidget {
@@ -42,7 +43,7 @@ class CommunityPage extends ConsumerWidget {
           },
         ),
         loading: () => const LoadingOverlay(),
-        error: (e, _) => ErrorView(message: e.toString()),
+        error: (e, _) => ErrorView(message: errorMessage(e)),
       ),
     );
   }

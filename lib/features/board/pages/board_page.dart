@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../shared/components/error_view.dart';
 import '../../../shared/components/loading_overlay.dart';
+import '../../../shared/utils/error_message.dart';
 import '../providers/board_provider.dart';
 
 class BoardPage extends ConsumerWidget {
@@ -37,18 +38,15 @@ class BoardPage extends ConsumerWidget {
                           Chip(label: Text(item.category)),
                           const Spacer(),
                           Text(
-                            DateFormat('dd.MM.yyyy')
-                                .format(item.createdAt),
-                            style:
-                                Theme.of(context).textTheme.bodySmall,
+                            DateFormat('dd.MM.yyyy').format(item.createdAt),
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ],
                       ),
                       const SizedBox(height: 8),
                       Text(
                         item.title,
-                        style:
-                            Theme.of(context).textTheme.titleMedium,
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 4),
                       Text(item.content),
@@ -60,7 +58,7 @@ class BoardPage extends ConsumerWidget {
           );
         },
         loading: () => const LoadingOverlay(),
-        error: (e, _) => ErrorView(message: e.toString()),
+        error: (e, _) => ErrorView(message: errorMessage(e)),
       ),
     );
   }

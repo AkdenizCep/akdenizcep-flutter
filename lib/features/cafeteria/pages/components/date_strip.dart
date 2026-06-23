@@ -26,8 +26,11 @@ class _DateStripState extends State<DateStrip> {
   void initState() {
     super.initState();
     final today = DateTime.now();
-    final start = DateTime(today.year, today.month, today.day)
-        .subtract(const Duration(days: _daysBefore));
+    final start = DateTime(
+      today.year,
+      today.month,
+      today.day,
+    ).subtract(const Duration(days: _daysBefore));
     _days = List.generate(
       _daysBefore + _daysAfter + 1,
       (i) => start.add(Duration(days: i)),

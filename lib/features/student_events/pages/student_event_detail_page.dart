@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../shared/components/error_view.dart';
 import '../../../shared/components/loading_overlay.dart';
 import '../../../shared/providers/user_provider.dart';
+import '../../../shared/utils/error_message.dart';
 import '../providers/student_events_provider.dart';
 
 class StudentEventDetailPage extends ConsumerWidget {
@@ -33,7 +34,8 @@ class StudentEventDetailPage extends ConsumerWidget {
                         builder: (ctx) => AlertDialog(
                           title: const Text('Etkinligi Sil'),
                           content: const Text(
-                              'Bu etkinligi silmek istediginize emin misiniz?'),
+                            'Bu etkinligi silmek istediginize emin misiniz?',
+                          ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(ctx, false),
@@ -77,8 +79,9 @@ class StudentEventDetailPage extends ConsumerWidget {
                 children: [
                   const Icon(Icons.calendar_today, size: 18),
                   const SizedBox(width: 8),
-                  Text(DateFormat('dd MMMM yyyy, HH:mm', 'tr')
-                      .format(event.date)),
+                  Text(
+                    DateFormat('dd MMMM yyyy, HH:mm', 'tr').format(event.date),
+                  ),
                 ],
               ),
               const SizedBox(height: 8),
@@ -98,7 +101,7 @@ class StudentEventDetailPage extends ConsumerWidget {
           ),
         ),
         loading: () => const LoadingOverlay(),
-        error: (e, _) => ErrorView(message: e.toString()),
+        error: (e, _) => ErrorView(message: errorMessage(e)),
       ),
     );
   }

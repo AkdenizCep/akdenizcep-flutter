@@ -5,10 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 class StorageService {
   final _storage = FirebaseStorage.instance;
 
-  Future<String> uploadFile({
-    required String path,
-    required File file,
-  }) async {
+  Future<String> uploadFile({required String path, required File file}) async {
     try {
       final ref = _storage.ref().child(path);
       await ref.putFile(file);

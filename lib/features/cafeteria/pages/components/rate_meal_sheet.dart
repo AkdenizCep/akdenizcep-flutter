@@ -47,9 +47,9 @@ class _RateMealSheetState extends State<RateMealSheet> {
         children: [
           Text(
             'Bu yemeği puanla',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 16),
           Center(
