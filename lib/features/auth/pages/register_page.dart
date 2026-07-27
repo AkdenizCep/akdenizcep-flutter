@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../shared/utils/error_message.dart';
 import '../providers/auth_provider.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
@@ -33,25 +34,22 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
     setState(() => _loading = true);
     try {
-      await ref.read(authServiceProvider).register(
+      await ref
+          .read(authServiceProvider)
+          .register(
             email: _emailController.text.trim(),
             password: _passwordController.text,
             name: _nameController.text.trim(),
             studentId: _studentIdController.text.trim(),
           );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Kayit basarili! Lutfen e-postanizi dogrulayin.'),
-          ),
-        );
-        context.go('/login');
+        context.go('/verify-email');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage(e))));
       }
     } finally {
       if (mounted) setState(() => _loading = false);

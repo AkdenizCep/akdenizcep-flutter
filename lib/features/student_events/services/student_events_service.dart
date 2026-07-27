@@ -18,9 +18,11 @@ class StudentEventsService {
   }
 
   Stream<StudentEvent> getEvent(String eventId) {
-    return _db.collection('student-events').doc(eventId).snapshots().map(
-          (snap) => StudentEvent.fromJson(snap.data()!..['id'] = snap.id),
-        );
+    return _db
+        .collection('student-events')
+        .doc(eventId)
+        .snapshots()
+        .map((snap) => StudentEvent.fromJson(snap.data()!..['id'] = snap.id));
   }
 
   Future<void> createEvent({

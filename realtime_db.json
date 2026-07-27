@@ -1,9 +1,5 @@
 {
-  "cafeteria_menu": {
-    "2026-03-16": {
-      "lunch": ["Mercimek çorbası", "Tavuk şiş", "Pilav"]
-    }
-  },
+
   "ring_schedule": {
     "au_103_gidis": {
       "weekday": [

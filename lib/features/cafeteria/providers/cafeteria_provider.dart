@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../models/meal_rating.dart';
+import '../models/meal_review.dart';
 import '../models/menu_item.dart';
 import '../services/cafeteria_service.dart';
 
@@ -22,4 +23,14 @@ final menuProvider = StreamProvider<List<MenuItem>>((ref) {
 final ratingsProvider = StreamProvider<List<MealRating>>((ref) {
   final date = ref.watch(formattedDateProvider);
   return ref.watch(cafeteriaServiceProvider).getRatings(date);
+});
+
+final selectedMealTypeProvider = StateProvider<String?>((_) => null);
+
+final mealReviewsProvider = StreamProvider.family<List<MealReview>, String>((
+  ref,
+  mealType,
+) {
+  final date = ref.watch(formattedDateProvider);
+  return ref.watch(cafeteriaServiceProvider).getReviews(date, mealType);
 });

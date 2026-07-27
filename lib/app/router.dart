@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../features/auth/pages/login_page.dart';
 import '../features/auth/pages/register_page.dart';
+import '../features/auth/pages/verify_email_page.dart';
 import '../features/auth/providers/auth_provider.dart';
 import '../features/board/pages/board_page.dart';
 import '../features/cafeteria/pages/cafeteria_page.dart';
@@ -12,6 +13,7 @@ import '../features/community/pages/community_page.dart';
 import '../features/community/pages/event_detail_page.dart';
 import '../features/home/pages/home_page.dart';
 import '../features/map/pages/map_page.dart';
+import '../features/profile/pages/profile_page.dart';
 import '../features/ring/pages/ring_page.dart';
 import '../features/student_events/pages/create_event_page.dart';
 import '../features/student_events/pages/student_event_detail_page.dart';
@@ -19,7 +21,9 @@ import '../features/student_events/pages/student_events_page.dart';
 
 // Shell branch navigator keys — birden fazla branch aynı yolu paylaşmasın
 final _shellHomeKey = GlobalKey<NavigatorState>(debugLabel: 'shellHome');
-final _shellCafeteriaKey = GlobalKey<NavigatorState>(debugLabel: 'shellCafeteria');
+final _shellCafeteriaKey = GlobalKey<NavigatorState>(
+  debugLabel: 'shellCafeteria',
+);
 final _shellRingKey = GlobalKey<NavigatorState>(debugLabel: 'shellRing');
 final _shellEventsKey = GlobalKey<NavigatorState>(debugLabel: 'shellEvents');
 final _shellMapKey = GlobalKey<NavigatorState>(debugLabel: 'shellMap');
@@ -33,22 +37,32 @@ final routerProvider = Provider<GoRouter>((ref) {
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/home',
     redirect: (context, state) {
-      final isLoggedIn = authState.valueOrNull != null;
-      final isAuthRoute = state.matchedLocation == '/login' ||
+      final user = authState.valueOrNull;
+      final isLoggedIn = user != null;
+      final isEmailVerified = user?.emailVerified ?? false;
+      final isAuthRoute =
+          state.matchedLocation == '/login' ||
           state.matchedLocation == '/register';
+      final isVerifyRoute = state.matchedLocation == '/verify-email';
 
-      if (!isLoggedIn && !isAuthRoute) return '/login';
-      if (isLoggedIn && isAuthRoute) return '/home';
+      if (!isLoggedIn) {
+        return isAuthRoute ? null : '/login';
+      }
+      if (!isEmailVerified) {
+        return isVerifyRoute ? null : '/verify-email';
+      }
+      if (isAuthRoute || isVerifyRoute) return '/home';
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginPage(),
-      ),
+      GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterPage(),
+      ),
+      GoRoute(
+        path: '/verify-email',
+        builder: (context, state) => const VerifyEmailPage(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
@@ -86,6 +100,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'board',
                     builder: (context, state) => const BoardPage(),
+                  ),
+                  GoRoute(
+                    path: 'profile',
+                    builder: (context, state) => const ProfilePage(),
                   ),
                 ],
               ),
@@ -148,4 +166,3 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-

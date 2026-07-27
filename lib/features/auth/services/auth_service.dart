@@ -11,6 +11,23 @@ class AuthService {
 
   Stream<User?> authStateChanges() => _auth.authStateChanges();
 
+  /// authStateChanges()'den farkli olarak reload() gibi profil
+  /// guncellemelerinde de (emailVerified degisimi dahil) yeni deger yayar.
+  Stream<User?> userChanges() => _auth.userChanges();
+
+  Future<bool> reloadAndCheckVerified() async {
+    await _auth.currentUser?.reload();
+    return _auth.currentUser?.emailVerified ?? false;
+  }
+
+  Future<void> resendVerificationEmail() async {
+    try {
+      await _auth.currentUser?.sendEmailVerification();
+    } on FirebaseAuthException catch (e) {
+      throw Exception(_mapAuthError(e.code));
+    }
+  }
+
   Future<UserCredential> register({
     required String email,
     required String password,
@@ -92,6 +109,8 @@ class AuthService {
         return 'Bu e-posta ile kayitli kullanici bulunamadi.';
       case 'wrong-password':
         return 'Hatali sifre.';
+      case 'too-many-requests':
+        return 'Cok fazla istek gonderildi. Lutfen birkac dakika sonra tekrar deneyin.';
       default:
         return 'Bir hata olustu. Lutfen tekrar deneyin.';
     }

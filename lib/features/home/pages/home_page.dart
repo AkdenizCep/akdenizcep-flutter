@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../shared/components/error_view.dart';
 import '../../../shared/components/loading_overlay.dart';
+import '../../../shared/providers/nav_visibility_provider.dart';
 import '../../../shared/providers/user_provider.dart';
+import '../../../shared/utils/error_message.dart';
 import '../providers/home_provider.dart';
 import 'components/announcement_slider.dart';
 import 'components/event_card.dart';
@@ -16,17 +18,24 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final navBarVisible = ref.watch(bottomNavVisibleProvider);
+
     return Scaffold(
       extendBody: true,
       body: navigationShell,
-      bottomNavigationBar: _FloatingNavBar(
-        currentIndex: navigationShell.currentIndex,
-        onDestinationSelected: (index) {
-          navigationShell.goBranch(
-            index,
-            initialLocation: index == navigationShell.currentIndex,
-          );
-        },
+      bottomNavigationBar: AnimatedSlide(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOut,
+        offset: navBarVisible ? Offset.zero : const Offset(0, 1),
+        child: _FloatingNavBar(
+          currentIndex: navigationShell.currentIndex,
+          onDestinationSelected: (index) {
+            navigationShell.goBranch(
+              index,
+              initialLocation: index == navigationShell.currentIndex,
+            );
+          },
+        ),
       ),
     );
   }
@@ -45,7 +54,8 @@ class _FloatingNavBar extends StatefulWidget {
   State<_FloatingNavBar> createState() => _FloatingNavBarState();
 }
 
-class _FloatingNavBarState extends State<_FloatingNavBar> with SingleTickerProviderStateMixin {
+class _FloatingNavBarState extends State<_FloatingNavBar>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   double _previousIndex = 0.0;
   double _currentIndex = 0.0;
@@ -99,7 +109,9 @@ class _FloatingNavBarState extends State<_FloatingNavBar> with SingleTickerProvi
         child: Container(
           height: 68,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.98),
+            color: Theme.of(
+              context,
+            ).colorScheme.surface.withValues(alpha: 0.98),
             borderRadius: BorderRadius.circular(36),
             boxShadow: [
               BoxShadow(
@@ -111,70 +123,94 @@ class _FloatingNavBarState extends State<_FloatingNavBar> with SingleTickerProvi
           ),
           child: LayoutBuilder(
             builder: (context, constraints) {
-            final totalWidth = constraints.maxWidth;
-            const itemCount = 5;
-            final slotWidth = totalWidth / itemCount;
-            const baseIndicatorWidth = 56.0;
-            const indicatorHeight = 48.0;
+              final totalWidth = constraints.maxWidth;
+              const itemCount = 5;
+              final slotWidth = totalWidth / itemCount;
+              const baseIndicatorWidth = 56.0;
+              const indicatorHeight = 48.0;
 
-            return AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) {
-                final t = CurvedAnimation(
-                  parent: _controller,
-                  curve: Curves.easeInOutCubic,
-                ).value;
+              return AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  final t = CurvedAnimation(
+                    parent: _controller,
+                    curve: Curves.easeInOutCubic,
+                  ).value;
 
-                final currentPos = Tween<double>(
-                  begin: _previousIndex,
-                  end: _currentIndex,
-                ).transform(t);
+                  final currentPos = Tween<double>(
+                    begin: _previousIndex,
+                    end: _currentIndex,
+                  ).transform(t);
 
-                final distance = (_currentIndex - _previousIndex).abs();
-                final maxStretch = distance * 0.28;
-                final stretch = 1.0 + maxStretch * (4 * t * (1 - t));
+                  final distance = (_currentIndex - _previousIndex).abs();
+                  final maxStretch = distance * 0.28;
+                  final stretch = 1.0 + maxStretch * (4 * t * (1 - t));
 
-                final width = baseIndicatorWidth * stretch;
-                final leftOffset = currentPos * slotWidth + (slotWidth - width) / 2;
-                final topOffset = (constraints.maxHeight - indicatorHeight) / 2;
+                  final width = baseIndicatorWidth * stretch;
+                  final leftOffset =
+                      currentPos * slotWidth + (slotWidth - width) / 2;
+                  final topOffset =
+                      (constraints.maxHeight - indicatorHeight) / 2;
 
-                return Stack(
-                  children: [
-                    // Sliding and stretching active indicator background
-                    Positioned(
-                      left: leftOffset,
-                      top: topOffset,
-                      width: width,
-                      height: indicatorHeight,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(24),
+                  return Stack(
+                    children: [
+                      // Sliding and stretching active indicator background
+                      Positioned(
+                        left: leftOffset,
+                        top: topOffset,
+                        width: width,
+                        height: indicatorHeight,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(24),
+                          ),
                         ),
                       ),
-                    ),
-                    // Interactive items layer
-                    Row(
-                      children: [
-                        _navItem(context, Icons.home, Icons.home_outlined, 0),
-                        _navItem(context, Icons.restaurant, Icons.restaurant_outlined, 1),
-                        _navItem(context, Icons.directions_bus, Icons.directions_bus_outlined, 2),
-                        _navItem(context, Icons.calendar_month, Icons.calendar_month_outlined, 3),
-                        _navItem(context, Icons.map, Icons.map_outlined, 4),
-                      ],
-                    ),
-                  ],
-                );
-              },
-            );
-          },
+                      // Interactive items layer
+                      Row(
+                        children: [
+                          _navItem(context, Icons.home, Icons.home_outlined, 0),
+                          _navItem(
+                            context,
+                            Icons.restaurant,
+                            Icons.restaurant_outlined,
+                            1,
+                          ),
+                          _navItem(
+                            context,
+                            Icons.directions_bus,
+                            Icons.directions_bus_outlined,
+                            2,
+                          ),
+                          _navItem(
+                            context,
+                            Icons.calendar_month,
+                            Icons.calendar_month_outlined,
+                            3,
+                          ),
+                          _navItem(context, Icons.map, Icons.map_outlined, 4),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-  Widget _navItem(BuildContext context, IconData selectedIcon, IconData icon, int index) {
+  Widget _navItem(
+    BuildContext context,
+    IconData selectedIcon,
+    IconData icon,
+    int index,
+  ) {
     final isSelected = widget.currentIndex == index;
     return Expanded(
       child: GestureDetector(
@@ -210,6 +246,9 @@ class HomeContentPage extends ConsumerWidget {
     final userAsync = ref.watch(currentUserProvider);
     final announcementsAsync = ref.watch(announcementsProvider);
     final eventsAsync = ref.watch(upcomingEventsProvider);
+    final userInitial = userAsync.valueOrNull?.name.isNotEmpty == true
+        ? userAsync.valueOrNull!.name[0].toUpperCase()
+        : '?';
 
     return Scaffold(
       body: SafeArea(
@@ -245,19 +284,19 @@ class HomeContentPage extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    IconButton(
-                      onPressed: () {},
-                      style: IconButton.styleFrom(
+                    GestureDetector(
+                      onTap: () => context.go('/home/profile'),
+                      child: CircleAvatar(
+                        radius: 20,
                         backgroundColor: Theme.of(
                           context,
-                        ).colorScheme.surfaceContainerHighest,
-                        shape: const CircleBorder(),
-                      ),
-                      icon: Badge(
-                        smallSize: 8,
-                        child: Icon(
-                          Icons.notifications_outlined,
-                          color: Theme.of(context).colorScheme.onSurface,
+                        ).colorScheme.primaryContainer,
+                        child: Text(
+                          userInitial,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ),
                     ),
@@ -344,7 +383,7 @@ class HomeContentPage extends ConsumerWidget {
                     const SizedBox(height: 200, child: LoadingOverlay()),
                 error: (e, _) => Padding(
                   padding: const EdgeInsets.all(20),
-                  child: ErrorView(message: e.toString()),
+                  child: ErrorView(message: errorMessage(e)),
                 ),
               ),
 
@@ -466,7 +505,8 @@ class HomeContentPage extends ConsumerWidget {
                         final event = events[index];
                         return EventCard(
                           event: event,
-                          onTap: () => context.go('/student-events/${event.id}'),
+                          onTap: () =>
+                              context.go('/student-events/${event.id}'),
                         );
                       },
                     ),
@@ -481,7 +521,7 @@ class HomeContentPage extends ConsumerWidget {
                 ),
                 error: (e, _) => Padding(
                   padding: const EdgeInsets.all(20),
-                  child: ErrorView(message: e.toString()),
+                  child: ErrorView(message: errorMessage(e)),
                 ),
               ),
             ],

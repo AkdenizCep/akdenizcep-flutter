@@ -6,7 +6,7 @@ import '../services/auth_service.dart';
 final authServiceProvider = Provider((_) => AuthService());
 
 final authStateProvider = StreamProvider<User?>((ref) {
-  return ref.watch(authServiceProvider).authStateChanges();
+  return ref.watch(authServiceProvider).userChanges();
 });
 
 final isEmailVerifiedProvider = Provider<bool>((ref) {

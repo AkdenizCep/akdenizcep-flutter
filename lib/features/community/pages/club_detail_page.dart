@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../shared/components/error_view.dart';
 import '../../../shared/components/loading_overlay.dart';
 import '../../../shared/providers/user_provider.dart';
+import '../../../shared/utils/error_message.dart';
 import '../providers/community_provider.dart';
 
 class ClubDetailPage extends ConsumerWidget {
@@ -38,8 +39,10 @@ class ClubDetailPage extends ConsumerWidget {
                         ? CachedNetworkImageProvider(club.logoUrl)
                         : null,
                     child: club.logoUrl.isEmpty
-                        ? Text(club.name.isNotEmpty ? club.name[0] : '',
-                            style: const TextStyle(fontSize: 32))
+                        ? Text(
+                            club.name.isNotEmpty ? club.name[0] : '',
+                            style: const TextStyle(fontSize: 32),
+                          )
                         : null,
                   ),
                 ),
@@ -51,13 +54,9 @@ class ClubDetailPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Center(
-                  child: Chip(label: Text(club.category)),
-                ),
+                Center(child: Chip(label: Text(club.category))),
                 const SizedBox(height: 8),
-                Center(
-                  child: Text('${club.followerCount} takipci'),
-                ),
+                Center(child: Text('${club.followerCount} takipci')),
                 const SizedBox(height: 16),
                 Center(
                   child: FilledButton.icon(
@@ -65,17 +64,13 @@ class ClubDetailPage extends ConsumerWidget {
                       if (currentUser == null) return;
                       final service = ref.read(communityServiceProvider);
                       if (isFollowing) {
-                        await service.unfollowClub(
-                            currentUser.id, clubId);
+                        await service.unfollowClub(currentUser.id, clubId);
                       } else {
-                        await service.followClub(
-                            currentUser.id, clubId);
+                        await service.followClub(currentUser.id, clubId);
                       }
                     },
-                    icon: Icon(
-                        isFollowing ? Icons.check : Icons.add),
-                    label:
-                        Text(isFollowing ? 'Takip Ediliyor' : 'Takip Et'),
+                    icon: Icon(isFollowing ? Icons.check : Icons.add),
+                    label: Text(isFollowing ? 'Takip Ediliyor' : 'Takip Et'),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -104,21 +99,22 @@ class ClubDetailPage extends ConsumerWidget {
                             title: Text(event.title),
                             subtitle: Text(event.location),
                             onTap: () => context.go(
-                                '/home/community/$clubId/event/${event.id}'),
+                              '/home/community/$clubId/event/${event.id}',
+                            ),
                           ),
                         );
                       },
                     );
                   },
                   loading: () => const LoadingOverlay(),
-                  error: (e, _) => ErrorView(message: e.toString()),
+                  error: (e, _) => ErrorView(message: errorMessage(e)),
                 ),
               ],
             ),
           );
         },
         loading: () => const LoadingOverlay(),
-        error: (e, _) => ErrorView(message: e.toString()),
+        error: (e, _) => ErrorView(message: errorMessage(e)),
       ),
     );
   }

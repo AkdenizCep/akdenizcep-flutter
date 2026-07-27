@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../shared/utils/error_message.dart';
 import '../providers/auth_provider.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -29,18 +30,70 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     setState(() => _loading = true);
     try {
-      await ref.read(authServiceProvider).login(
+      await ref
+          .read(authServiceProvider)
+          .login(
             email: _emailController.text.trim(),
             password: _passwordController.text,
           );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage(e))));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _forgotPassword() async {
+    final controller = TextEditingController(text: _emailController.text);
+
+    final email = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Şifreni mi unuttun?'),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(
+            labelText: 'E-posta',
+            hintText: 'ogrenci@ogr.akdeniz.edu.tr',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Vazgeç'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(controller.text.trim()),
+            child: const Text('Gönder'),
+          ),
+        ],
+      ),
+    );
+
+    if (email == null || email.isEmpty || !mounted) return;
+
+    try {
+      await ref.read(authServiceProvider).sendPasswordReset(email);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Şifre sıfırlama bağlantısı $email adresine gönderildi.',
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage(e))));
+      }
     }
   }
 
@@ -59,8 +112,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   Text(
                     'Akdeniz Cep',
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -90,7 +143,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     validator: (v) =>
                         v == null || v.isEmpty ? 'Sifre gerekli' : null,
                   ),
-                  const SizedBox(height: 24),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: _forgotPassword,
+                      child: const Text('Şifreni mi unuttun?'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
@@ -99,8 +159,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           ? const SizedBox(
                               height: 20,
                               width: 20,
-                              child:
-                                  CircularProgressIndicator(strokeWidth: 2),
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Text('Giris Yap'),
                     ),

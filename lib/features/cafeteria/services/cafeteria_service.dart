@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 
 import '../../../firebase_options.dart';
 import '../models/meal_rating.dart';
+import '../models/meal_review.dart';
 import '../models/menu_item.dart';
 
 class CafeteriaService {
@@ -40,6 +41,58 @@ class CafeteriaService {
         );
   }
 
+  Stream<List<MealReview>> getReviews(String date, String mealName) {
+    final docId = '${date}_$mealName';
+    return _db
+        .collection('cafeteria_ratings')
+        .doc(docId)
+        .collection('ratings')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snap) {
+          final reviews = snap.docs
+              .map((d) => MealReview.fromJson(d.data()..['uid'] = d.id))
+              .toList();
+          reviews.sort((a, b) {
+            final scoreDiff = b.score.compareTo(a.score);
+            if (scoreDiff != 0) return scoreDiff;
+            return b.createdAt.compareTo(a.createdAt);
+          });
+          return reviews;
+        });
+  }
+
+  /// Bir yoruma upvote/downvote verir. [value] 1 (faydalı), -1 (faydasız)
+  /// veya 0 (oyu geri al) olabilir. Kullanıcı kendi yorumuna oy veremez.
+  Future<void> voteReview({
+    required String date,
+    required String mealName,
+    required String reviewUid,
+    required String voterUid,
+    required int value,
+  }) async {
+    if (reviewUid == voterUid) {
+      throw Exception('Kendi yorumunuza oy veremezsiniz.');
+    }
+
+    final docId = '${date}_$mealName';
+    final reviewRef = _db
+        .collection('cafeteria_ratings')
+        .doc(docId)
+        .collection('ratings')
+        .doc(reviewUid);
+
+    try {
+      if (value == 0) {
+        await reviewRef.update({'votes.$voterUid': FieldValue.delete()});
+      } else {
+        await reviewRef.update({'votes.$voterUid': value});
+      }
+    } on FirebaseException catch (e) {
+      throw Exception('Oy verilemedi: ${e.message}');
+    }
+  }
+
   /// Kullanicinin ayni gune ait rating'i varsa islem reddedilir.
   /// avgRating ve ratingCount atomik olarak transaction ile guncellenir.
   Future<void> rateMeal({
@@ -47,6 +100,8 @@ class CafeteriaService {
     required String date,
     required String mealName,
     required int rating,
+    required String authorName,
+    String comment = '',
   }) async {
     final docId = '${date}_$mealName';
     final ratingDocRef = _db
@@ -84,9 +139,18 @@ class CafeteriaService {
         }, SetOptions(merge: true));
 
         transaction.set(ratingDocRef, {
+          'uid': uid,
+          'date': date,
+          'mealName': mealName,
           'rating': rating,
+          'comment': comment,
+          'authorName': authorName,
           'createdAt': FieldValue.serverTimestamp(),
         });
+
+        transaction.set(_db.collection('users').doc(uid), {
+          'ratedMealIds': FieldValue.arrayUnion([docId]),
+        }, SetOptions(merge: true));
       });
     } on FirebaseException catch (e) {
       throw Exception('Oy verilemedi: ${e.message}');
