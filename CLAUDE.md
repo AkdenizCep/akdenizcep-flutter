@@ -13,6 +13,14 @@ flutter pub get           # after changing pubspec.yaml
 
 No codegen, no build runners, no CI pipelines configured.
 
+## Project wiki
+
+`akdenizcep-wiki/` is a living knowledge base for this project, maintained by Claude Code. It does **not** duplicate the code or `DEVELOPMENT.md` — it holds what those don't answer: why decisions were made, which feature reads/writes which data path, where docs and code have drifted apart.
+
+- Start at `akdenizcep-wiki/wiki/index.md`, or `overview.md` for the synthesis.
+- Maintenance rules live in `akdenizcep-wiki/CLAUDE.md` — read it before touching anything in that directory.
+- Operations: `/wiki-ingest`, `/wiki-query`, `/wiki-lint`.
+
 ## Architecture
 
 Read `DEVELOPMENT.md` first — it is comprehensive and authoritative (written in Turkish). It documents the full Firestore/Realtime DB schema, folder layout per feature, and the "Yapılması Gerekenler / Kaçınılması Gerekenler" (do's/don'ts) list in detail.
