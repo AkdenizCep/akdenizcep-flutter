@@ -28,6 +28,20 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- API 28 Apache HTTP'yi varsayilan classpath'ten cikardi. Maps SDK'nin
+             dynamite modulu uygulama surecine yuklenip org.apache.http.* ariyor;
+             bulamayinca harita acilirken surec cokuyor. Eski Play Services
+             surumlerinde gerekli, yenilerinde zararsiz. -->
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+        <!-- google_maps_flutter bu anahtar olmadan bos/gri bir harita cizer.
+             Deger kaynak kontrolunde tutulmaz; android/local.properties
+             icindeki MAPS_API_KEY'den build.gradle.kts ile enjekte edilir.
+             Anahtar Cloud Console'da paket adi + SHA-1 ile kisitlanmalidir. -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

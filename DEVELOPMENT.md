@@ -14,6 +14,41 @@ Dağınık hâlde bulunan kampüs servislerini (OBS, yemekhane, ring saatleri, k
 
 ---
 
+## Kurulum: Google Maps API anahtarı
+
+Harita ekranları (kampüs haritası, ring durakları) bir Google Maps API anahtarı
+ister. Anahtar **kaynak kontrolünde tutulmaz** — depo public olduğu için her iki
+platformda da git'in görmediği bir dosyadan okunur. Anahtar olmadan uygulama
+derlenir ve çalışır, yalnızca haritalar boş/gri çizilir.
+
+**Android** — `android/local.properties` dosyasına ekle (dosya zaten
+gitignore'da):
+
+```properties
+MAPS_API_KEY=buraya_anahtarini_yaz
+```
+
+`android/app/build.gradle.kts` bunu okuyup `AndroidManifest.xml` içindeki
+`${MAPS_API_KEY}` yer tutucusuna enjekte eder. CI'da `MAPS_API_KEY` ortam
+değişkeni de kullanılabilir.
+
+**iOS** — örnek dosyayı kopyala ve doldur:
+
+```bash
+cp ios/Flutter/Secrets.xcconfig.example ios/Flutter/Secrets.xcconfig
+```
+
+`Debug.xcconfig` ve `Release.xcconfig` bu dosyayı `#include?` ile alır (dosya
+yoksa build kırılmaz), değer `Info.plist` içindeki `MapsApiKey` anahtarına
+işlenir ve `AppDelegate.swift` oradan okur.
+
+> Anahtarı Google Cloud Console'da mutlaka kısıtla: Android için paket adı +
+> SHA-1, iOS için bundle id. Mobil Maps anahtarları uygulama binary'sinin
+> içinde dağıtıldığı için gerçek anlamda gizlenemez; tek gerçek koruma
+> kısıtlamadır.
+
+---
+
 ## Mimari: Model / Service / Provider / Pages
 
 Proje **4 katmanlı pragmatic architecture** kullanır. Clean Architecture **kullanılmaz** — UseCase sınıfları, Repository interface/implementation ayrımı veya DTO/Entity çifti yoktur.
@@ -175,13 +210,16 @@ lib/
 │   │
 │   ├── ring/
 │   │   ├── models/
-│   │   │   └── ring_schedule.dart
+│   │   │   ├── ring_schedule.dart
+│   │   │   ├── ring_stop.dart
+│   │   │   └── ring_departures.dart    # saf hesaplama, Firebase'e bağlı değil
 │   │   ├── services/
 │   │   │   └── ring_service.dart
 │   │   ├── providers/
 │   │   │   └── ring_provider.dart
 │   │   └── pages/
 │   │       ├── ring_page.dart
+│   │       ├── ring_stops_page.dart
 │   │       └── components/
 │   │
 │   ├── board/
@@ -282,14 +320,40 @@ cafeteria_ratings/{date_mealKey}        # örn: "2024-01-15_tavuk-sis"
       "lunch": ["Mercimek çorbası", "Tavuk şiş", "Pilav"]
     }
   },
+  "ring_stops": {
+    "rektorluk": { "name": "Rektörlük", "lat": 36.8969, "lng": 30.6364 },
+    "ziraat": { "name": "Ziraat Fakültesi", "lat": 36.8981, "lng": 30.6402 },
+    "meltem": { "name": "Meltem Kapısı", "lat": 36.8925, "lng": 30.6488 }
+  },
   "ring_schedule": {
-    "line_1": {
+    "au102_gidis": {
       "weekday": ["07:30", "08:00", "08:30"],
-      "weekend": ["09:00", "11:00", "14:00"]
+      "weekend": ["09:00", "11:00", "14:00"],
+      "stops": ["rektorluk", "ziraat", "meltem"]
+    },
+    "au102_donus": {
+      "weekday": ["07:45", "08:15"],
+      "weekend": ["09:30"],
+      "stops": ["meltem", "ziraat", "rektorluk"]
     }
   }
 }
 ```
+
+#### Ring veri kuralları
+
+- **Hat anahtarı `<hatKodu>_<yön>` biçimindedir** — `au102_gidis`, `au102_donus`.
+  Hat listesi bu anahtarlardan türetilir; uygulamada sabit hat listesi tutulmaz.
+- `ring_stops` ortak bir durak havuzudur; hatlar `stops` dizisiyle **sıralı**
+  referans verir (kalkış noktasından varış noktasına). Bir durak birden çok
+  hatta geçebilir; "bu duraktan hangi hatlar geçiyor" bu referanslardan
+  hesaplanır.
+- `stops` alanı **opsiyoneldir**. Girilmediğinde uygulama yön seçicide gerçek
+  durak adları yerine "Gidiş / Dönüş"e düşer ve "Yakındaki Duraklar" girişini
+  hiç göstermez — uydurma durak adı gösterilmez.
+- **Durak bazlı saat yayınlanmaz.** `weekday` / `weekend` dizileri yalnızca
+  hattın *kalkış noktasından* ayrılma saatleridir. Bu yüzden arayüzde hiçbir
+  yerde durağa "varış" süresi gösterilmez; dil her zaman "kalkış"tır.
 
 ---
 

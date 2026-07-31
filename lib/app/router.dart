@@ -15,6 +15,7 @@ import '../features/home/pages/home_page.dart';
 import '../features/map/pages/map_page.dart';
 import '../features/profile/pages/profile_page.dart';
 import '../features/ring/pages/ring_page.dart';
+import '../features/ring/pages/ring_stops_page.dart';
 import '../features/student_events/pages/create_event_page.dart';
 import '../features/student_events/pages/student_event_detail_page.dart';
 import '../features/student_events/pages/student_events_page.dart';
@@ -126,6 +127,12 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/ring',
                 builder: (context, state) => const RingPage(),
+                routes: [
+                  GoRoute(
+                    path: 'stops',
+                    builder: (context, state) => const RingStopsPage(),
+                  ),
+                ],
               ),
             ],
           ),
