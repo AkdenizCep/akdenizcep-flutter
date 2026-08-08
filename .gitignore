@@ -79,6 +79,8 @@ unlinked_spec.ds
 **/ios/Flutter/Flutter.framework
 **/ios/Flutter/Flutter.podspec
 **/ios/Flutter/Generated.xcconfig
+# Maps API anahtari — Secrets.xcconfig.example uzerinden olusturulur
+**/ios/Flutter/Secrets.xcconfig
 **/ios/Flutter/ephemeral
 **/ios/Flutter/app.flx
 **/ios/Flutter/app.zip
@@ -117,3 +119,7 @@ app.*.symbols
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock
+# Obsidian — makine-yerel arayüz durumu (wiki içeriği commit edilir)
+akdenizcep-wiki/.obsidian/workspace.json
+akdenizcep-wiki/.obsidian/plugins/
+akdenizcep-wiki/.llm-wiki-backups/

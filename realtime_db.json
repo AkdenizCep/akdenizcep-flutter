@@ -1,7 +1,46 @@
 {
-
+  "cafeteria_menu": {
+    "2026-07-29": {
+      "lunch": ["Ezogelin Çorbası", "Etli Nohut", "Bulgur Pilavı", "Cacık"],
+      "dinner": ["Domates Çorbası", "Fırın Tavuk", "Şehriyeli Pirinç Pilavı", "Mevsim Salata"]
+    },
+    "2026-07-30": {
+      "lunch": ["Yayla Çorbası", "Karnıyarık", "Peynirli Makarna", "Ayran"],
+      "dinner": ["Mercimek Çorbası", "Izgara Köfte", "Patates Püresi", "Kısır"]
+    },
+    "2026-07-31": {
+      "lunch": ["Tarhana Çorbası", "Tavuk Sote", "Pirinç Pilavı", "Sütlaç"],
+      "dinner": ["Şehriye Çorbası", "Fırında Levrek", "Zeytinyağlı Barbunya", "Yoğurt"]
+    },
+    "2026-08-03": {
+      "lunch": ["Mercimek Çorbası", "Etli Kuru Fasulye", "Pirinç Pilavı", "Turşu"],
+      "dinner": ["Brokoli Çorbası", "Tavuk Şinitzel", "Fırın Patates", "Mevsim Salata"]
+    },
+    "2026-08-04": {
+      "lunch": ["Düğün Çorbası", "Fırında Makarna", "Zeytinyağlı Taze Fasulye", "Kemalpaşa Tatlısı"],
+      "dinner": ["Ezogelin Çorbası", "İzmir Köfte", "Bulgur Pilavı", "Cacık"]
+    }
+  },
+  "ring_stops": {
+    "durak_1": {
+      "name": "durak_1",
+      "lat": 36.892546,
+      "lng": 30.642204
+    },
+    "durak_2": {
+      "name": "durak_2",
+      "lat": 36.894839,
+      "lng": 30.648548
+    },
+    "durak_3": {
+      "name": "durak_3",
+      "lat": 36.89272,
+      "lng": 30.662273
+    }
+  },
   "ring_schedule": {
     "au_103_gidis": {
+      "stops": ["durak_1", "durak_2", "durak_3"],
       "weekday": [
         "06:31", "06:51", "07:11", "07:31", "07:51",
         "08:01", "08:11", "08:21", "08:31", "08:41",
@@ -30,6 +69,7 @@
       ]
     },
     "au_103_donus": {
+      "stops": ["durak_3", "durak_2", "durak_1"],
       "weekday": [
         "06:45", "07:05", "07:25", "07:45", "08:05",
         "08:15", "08:25", "08:35", "08:45", "08:55",
@@ -58,6 +98,7 @@
       ]
     },
     "au_102_gidis": {
+      "stops": ["durak_1", "durak_2", "durak_3"],
       "weekday": [
         "06:25", "06:55", "07:25", "07:55", "08:07",
         "08:19", "08:31", "08:43", "08:55", "09:07",
@@ -82,6 +123,7 @@
       ]
     },
     "au_102_donus": {
+      "stops": ["durak_3", "durak_2", "durak_1"],
       "weekday": [
         "06:37", "07:07", "07:37", "08:07", "08:19",
         "08:31", "08:43", "08:55", "09:07", "09:19",

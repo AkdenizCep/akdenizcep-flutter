@@ -1,5 +1,3 @@
-
-
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
@@ -8,53 +6,55 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```
 flutter analyze          # lint + typecheck (single command)
-flutter test             # tests (currently placeholder — Firebase required for real tests)
-flutter run              # run on connected device
-flutter pub get          # after changing pubspec.yaml
+flutter test              # tests (currently placeholder — Firebase required for real tests)
+flutter run                # run on connected device
+flutter pub get           # after changing pubspec.yaml
 ```
 
 No codegen, no build runners, no CI pipelines configured.
 
-## Project
+## Project wiki
 
-**Akdeniz Cep** is a mobile app for Akdeniz University students, unifying scattered campus services (OBS, cafeteria, ring/shuttle schedules, club events) into one app. Tech stack: Flutter · Firebase (Firestore, Auth, Realtime DB, Storage) · Riverpod · go_router.
+`akdenizcep-wiki/` is a living knowledge base for this project, maintained by Claude Code. It does **not** duplicate the code or `DEVELOPMENT.md` — it holds what those don't answer: why decisions were made, which feature reads/writes which data path, where docs and code have drifted apart.
 
-For full architectural detail in Turkish (data model field listings, code examples per layer), see `DEVELOPMENT.md` — it is the authoritative source. This file summarizes the points an agent is most likely to need or miss.
+- Start at `akdenizcep-wiki/wiki/index.md`, or `overview.md` for the synthesis.
+- Maintenance rules live in `akdenizcep-wiki/CLAUDE.md` — read it before touching anything in that directory.
+- Operations: `/wiki-ingest`, `/wiki-query`, `/wiki-lint`.
 
-## Architecture: Model → Service → Provider → Page
+## Architecture
 
-Pragmatic 4-layer architecture, **not** Clean Architecture — no UseCase, Repository interface/impl, or DTO/Entity layers.
+Read `DEVELOPMENT.md` first — it is comprehensive and authoritative (written in Turkish). It documents the full Firestore/Realtime DB schema, folder layout per feature, and the "Yapılması Gerekenler / Kaçınılması Gerekenler" (do's/don'ts) list in detail.
 
-```
-Firestore/Realtime DB ──► Service ──► Provider ──► Page
-```
+Key points an agent might miss:
 
-- **`models/`** — Pure Dart, no Flutter/Firebase imports. Each has `fromJson`, `toJson`, `copyWith`. Mapped directly from Firestore docs (no separate DTO).
-- **`services/`** — All Firebase calls live here exclusively. Never call `FirebaseFirestore.instance` or `FirebaseAuth.instance` from pages or providers. Returns `Stream<T>`/`Future<T>`; no `ref` or `BuildContext`. Error handling (`try/catch`) happens here.
-- **`providers/`** — Riverpod only; `ref` and Riverpod APIs live exclusively here. Calls services, can hold business logic (filtering, sorting, combining multiple service calls). Firestore streams are wrapped in `StreamProvider`.
-- **`pages/`** — UI only, no business logic or Firebase calls. `ConsumerWidget` + `ref.watch`, never `setState`/`StatefulWidget`. Page-specific widgets go in that page's `components/` subfolder.
-
-Cross-feature imports are forbidden — one feature's `services/`/`providers/` may not be imported by another feature; shared logic goes in `lib/shared/` (`shared/components/`, `shared/services/`, `shared/providers/`).
-
-Navigation is `go_router` only, configured centrally in `lib/app/router.dart` (auth redirect logic lives there too, driven by `authStateProvider`).
+- **Not Clean Architecture.** No UseCase, Repository interface/impl, or DTO/Entity layers. Pattern is `Model → Service → Provider → Page`.
+- All Firebase calls live exclusively in `services/`. Never call `FirebaseFirestore.instance` or `FirebaseAuth.instance` from pages or providers.
+- `ref` and Riverpod APIs live exclusively in `providers/`. Never pass `ref` or `BuildContext` into services.
+- Models are pure Dart (no Flutter imports). Each has `fromJson`, `toJson`, `copyWith`.
+- Pages use `ConsumerWidget` + `ref.watch`. No `setState`.
+- Navigation is `go_router` only, configured in `lib/app/router.dart`.
+- Cross-feature imports are forbidden — shared logic goes in `lib/shared/`.
 
 ## Feature structure
 
-Each feature under `lib/features/<name>/` follows `models/`, `services/`, `providers/`, `pages/` (with `pages/components/`). Features: `auth`, `board`, `cafeteria`, `community`, `home`, `map`, `ring`, `student_events`.
+Each feature under `lib/features/<name>/` follows: `models/`, `services/`, `providers/`, `pages/` (with `pages/components/` for page-specific widgets).
+
+Features: auth, board, cafeteria, community, home, map, ring, student_events.
 
 ## Firebase
 
-- Project ID: `akdeniz-cep-36d3f`. Firestore + Auth + Realtime DB + Storage all in use.
-- **Realtime DB**: cafeteria menus (`cafeteria_menu`) and ring/shuttle schedules (`ring_schedule`) — manually entered by university staff, frequently-updated data kept out of Firestore to control cost.
-- **Firestore collections**: `users/{uid}`, `clubs/{clubId}` (with `club-events/{ceventId}` subcollection), `announcements/{announcementId}`, `student-events/{seventId}`, `cafeteria_ratings/{date_mealKey}` (with `ratings/{uid}` subcollection).
-- **Auth**: email+password only, restricted to `@ogr.akdeniz.edu.tr` domain, enforced both client-side in `AuthService` and server-side via Firestore Security Rules (`request.auth.token.email`). No Google Sign-In. Email verification sent after registration.
-- Meal ratings: one rating per user per meal, enforced by checking existence of `ratings/{uid}` doc before allowing a new rating. `avgRating`/`ratingCount` are updated atomically via Firestore transaction — never written directly from the client.
-- Club event creation is restricted to the club's `adminUid` via Security Rules. Student events (`student-events`) can be created by any logged-in student; edit/delete restricted to the `authorUid` owner.
-- OBS is opened via `WebView` (no native integration). Campus map uses Google Maps with static markers.
-- `firebase_options.dart` is auto-generated by the FlutterFire CLI — do not edit manually.
+- Project ID: `akdeniz-cep-36d3f`
+- Firestore + Auth + Realtime DB + Storage all used.
+- Realtime DB holds cafeteria menus and ring schedules (manually entered data by the university — never used for comments/events, which belong in Firestore).
+- Firestore holds users, clubs, club-events, announcements, student-events, cafeteria_ratings.
+- Auth: email+password only, restricted to `@ogr.akdeniz.edu.tr` domain. No Google Sign-In.
+- Club event creation is restricted to the club's `adminUid` via Firestore Security Rules. Student events (`student-events`) can be created by any logged-in student; edit/delete restricted to the `authorUid` match.
+- Meal ratings use Firestore transactions for atomic `avgRating`/`ratingCount` updates — never written directly from the client. One rating per user per meal per day enforced by checking for the existence of the `ratings/{uid}` subcollection doc before allowing a new one.
+- OBS page is a `WebView` — no native OBS integration. Campus map uses Google Maps with static markers.
 
 ## Conventions
 
 - Locale is Turkish (`tr`) — `intl` date formatting initialized in `main.dart`.
-- `flutter_lints` is the lint base; no custom rules enabled in `analysis_options.yaml`.
 - No emojis in code unless explicitly requested.
+- `flutter_lints` is the lint base; no custom rules enabled in `analysis_options.yaml`.
+- `firebase_options.dart` is auto-generated by FlutterFire CLI — do not edit manually.

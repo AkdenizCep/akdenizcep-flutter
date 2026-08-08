@@ -1,2 +1,4 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
 #include "Generated.xcconfig"
+// Maps anahtari; git'te tutulmaz. Yoksa build kirilmaz, harita bos cizer.
+#include? "Secrets.xcconfig"

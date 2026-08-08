@@ -1,3 +1,20 @@
+import java.util.Properties
+
+// Maps anahtari kaynak kontrolune girmez: git'in gormedigi local.properties'ten
+// okunur ve manifest'e placeholder olarak enjekte edilir. CI icin ayni degeri
+// ORG_GRADLE_PROJECT_MAPS_API_KEY veya MAPS_API_KEY ortam degiskeniyle ver.
+// Anahtar bulunamazsa build kirilmaz; harita bos/gri cizer.
+val mapsApiKey: String = run {
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use { localProperties.load(it) }
+    }
+    localProperties.getProperty("MAPS_API_KEY")
+        ?: System.getenv("MAPS_API_KEY")
+        ?: ""
+}
+
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -32,6 +49,9 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // AndroidManifest.xml icindeki ${MAPS_API_KEY} bununla doldurulur.
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
     }
 
     buildTypes {
