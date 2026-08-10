@@ -27,6 +27,25 @@ service cloud.firestore {
         (!(uid in afterVotes) || afterVotes[uid] in [1, -1]);
     }
 
+    // Etkinliklere katılım: bir öğrenci yalnızca "attendeeIds" ve
+    // "attendeeCount" alanlarını, yalnızca kendi uid'ini ekleyip çıkararak
+    // değiştirebilir. Etkinliğin diğer alanlarına dokunamaz.
+    function isValidAttendanceChange(uid) {
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      let beforeIds = resource.data.attendeeIds is list ? resource.data.attendeeIds : [];
+      let afterIds = request.resource.data.attendeeIds is list ? request.resource.data.attendeeIds : [];
+      let joined = afterIds.toSet().difference(beforeIds.toSet());
+      let left = beforeIds.toSet().difference(afterIds.toSet());
+      return changed.hasOnly(['attendeeIds', 'attendeeCount']) &&
+        joined.hasOnly([uid]) && left.hasOnly([uid]) &&
+        request.resource.data.attendeeCount == afterIds.size();
+    }
+
+    // Etkinlik altındaki sorular/yorumlar — her iki etkinlik türü için aynı.
+    function isCommentAuthor() {
+      return isAkdenizStudent() && request.auth.uid == resource.data.authorUid;
+    }
+
     match /users/{uid} {
       allow read: if isAkdenizStudent();
       allow create, update: if isOwner(uid);
@@ -42,9 +61,28 @@ service cloud.firestore {
 
       match /club-events/{ceventId} {
         allow read: if isAkdenizStudent();
-        allow write: if isAkdenizStudent() &&
+        allow create, delete: if isAkdenizStudent() &&
           request.auth.uid == get(/databases/$(database)/documents/clubs/$(clubId)).data.adminUid;
+        // Kulüp yöneticisi her alanı düzenler; diğer öğrenciler yalnızca
+        // etkinliğe katılır/ayrılır.
+        allow update: if isAkdenizStudent() && (
+          request.auth.uid == get(/databases/$(database)/documents/clubs/$(clubId)).data.adminUid ||
+          isValidAttendanceChange(request.auth.uid)
+        );
+
+        match /comments/{commentId} {
+          allow read: if isAkdenizStudent();
+          allow create: if isAkdenizStudent() &&
+            request.auth.uid == request.resource.data.authorUid;
+          allow update, delete: if isCommentAuthor();
+        }
       }
+    }
+
+    // collectionGroup('club-events') sorgusu için — etkinlik akışı tüm
+    // kulüplerin etkinliklerini tek sorguda okur.
+    match /{path=**}/club-events/{ceventId} {
+      allow read: if isAkdenizStudent();
     }
 
     match /announcements/{announcementId} {
@@ -56,8 +94,20 @@ service cloud.firestore {
       allow read: if isAkdenizStudent();
       allow create: if isAkdenizStudent() &&
         request.auth.uid == request.resource.data.authorUid;
-      allow update, delete: if isAkdenizStudent() &&
+      allow delete: if isAkdenizStudent() &&
         request.auth.uid == resource.data.authorUid;
+      // Etkinlik sahibi her alanı düzenler; diğer öğrenciler yalnızca katılır.
+      allow update: if isAkdenizStudent() && (
+        request.auth.uid == resource.data.authorUid ||
+        isValidAttendanceChange(request.auth.uid)
+      );
+
+      match /comments/{commentId} {
+        allow read: if isAkdenizStudent();
+        allow create: if isAkdenizStudent() &&
+          request.auth.uid == request.resource.data.authorUid;
+        allow update, delete: if isCommentAuthor();
+      }
     }
 
     // Geri bildirimler sadece Firebase Console'dan okunur; uygulama
