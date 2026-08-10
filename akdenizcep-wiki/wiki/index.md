@@ -13,17 +13,17 @@ Başlangıç noktası: [[wiki/overview]] — projenin sentezi ve bugünkü durum
 
 ## Feature'lar
 
-| Sayfa | Özet |
-| --- | --- |
-| [[wiki/features/auth]] | Kayıt, giriş, e-posta doğrulama. Domain kısıtının uygulandığı yer. |
-| [[wiki/features/home]] | Hem sekme kabuğu hem ana sayfa içeriği. Hızlı erişim kartları henüz bağlı değil. |
-| [[wiki/features/cafeteria]] | Menü, puanlama, yorum ve yorum oylaması. İki veritabanına birden dokunan tek feature. |
-| [[wiki/features/ring]] | Ring saatleri ve duraklar. 18 bileşen; durak verisi eksik olduğu için bir kısmı bugün görünmüyor. |
-| [[wiki/features/community]] | Kulüpler, kulüp etkinlikleri, takip et/bırak. |
-| [[wiki/features/student_events]] | Öğrencilerin kendi etkinlikleri. Yetki yazarlığa bağlı. |
-| [[wiki/features/board]] | İlan panosu. Güvenlik kuralı yok — en kritik açık. |
-| [[wiki/features/profile]] | Kullanıcı kesiti. Beş veri yoluna dokunuyor; hiçbir dökümanda geçmiyor. |
-| [[wiki/features/map]] | Statik marker'lı kampüs haritası. Firebase'e dokunmayan tek feature. |
+| Sayfa                            | Özet                                                                                              |
+| -------------------------------- | ------------------------------------------------------------------------------------------------- |
+| [[wiki/features/auth]]           | Kayıt, giriş, e-posta doğrulama. Domain kısıtının uygulandığı yer.                                |
+| [[wiki/features/home]]           | Hem sekme kabuğu hem ana sayfa içeriği. Hızlı erişim kartları henüz bağlı değil.                  |
+| [[wiki/features/cafeteria]]      | Menü, puanlama, yorum ve yorum oylaması. İki veritabanına birden dokunan tek feature.             |
+| [[wiki/features/ring]]           | Ring saatleri ve duraklar. 18 bileşen; durak verisi eksik olduğu için bir kısmı bugün görünmüyor. |
+| [[wiki/features/community]]      | Kulüpler, kulüp etkinlikleri, takip et/bırak.                                                     |
+| [[wiki/features/student_events]] | Öğrencilerin kendi etkinlikleri. Yetki yazarlığa bağlı.                                           |
+| [[wiki/features/board]]          | İlan panosu. Güvenlik kuralı yok — en kritik açık.                                                |
+| [[wiki/features/profile]]        | Kullanıcı kesiti. Beş veri yoluna dokunuyor; hiçbir dökümanda geçmiyor.                           |
+| [[wiki/features/map]]            | Statik marker'lı kampüs haritası. Firebase'e dokunmayan tek feature.                              |
 
 ## Veri yolları
 

@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800;900&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=swap" rel="stylesheet"><style>body{margin:0;background:#f0eee9;font-family:Roboto,system-ui,sans-serif}a{color:#135BEC}a:hover{color:#0b3f9f}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08)}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}.ph::-webkit-scrollbar,.hs::-webkit-scrollbar{display:none}.ph,.hs{scrollbar-width:none}</style></helmet>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname"><a class="dv-oid" href="#1b">1b</a> üzerinden devam: büyük görsel, kategori şeridi, kaynak filtresi</span></div>
+<div class="dv-opts">
+<div class="dv-opt" id="2a"><div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Kategori şeridi + kulüp/öğrenci filtresi · kartta logo ve isim</div>
+<div style="width:390px;height:844px;position:relative;background:#F7F8FB;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#171A22;flex:none"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+
+<div style="flex:none;padding:12px 20px 14px;display:flex;align-items:center;gap:12px">
+<div style="flex:1;min-width:0"><div style="font:800 12px/1.2 Roboto;color:#44474F;letter-spacing:.06em">KATEGORİLER</div><div style="font:900 28px/1.12 Roboto;color:#171A22;margin-top:2px">Etkinlikler</div></div>
+<div style="height:44px;display:flex;align-items:center;gap:8px;padding:0 16px;border-radius:22px;background:#fff;border:1px solid #D6DCE8"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#44474F">search</span><span style="font:700 13px Roboto;color:#44474F">Ara</span></div>
+</div>
+
+<div class="hs" style="flex:none;display:flex;gap:14px;padding:2px 20px 16px;overflow-x:auto">
+<sc-for list="{{ catStrip2 }}" as="c" hint-placeholder-count="6">
+<div onClick="{{ c.onClick }}" style="width:68px;flex:none;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer">
+<div style="width:62px;height:62px;border-radius:22px;display:flex;align-items:center;justify-content:center;{{ c.ringStyle }}"><span style="font-family:'Material Symbols Rounded';font-size:26px;line-height:1;font-variation-settings:'FILL' 1;color:{{ c.iconColor }}">{{ c.icon }}</span></div>
+<div style="font:{{ c.labelWeight }} 11px/1.2 Roboto;color:{{ c.labelColor }};text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:68px">{{ c.name }}</div>
+</div>
+</sc-for>
+</div>
+
+<div class="hs" style="flex:none;display:flex;gap:8px;padding:0 20px 12px;overflow-x:auto">
+<sc-for list="{{ srcTabs2 }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.onClick }}" style="{{ t.style }}"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">{{ t.icon }}</span>{{ t.label }}</button></sc-for>
+</div>
+
+<div style="flex:none;display:flex;align-items:baseline;justify-content:space-between;padding:0 20px 10px"><span style="font:800 15px Roboto;color:#171A22">{{ catTitle2 }}</span><span style="font:700 12px Roboto;color:#44474F">{{ countLabel2 }}</span></div>
+
+<div class="ph" style="flex:1;overflow-y:auto;padding:0 20px 140px;display:flex;flex-direction:column;gap:18px">
+<sc-for list="{{ feed2 }}" as="e" hint-placeholder-count="3">
+<div style="flex:none;background:#fff;border:1px solid #D6DCE8;border-radius:20px;overflow:hidden">
+<div style="height:230px;position:relative;overflow:hidden;background:{{ e.gradient }}">
+<div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,0) 0 12px,rgba(255,255,255,.09) 12px 24px)"></div>
+<span style="position:absolute;right:-24px;bottom:-30px;font-family:'Material Symbols Rounded';font-size:170px;line-height:1;color:rgba(255,255,255,.20);font-variation-settings:'FILL' 1">{{ e.icon }}</span>
+<div style="position:absolute;left:0;right:0;bottom:0;height:110px;background:linear-gradient(0deg,rgba(0,0,0,.45),rgba(0,0,0,0))"></div>
+<div style="position:absolute;top:14px;left:14px;display:flex;align-items:center;gap:6px;padding:9px 13px;border-radius:16px;background:#fff;box-shadow:0 6px 16px rgba(0,0,0,.12)"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">calendar_today</span><span style="font:900 12px/1.2 Roboto;color:#135BEC">{{ e.datePill }}</span></div>
+<span style="{{ e.badgeStyle }};position:absolute;top:14px;right:14px">{{ e.badgeLabel }}</span>
+<div style="position:absolute;left:14px;bottom:12px;font:400 10px ui-monospace,Menlo,monospace;color:rgba(255,255,255,.8);letter-spacing:.06em">ETKİNLİK GÖRSELİ 1200×800</div>
+</div>
+<div style="padding:16px 18px 18px">
+<div style="display:flex;align-items:center;gap:12px">
+<div style="{{ e.logoStyle }}"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;font-variation-settings:'FILL' 1;color:{{ e.color }}">{{ e.logoIcon }}</span>{{ e.logoChar }}</div>
+<div style="flex:1;min-width:0"><div style="font:800 15px/1.25 Roboto;color:#171A22;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.authorName }}</div><div style="font:600 12px/1.3 Roboto;color:#44474F;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.authorMeta }}</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#44474F">more_horiz</span>
+</div>
+<div style="font:900 21px/1.2 Roboto;color:#171A22;margin-top:14px">{{ e.title }}</div>
+<div style="display:flex;align-items:center;gap:6px;margin-top:10px"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;color:#44474F;font-variation-settings:'FILL' 1">location_on</span><span style="font:700 14px/1.4 Roboto;color:#44474F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.place }}</span></div>
+<div style="font:400 15px/1.45 Roboto;color:#171A22;margin-top:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ e.desc }}</div>
+<div style="height:1px;background:#D6DCE8;margin:16px 0 14px"></div>
+<div style="display:flex;align-items:center;gap:12px">
+<div style="flex:1;min-width:0;display:flex;align-items:center"><sc-for list="{{ e.avatars }}" as="a" hint-placeholder-count="3"><div style="width:28px;height:28px;border-radius:50%;border:2px solid #fff;margin-right:-9px;background:{{ a.bg }};display:flex;align-items:center;justify-content:center;font:800 11px Roboto;color:#fff">{{ a.ch }}</div></sc-for><span style="font:700 12px Roboto;color:#44474F;margin-left:18px">{{ e.attLabel }} katılıyor</span></div>
+<button onClick="{{ e.onJoin }}" style="{{ e.joinStyle }}">{{ e.joinLabel }}</button>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="position:absolute;left:0;right:0;bottom:0;height:132px;background:linear-gradient(0deg,rgba(19,91,236,.30) 0%,rgba(19,91,236,.15) 40%,rgba(19,91,236,.03) 60%,rgba(19,91,236,0) 100%);pointer-events:none"></div>
+<div style="position:absolute;left:24px;right:24px;bottom:24px;height:68px;border-radius:36px;background:rgba(255,255,255,.98);box-shadow:0 8px 24px rgba(0,0,0,.05);display:flex;align-items:center">
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">home</span></div>
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">restaurant</span></div>
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">directions_bus</span></div>
+<div style="flex:1;display:flex;justify-content:center;position:relative"><div style="position:absolute;width:56px;height:48px;border-radius:24px;background:#E8F0FF"></div><span style="position:relative;font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">calendar_month</span></div>
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">map</span></div>
+</div>
+</div>
+</div>
+</div>
+<p class="dv-next">Sırada: "<a class="dv-oid" href="#2a">2a</a> kartını detay sayfasına da uygula" · "kategori şeridini yatay sekmeye çevir" · "kart görselini tam genişlik yap"</p>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Etkinlik akışı — 3 geçiş modeli + detay, kulüp profili, oluşturma</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1a"><div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Kaynak sekmeleri + zaman filtreleri — mevcut karta en sadık</div>
+<div style="width:390px;height:844px;position:relative;background:#F7F8FB;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#171A22;flex:none"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+
+<div style="flex:none;padding:10px 20px 18px;display:flex;align-items:center;gap:14px">
+<div style="width:56px;height:56px;border-radius:18px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:30px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">groups_2</span></div>
+<div style="flex:1;min-width:0"><div style="font:800 24px/1.05 Roboto;color:#171A22">Akdeniz Cep</div><div style="font:800 14px/1.22 Roboto;color:#44474F;margin-top:4px">ETKİNLİK AKIŞI</div></div>
+<div style="width:44px;height:44px;border-radius:50%;background:#E5EAF3;display:flex;align-items:center;justify-content:center;position:relative;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#171A22;font-variation-settings:'FILL' 1">notifications</span><span style="position:absolute;top:9px;right:10px;width:8px;height:8px;border-radius:50%;background:#BA1A1A"></span></div>
+</div>
+<div style="height:1px;background:#D6DCE8;flex:none"></div>
+
+<div style="flex:none;padding:16px 20px 0;display:flex;background:#F2F5FA;margin:16px 20px 0;border-radius:26px;padding:5px;gap:4px">
+<sc-for list="{{ srcTabs }}" as="t" hint-placeholder-count="3"><button onClick="{{ t.onClick }}" style="{{ t.style }}">{{ t.label }}</button></sc-for>
+</div>
+
+<div class="hs" style="flex:none;display:flex;gap:10px;padding:14px 20px 12px;overflow-x:auto">
+<sc-for list="{{ timeChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;font-variation-settings:'FILL' 1">{{ c.icon }}</span>{{ c.label }}</button></sc-for>
+</div>
+
+<div class="ph" style="flex:1;overflow-y:auto;padding:8px 20px 140px;display:flex;flex-direction:column;gap:16px">
+<sc-for list="{{ feedA }}" as="e" hint-placeholder-count="3">
+<div style="flex:none;background:#fff;border:1px solid #D6DCE8;border-radius:16px;overflow:hidden">
+<div style="display:flex;align-items:center;gap:14px;padding:18px 14px 14px 20px">
+<div style="width:46px;height:46px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;background:{{ e.tintBg }}"><span style="font-family:'Material Symbols Rounded';font-size:23px;line-height:1;font-variation-settings:'FILL' 1;color:{{ e.color }}">{{ e.icon }}</span></div>
+<div style="flex:1;min-width:0"><div style="font:800 16px/1.32 Roboto;color:#171A22;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.author }}</div><div style="font:600 12px/1.42 Roboto;color:#44474F;margin-top:2px">{{ e.ago }} paylaşıldı</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#44474F">more_horiz</span>
+</div>
+<div style="height:190px;position:relative;overflow:hidden;background:{{ e.gradient }}">
+<span style="position:absolute;right:-28px;top:-24px;font-family:'Material Symbols Rounded';font-size:154px;line-height:1;color:rgba(255,255,255,.18);font-variation-settings:'FILL' 1">{{ e.icon }}</span>
+<div style="position:absolute;left:22px;bottom:22px;width:76px;height:76px;border-radius:22px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:38px;line-height:1;color:#fff;font-variation-settings:'FILL' 1">{{ e.icon }}</span></div>
+<div style="position:absolute;top:18px;right:18px;display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:22px;background:#fff;box-shadow:0 8px 18px rgba(0,0,0,.10)"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">calendar_today</span><span style="font:900 12px/1.2 Roboto;color:#135BEC">{{ e.datePill }}</span></div>
+</div>
+<div style="padding:18px 20px 20px">
+<div style="font:900 20px/1.18 Roboto;color:#171A22">{{ e.title }}</div>
+<div style="display:flex;align-items:center;gap:6px;margin-top:10px"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;color:#44474F;font-variation-settings:'FILL' 1">location_on</span><span style="font:700 14px/1.46 Roboto;color:#44474F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.place }}</span></div>
+<div style="font:400 16px/1.35 Roboto;color:#171A22;margin-top:14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">{{ e.desc }}</div>
+<div style="height:1px;background:#D6DCE8;margin:18px 0 14px"></div>
+<div style="display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">calendar_month</span><span style="flex:1;font:800 14px/1.22 Roboto;color:#135BEC">{{ e.dateLong }}</span><button style="min-width:96px;height:44px;border:0;border-radius:16px;background:#135BEC;color:#fff;font:800 14px Roboto;cursor:pointer" style-hover="background:#0b46bd">Detay</button></div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="position:absolute;left:0;right:0;bottom:0;height:132px;background:linear-gradient(0deg,rgba(19,91,236,.30) 0%,rgba(19,91,236,.15) 40%,rgba(19,91,236,.03) 60%,rgba(19,91,236,0) 100%);pointer-events:none"></div>
+<div style="position:absolute;left:24px;right:24px;bottom:24px;height:68px;border-radius:36px;background:rgba(255,255,255,.98);box-shadow:0 8px 24px rgba(0,0,0,.05);display:flex;align-items:center">
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">home</span></div>
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">restaurant</span></div>
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">directions_bus</span></div>
+<div style="flex:1;display:flex;justify-content:center;position:relative"><div style="position:absolute;width:56px;height:48px;border-radius:24px;background:#E8F0FF"></div><span style="position:relative;font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">calendar_month</span></div>
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">map</span></div>
+</div>
+<div style="position:absolute;right:24px;bottom:112px;width:60px;height:60px;border-radius:18px;background:#135BEC;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(19,91,236,.35)"><span style="font-family:'Material Symbols Rounded';font-size:28px;line-height:1;color:#fff">add</span></div>
+</div>
+</div>
+
+<div class="dv-opt" id="1b"><div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Takip edilen kulüp şeridi — seçince o kulübün akışı</div>
+<div style="width:390px;height:844px;position:relative;background:#F7F8FB;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#171A22;flex:none"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+
+<div style="flex:none;padding:12px 20px 14px;display:flex;align-items:center;gap:12px">
+<div style="flex:1;min-width:0"><div style="font:800 12px/1.2 Roboto;color:#44474F;letter-spacing:.06em">TOPLULUKLAR</div><div style="font:900 28px/1.12 Roboto;color:#171A22;margin-top:2px">Etkinlikler</div></div>
+<div style="height:44px;display:flex;align-items:center;gap:8px;padding:0 16px;border-radius:22px;background:#fff;border:1px solid #D6DCE8"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#44474F">search</span><span style="font:700 13px Roboto;color:#44474F">Ara</span></div>
+</div>
+
+<div class="hs" style="flex:none;display:flex;gap:14px;padding:2px 20px 16px;overflow-x:auto">
+<sc-for list="{{ clubStrip }}" as="c" hint-placeholder-count="5">
+<div onClick="{{ c.onClick }}" style="width:68px;flex:none;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer">
+<div style="width:62px;height:62px;border-radius:22px;display:flex;align-items:center;justify-content:center;{{ c.ringStyle }}"><span style="font-family:'Material Symbols Rounded';font-size:26px;line-height:1;font-variation-settings:'FILL' 1;color:{{ c.iconColor }}">{{ c.icon }}</span></div>
+<div style="font:{{ c.labelWeight }} 11px/1.2 Roboto;color:{{ c.labelColor }};text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:68px">{{ c.name }}</div>
+</div>
+</sc-for>
+</div>
+
+<div style="flex:none;margin:0 20px 14px;padding:16px 18px;border-radius:20px;background:{{ ctxBg }};display:flex;align-items:center;gap:14px">
+<div style="width:46px;height:46px;border-radius:16px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#fff;font-variation-settings:'FILL' 1">{{ ctxIcon }}</span></div>
+<div style="flex:1;min-width:0"><div style="font:900 16px/1.2 Roboto;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ctxTitle }}</div><div style="font:600 12px/1.3 Roboto;color:rgba(255,255,255,.82);margin-top:3px">{{ ctxSub }}</div></div>
+<button onClick="{{ toggleCtxFollow }}" style="{{ ctxBtnStyle }}">{{ ctxBtnLabel }}</button>
+</div>
+
+<div class="ph" style="flex:1;overflow-y:auto;padding:0 20px 140px;display:flex;flex-direction:column;gap:14px">
+<sc-for list="{{ feedB }}" as="e" hint-placeholder-count="4">
+<div style="flex:none;background:#fff;border:1px solid #D6DCE8;border-radius:16px;overflow:hidden;display:flex">
+<div style="width:110px;flex:none;position:relative;background:{{ e.gradient }}"><span style="position:absolute;left:50%;top:62%;transform:translate(-50%,-50%);font-family:'Material Symbols Rounded';font-size:44px;line-height:1;color:rgba(255,255,255,.9);font-variation-settings:'FILL' 1">{{ e.icon }}</span><div style="position:absolute;left:8px;right:8px;top:8px;padding:5px 6px;border-radius:11px;background:rgba(255,255,255,.94);font:900 10px/1.1 Roboto;color:#135BEC;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.datePill }}</div></div>
+<div style="flex:1;min-width:0;padding:16px 16px 14px">
+<div style="font:800 11px/1.2 Roboto;color:{{ e.color }};letter-spacing:.05em">{{ e.catLabel }}</div>
+<div style="font:900 17px/1.2 Roboto;color:#171A22;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ e.title }}</div>
+<div style="display:flex;align-items:center;gap:5px;margin-top:8px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;color:#44474F;font-variation-settings:'FILL' 1">location_on</span><span style="font:600 12px/1.3 Roboto;color:#44474F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.place }}</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px">
+<div style="display:flex;align-items:center"><sc-for list="{{ e.avatars }}" as="a" hint-placeholder-count="3"><div style="width:24px;height:24px;border-radius:50%;border:2px solid #fff;margin-right:-8px;background:{{ a.bg }};display:flex;align-items:center;justify-content:center;font:800 10px Roboto;color:#fff">{{ a.ch }}</div></sc-for><span style="font:700 11px Roboto;color:#44474F;margin-left:16px">{{ e.attLabel }}</span></div>
+<button onClick="{{ e.onJoin }}" style="{{ e.joinStyle }}">{{ e.joinLabel }}</button>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="position:absolute;left:0;right:0;bottom:0;height:132px;background:linear-gradient(0deg,rgba(19,91,236,.30) 0%,rgba(19,91,236,.15) 40%,rgba(19,91,236,.03) 60%,rgba(19,91,236,0) 100%);pointer-events:none"></div>
+<div style="position:absolute;left:24px;right:24px;bottom:24px;height:68px;border-radius:36px;background:rgba(255,255,255,.98);box-shadow:0 8px 24px rgba(0,0,0,.05);display:flex;align-items:center">
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">home</span></div>
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">restaurant</span></div>
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">directions_bus</span></div>
+<div style="flex:1;display:flex;justify-content:center;position:relative"><div style="position:absolute;width:56px;height:48px;border-radius:24px;background:#E8F0FF"></div><span style="position:relative;font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">calendar_month</span></div>
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">map</span></div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1c"><div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Kategori sekmeleri + gün şeridi — yoğun, ajanda hissi</div>
+<div style="width:390px;height:844px;position:relative;background:#fff;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#fff;flex:none;background:#135BEC"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+
+<div style="flex:none;background:#135BEC;padding:10px 20px 0;border-radius:0 0 28px 28px">
+<div style="display:flex;align-items:center;gap:12px">
+<div style="flex:1"><div style="font:900 26px/1.1 Roboto;color:#fff">Etkinlikler</div><div style="font:600 13px/1.3 Roboto;color:rgba(255,255,255,.75);margin-top:4px">Bu hafta kampüste 14 etkinlik</div></div>
+<div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#fff">search</span></div>
+</div>
+<div class="hs" style="display:flex;gap:10px;overflow-x:auto;padding:18px 0 0;margin:0 -20px;padding-left:20px;padding-right:20px">
+<sc-for list="{{ days }}" as="d" hint-placeholder-count="7"><div onClick="{{ d.onClick }}" style="{{ d.style }}"><span style="font:700 10px/1 Roboto;opacity:.75">{{ d.dow }}</span><span style="font:900 18px/1 Roboto;margin-top:6px">{{ d.num }}</span><span style="{{ d.dotStyle }}"></span></div></sc-for>
+</div>
+<div style="height:22px"></div>
+</div>
+
+<div class="hs" style="flex:none;display:flex;gap:8px;padding:16px 20px 10px;overflow-x:auto">
+<sc-for list="{{ catTabs }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for>
+</div>
+
+<div class="ph" style="flex:1;overflow-y:auto;padding:6px 20px 140px">
+<sc-for list="{{ feedC }}" as="e" hint-placeholder-count="4">
+<div style="flex:none;display:flex;gap:14px">
+<div style="width:52px;flex:none;display:flex;flex-direction:column;align-items:center;padding-top:4px">
+<div style="font:900 15px/1 Roboto;color:#171A22">{{ e.timeLabel }}</div>
+<div style="font:700 10px/1 Roboto;color:#44474F;margin-top:4px">{{ e.durLabel }}</div>
+<div style="width:2px;flex:1;background:#E5EAF3;margin-top:10px"></div>
+</div>
+<div style="flex:1;min-width:0;padding-bottom:18px">
+<div style="border-radius:18px;overflow:hidden;border:1px solid #D6DCE8;background:#fff">
+<div style="height:6px;background:{{ e.color }}"></div>
+<div style="padding:16px 16px 14px">
+<div style="display:flex;align-items:center;gap:8px"><div style="width:26px;height:26px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:{{ e.tintBg }}"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1;font-variation-settings:'FILL' 1;color:{{ e.color }}">{{ e.icon }}</span></div><span style="font:800 12px/1.2 Roboto;color:#44474F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.author }}</span><span style="{{ e.srcBadgeStyle }}">{{ e.srcBadge }}</span></div>
+<div style="font:900 18px/1.2 Roboto;color:#171A22;margin-top:10px">{{ e.title }}</div>
+<div style="display:flex;align-items:center;gap:5px;margin-top:8px"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:#44474F;font-variation-settings:'FILL' 1">location_on</span><span style="font:600 13px/1.3 Roboto;color:#44474F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.place }}</span></div>
+<div style="display:flex;align-items:center;gap:10px;margin-top:14px"><button onClick="{{ e.onJoin }}" style="{{ e.joinWideStyle }}">{{ e.joinLabel }}</button><div style="width:44px;height:40px;border-radius:14px;border:1px solid #D6DCE8;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#44474F">bookmark</span></div></div>
+</div>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="position:absolute;left:0;right:0;bottom:0;height:132px;background:linear-gradient(0deg,rgba(19,91,236,.30) 0%,rgba(19,91,236,.15) 40%,rgba(19,91,236,.03) 60%,rgba(19,91,236,0) 100%);pointer-events:none"></div>
+<div style="position:absolute;left:24px;right:24px;bottom:24px;height:68px;border-radius:36px;background:rgba(255,255,255,.98);box-shadow:0 8px 24px rgba(0,0,0,.05);display:flex;align-items:center">
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">home</span></div>
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">restaurant</span></div>
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">directions_bus</span></div>
+<div style="flex:1;display:flex;justify-content:center;position:relative"><div style="position:absolute;width:56px;height:48px;border-radius:24px;background:#E8F0FF"></div><span style="position:relative;font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">calendar_month</span></div>
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">map</span></div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1d"><div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Etkinlik detayı — katıl, kulüp kartı, konum, yorumlar</div>
+<div style="width:390px;height:844px;position:relative;background:#F7F8FB;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div class="ph" style="position:absolute;inset:0;overflow-y:auto">
+<div style="height:330px;position:relative;background:linear-gradient(135deg,#135BECf2,#135BEC7a,#7B3FF285)">
+<div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,0) 0 12px,rgba(255,255,255,.10) 12px 24px)"></div>
+<div style="position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);text-align:center"><div style="font:400 11px/1.4 ui-monospace,Menlo,monospace;color:rgba(255,255,255,.85);letter-spacing:.08em">ETKİNLİK GÖRSELİ<br>1200 × 800</div></div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:150px;background:linear-gradient(0deg,rgba(0,0,0,.55),rgba(0,0,0,0))"></div>
+<div style="position:absolute;top:52px;left:20px;right:20px;display:flex;align-items:center;justify-content:space-between">
+<div style="width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.32);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#fff">arrow_back</span></div>
+<div style="display:flex;gap:10px">
+<div onClick="{{ toggleSave }}" style="width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.32);display:flex;align-items:center;justify-content:center;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#fff;font-variation-settings:'FILL' {{ saveFill }}">bookmark</span></div>
+<div style="width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.32);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#fff">share</span></div>
+</div>
+</div>
+<div style="position:absolute;left:20px;bottom:44px;display:flex;gap:8px">
+<span style="padding:7px 12px;border-radius:12px;background:rgba(255,255,255,.92);font:900 11px Roboto;color:#135BEC">TEKNOLOJİ</span>
+<span style="padding:7px 12px;border-radius:12px;background:rgba(255,255,255,.92);font:900 11px Roboto;color:#168A5B">ÜCRETSİZ</span>
+</div>
+</div>
+
+<div style="margin-top:-26px;background:#F7F8FB;border-radius:26px 26px 0 0;padding:24px 20px 190px;position:relative">
+<div style="font:900 26px/1.16 Roboto;color:#171A22">Yapay Zeka ile Görüntü İşleme Atölyesi</div>
+<div style="display:flex;gap:12px;margin-top:18px">
+<div style="flex:1;background:#fff;border:1px solid #D6DCE8;border-radius:16px;padding:14px"><div style="display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">calendar_month</span><span style="font:800 11px Roboto;color:#44474F">TARİH</span></div><div style="font:800 15px/1.3 Roboto;color:#171A22;margin-top:8px">12 Mart Perşembe</div><div style="font:600 13px Roboto;color:#44474F;margin-top:2px">18:00 – 20:30</div></div>
+<div style="flex:1;background:#fff;border:1px solid #D6DCE8;border-radius:16px;padding:14px"><div style="display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#E8601C;font-variation-settings:'FILL' 1">location_on</span><span style="font:800 11px Roboto;color:#44474F">KONUM</span></div><div style="font:800 15px/1.3 Roboto;color:#171A22;margin-top:8px">Mühendislik Fak.</div><div style="font:600 13px Roboto;color:#44474F;margin-top:2px">B Blok, D-201</div></div>
+</div>
+
+<div style="margin-top:14px;background:#fff;border:1px solid #D6DCE8;border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px">
+<div style="width:52px;height:52px;border-radius:18px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:26px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">memory</span></div>
+<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:5px"><span style="font:800 16px/1.2 Roboto;color:#171A22">ACM Bilgisayar Kulübü</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">verified</span></div><div style="font:600 12px Roboto;color:#44474F;margin-top:3px">1.248 takipçi · 32 etkinlik</div></div>
+<button onClick="{{ toggleFollow }}" style="{{ followStyle }}">{{ followLabel }}</button>
+</div>
+
+<div style="margin-top:22px;font:800 17px Roboto;color:#171A22">Açıklama</div>
+<div style="font:400 15px/1.55 Roboto;color:#171A22;margin-top:8px">OpenCV ve PyTorch ile temel görüntü işleme hattını sıfırdan kuruyoruz. Laptop getirmeniz yeterli; kurulum dosyaları etkinlik başında paylaşılacak. Ön bilgi gerekmiyor, Python temel seviye yeterli.</div>
+
+<div style="margin-top:22px;display:flex;align-items:center;justify-content:space-between"><span style="font:800 17px Roboto;color:#171A22">Katılımcılar</span><span style="font:700 13px Roboto;color:#135BEC">Tümü</span></div>
+<div style="margin-top:12px;background:#fff;border:1px solid #D6DCE8;border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px">
+<div style="display:flex"><sc-for list="{{ attendees }}" as="a" hint-placeholder-count="5"><div style="width:36px;height:36px;border-radius:50%;border:2px solid #fff;margin-right:-10px;background:{{ a.bg }};display:flex;align-items:center;justify-content:center;font:800 13px Roboto;color:#fff">{{ a.ch }}</div></sc-for></div>
+<div style="flex:1;min-width:0;margin-left:16px"><div style="font:800 15px Roboto;color:#171A22">{{ joinCount }} kişi katılıyor</div><div style="font:600 12px Roboto;color:#44474F;margin-top:2px">Kontenjan 60 · {{ leftCount }} yer kaldı</div></div>
+</div>
+
+<div style="margin-top:22px;font:800 17px Roboto;color:#171A22">Konum</div>
+<div style="margin-top:12px;border:1px solid #D6DCE8;border-radius:16px;overflow:hidden;background:#fff">
+<div style="height:140px;position:relative;background:#ECEFF6;background-image:repeating-linear-gradient(0deg,#E5EAF3 0 1px,transparent 1px 28px),repeating-linear-gradient(90deg,#E5EAF3 0 1px,transparent 1px 28px)">
+<div style="position:absolute;left:0;top:58px;width:100%;height:14px;background:#DDE3EE"></div>
+<div style="position:absolute;left:46%;top:0;width:12px;height:100%;background:#DDE3EE"></div>
+<span style="position:absolute;left:50%;top:52%;transform:translate(-50%,-100%);font-family:'Material Symbols Rounded';font-size:34px;line-height:1;color:#E8601C;font-variation-settings:'FILL' 1">location_on</span>
+<div style="position:absolute;left:12px;bottom:10px;font:400 10px ui-monospace,Menlo,monospace;color:#7A8494">kampüs haritası</div>
+</div>
+<div style="padding:14px 16px;display:flex;align-items:center;gap:12px"><div style="flex:1"><div style="font:800 14px Roboto;color:#171A22">Mühendislik Fakültesi B Blok</div><div style="font:600 12px Roboto;color:#44474F;margin-top:2px">Ana kapıdan 6 dk yürüme</div></div><button style="height:40px;padding:0 16px;border-radius:14px;border:1px solid #135BEC;background:#fff;color:#135BEC;font:800 13px Roboto;cursor:pointer">Haritada aç</button></div>
+</div>
+
+<div style="margin-top:22px;display:flex;align-items:center;justify-content:space-between"><span style="font:800 17px Roboto;color:#171A22">Sorular</span><span style="font:700 13px Roboto;color:#44474F">{{ commentCount }} yorum</span></div>
+<div style="margin-top:12px;display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ comments }}" as="c" hint-placeholder-count="2">
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:16px;padding:14px 16px;display:flex;gap:12px">
+<div style="width:34px;height:34px;border-radius:50%;flex:none;background:{{ c.bg }};display:flex;align-items:center;justify-content:center;font:800 13px Roboto;color:#fff">{{ c.ch }}</div>
+<div style="flex:1;min-width:0"><div style="display:flex;align-items:baseline;gap:8px"><span style="font:800 14px Roboto;color:#171A22">{{ c.name }}</span><span style="font:600 11px Roboto;color:#44474F">{{ c.ago }}</span></div><div style="font:400 14px/1.45 Roboto;color:#171A22;margin-top:4px">{{ c.text }}</div></div>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:12px;display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #D6DCE8;border-radius:24px;padding:6px 6px 6px 18px">
+<span style="flex:1;font:400 14px Roboto;color:#7A8494">Bir soru sor…</span>
+<div style="width:40px;height:40px;border-radius:50%;background:#135BEC;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#fff;font-variation-settings:'FILL' 1">send</span></div>
+</div>
+</div>
+</div>
+
+<div style="position:absolute;left:0;right:0;bottom:0;padding:16px 20px 26px;background:linear-gradient(0deg,#F7F8FB 62%,rgba(247,248,251,0));display:flex;align-items:center;gap:12px">
+<div style="flex:none"><div style="font:900 18px/1.1 Roboto;color:#171A22">Ücretsiz</div><div style="font:600 12px Roboto;color:#44474F;margin-top:2px">Kayıt gerekli</div></div>
+<button onClick="{{ toggleJoin }}" style="{{ joinCtaStyle }}"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;font-variation-settings:'FILL' 1">{{ joinCtaIcon }}</span>{{ joinCtaLabel }}</button>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1e"><div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Kulüp profili — takip, etkinlikler, hakkında</div>
+<div style="width:390px;height:844px;position:relative;background:#F7F8FB;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div class="ph" style="position:absolute;inset:0;overflow-y:auto;padding-bottom:120px">
+<div style="height:200px;position:relative;background:linear-gradient(135deg,#135BECf2,#135BEC7a,#7B3FF285)">
+<div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,0) 0 12px,rgba(255,255,255,.10) 12px 24px)"></div>
+<div style="position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);font:400 10px ui-monospace,Menlo,monospace;color:rgba(255,255,255,.85);letter-spacing:.08em">KULÜP KAPAK GÖRSELİ</div>
+<div style="position:absolute;top:52px;left:20px;width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.32);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#fff">arrow_back</span></div>
+</div>
+<div style="padding:0 20px">
+<div style="margin-top:-38px;display:flex;align-items:flex-end;gap:14px">
+<div style="width:84px;height:84px;border-radius:26px;background:#fff;border:3px solid #fff;box-shadow:0 6px 18px rgba(0,0,0,.10);display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:40px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">memory</span></div>
+<button onClick="{{ toggleFollow }}" style="{{ followBigStyle }}">{{ followLabel }}</button>
+</div>
+<div style="display:flex;align-items:center;gap:6px;margin-top:16px"><span style="font:900 24px/1.2 Roboto;color:#171A22">ACM Bilgisayar Kulübü</span><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">verified</span></div>
+<div style="display:flex;gap:8px;margin-top:10px"><span style="padding:6px 12px;border-radius:12px;background:#E8F0FF;font:700 12px Roboto;color:#082B76">Teknoloji</span><span style="padding:6px 12px;border-radius:12px;background:#F2F5FA;font:700 12px Roboto;color:#44474F">Kuruluş 2009</span></div>
+<div style="font:400 15px/1.5 Roboto;color:#171A22;margin-top:14px">Yazılım, veri ve donanım üzerine atölyeler ve hackathonlar düzenliyoruz. Herkese açık.</div>
+<div style="display:flex;gap:10px;margin-top:18px">
+<div style="flex:1;background:#fff;border:1px solid #D6DCE8;border-radius:16px;padding:14px;text-align:center"><div style="font:900 20px Roboto;color:#171A22">1.248</div><div style="font:700 11px Roboto;color:#44474F;margin-top:3px">TAKİPÇİ</div></div>
+<div style="flex:1;background:#fff;border:1px solid #D6DCE8;border-radius:16px;padding:14px;text-align:center"><div style="font:900 20px Roboto;color:#171A22">32</div><div style="font:700 11px Roboto;color:#44474F;margin-top:3px">ETKİNLİK</div></div>
+<div style="flex:1;background:#fff;border:1px solid #D6DCE8;border-radius:16px;padding:14px;text-align:center"><div style="font:900 20px Roboto;color:#171A22">4</div><div style="font:700 11px Roboto;color:#44474F;margin-top:3px">YAKLAŞAN</div></div>
+</div>
+<div style="display:flex;background:#F2F5FA;border-radius:26px;padding:5px;gap:4px;margin-top:20px">
+<sc-for list="{{ clubTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.onClick }}" style="{{ t.style }}">{{ t.label }}</button></sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;margin-top:16px">
+<sc-for list="{{ clubBody }}" as="e" hint-placeholder-count="3">
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:16px;padding:14px;display:flex;gap:14px;align-items:center">
+<div style="width:56px;height:56px;border-radius:16px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;background:{{ e.tintBg }}"><span style="font:900 18px/1 Roboto;color:{{ e.color }}">{{ e.day }}</span><span style="font:800 10px/1 Roboto;color:{{ e.color }};margin-top:4px">{{ e.mon }}</span></div>
+<div style="flex:1;min-width:0"><div style="font:800 15px/1.25 Roboto;color:#171A22;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ e.title }}</div><div style="font:600 12px Roboto;color:#44474F;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.timeLabel }} · {{ e.place }}</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#7A8494">chevron_right</span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:132px;background:linear-gradient(0deg,rgba(19,91,236,.30) 0%,rgba(19,91,236,.15) 40%,rgba(19,91,236,.03) 60%,rgba(19,91,236,0) 100%);pointer-events:none"></div>
+<div style="position:absolute;left:24px;right:24px;bottom:24px;height:68px;border-radius:36px;background:rgba(255,255,255,.98);box-shadow:0 8px 24px rgba(0,0,0,.05);display:flex;align-items:center">
+<div style="flex:1;display:flex;justify-content:center;position:relative"><div style="position:absolute;width:56px;height:48px;border-radius:24px;background:#E8F0FF"></div><span style="position:relative;font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">home</span></div>
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">restaurant</span></div>
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">directions_bus</span></div>
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">calendar_month</span></div>
+<div style="flex:1;display:flex;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#44474F">map</span></div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1f"><div class="dv-olabel"><a class="dv-oid" href="#1f">1f</a>Etkinlik oluşturma — kendi adına / kulüp adına</div>
+<div style="width:390px;height:844px;position:relative;background:#F7F8FB;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div class="ph" style="position:absolute;inset:0;overflow-y:auto">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#171A22"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="display:flex;align-items:center;gap:8px;padding:12px 20px 8px"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#171A22">close</span><span style="flex:1;text-align:center;font:800 20px Roboto;color:#171A22">Etkinlik Oluştur</span><span style="width:24px"></span></div>
+<div style="padding:12px 20px 150px">
+<div style="font:800 12px Roboto;color:#44474F;letter-spacing:.04em">KİMİN ADINA</div>
+<div style="display:flex;gap:10px;margin-top:10px">
+<sc-for list="{{ authorTabs }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.onClick }}" style="{{ t.style }}"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;font-variation-settings:'FILL' 1">{{ t.icon }}</span>{{ t.label }}</button></sc-for>
+</div>
+
+<div style="margin-top:22px;height:150px;border-radius:18px;border:1.5px dashed #B9C3D4;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+<span style="font-family:'Material Symbols Rounded';font-size:30px;line-height:1;color:#135BEC">add_photo_alternate</span>
+<div style="font:800 14px Roboto;color:#171A22">Kapak görseli ekle</div>
+<div style="font:400 11px ui-monospace,Menlo,monospace;color:#7A8494">önerilen 1200 × 800 · opsiyonel</div>
+</div>
+
+<div style="margin-top:20px;font:800 13px Roboto;color:#171A22">Başlık</div>
+<div style="margin-top:8px;height:56px;border-radius:16px;border:1.4px solid #135BEC;background:#fff;display:flex;align-items:center;padding:0 18px;font:400 16px Roboto;color:#171A22">Analog Fotoğraf Yürüyüşü<span style="width:1.5px;height:20px;background:#135BEC;margin-left:2px"></span></div>
+<div style="display:flex;justify-content:flex-end;font:600 11px Roboto;color:#7A8494;margin-top:6px">24 / 80</div>
+
+<div style="display:flex;gap:12px;margin-top:10px">
+<div style="flex:1"><div style="font:800 13px Roboto;color:#171A22">Tarih</div><div style="margin-top:8px;height:56px;border-radius:16px;border:1px solid #D6DCE8;background:#FBFCFF;display:flex;align-items:center;gap:10px;padding:0 16px"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#44474F">calendar_month</span><span style="font:500 15px Roboto;color:#171A22">14 Mart</span></div></div>
+<div style="flex:1"><div style="font:800 13px Roboto;color:#171A22">Saat</div><div style="margin-top:8px;height:56px;border-radius:16px;border:1px solid #D6DCE8;background:#FBFCFF;display:flex;align-items:center;gap:10px;padding:0 16px"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#44474F">schedule</span><span style="font:500 15px Roboto;color:#171A22">10:30</span></div></div>
+</div>
+
+<div style="margin-top:16px;font:800 13px Roboto;color:#171A22">Konum</div>
+<div style="margin-top:8px;height:56px;border-radius:16px;border:1px solid #D6DCE8;background:#FBFCFF;display:flex;align-items:center;gap:10px;padding:0 16px"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#44474F;font-variation-settings:'FILL' 1">location_on</span><span style="flex:1;font:500 15px Roboto;color:#171A22">Kampüs Göleti</span><span style="font:800 12px Roboto;color:#135BEC">Haritadan seç</span></div>
+
+<div style="margin-top:16px;font:800 13px Roboto;color:#171A22">Kategori</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+<sc-for list="{{ createCats }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for>
+</div>
+
+<div style="margin-top:16px;font:800 13px Roboto;color:#171A22">Açıklama</div>
+<div style="margin-top:8px;min-height:110px;border-radius:16px;border:1px solid #D6DCE8;background:#FBFCFF;padding:16px 18px;font:400 15px/1.5 Roboto;color:#7A8494">Etkinliği birkaç cümleyle anlat: kimler katılabilir, ne getirmeli?</div>
+
+<div style="margin-top:16px;background:#fff;border:1px solid #D6DCE8;border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px">
+<div style="flex:1"><div style="font:800 14px Roboto;color:#171A22">Kontenjan sınırı</div><div style="font:600 12px Roboto;color:#44474F;margin-top:3px">Katılımcı sayısını sınırla</div></div>
+<div onClick="{{ toggleQuota }}" style="{{ quotaTrackStyle }}"><div style="{{ quotaKnobStyle }}"></div></div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;padding:16px 20px 26px;background:linear-gradient(0deg,#F7F8FB 62%,rgba(247,248,251,0))">
+<button style="width:100%;height:56px;border:0;border-radius:16px;background:#135BEC;color:#fff;font:800 16px Roboto;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" style-hover="background:#0b46bd"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;font-variation-settings:'FILL' 1">campaign</span>Etkinliği Paylaş</button>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Sırada: "<a class="dv-oid" href="#1b">1b</a> yönünde ilerle, detayı ona göre sadeleştir" · "<a class="dv-oid" href="#1a">1a</a>'daki kartı <a class="dv-oid" href="#1c">1c</a>'nin gün şeridiyle birleştir" · "koyu tema varyantı"</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:1100}}">
+const P = '#135BEC', OSV = '#44474F', OV = '#D6DCE8';
+
+const EV = [
+  {id:'e1', src:'club', cat:'Teknoloji', author:'ACM Bilgisayar Kulübü', color:'#135BEC', icon:'memory',
+   title:'Yapay Zeka ile Görüntü İşleme Atölyesi', place:'Mühendislik Fak. B Blok, D-201',
+   desc:'OpenCV ve PyTorch ile temel görüntü işleme hattını sıfırdan kuruyoruz. Laptop getirmeniz yeterli, kurulum dosyaları etkinlik başında paylaşılacak.',
+   day:12, mon:'MAR', dow:'PER', time:'18:00', dur:'2s 30d', ago:'2 saat önce', att:48},
+  {id:'e2', src:'student', cat:'Spor', author:'Mert A. · Öğrenci', color:'#168A5B', icon:'sports_soccer',
+   title:'Bahar Turnuvası: Halı Saha Elemeleri', place:'Olbia Spor Sahası',
+   desc:'6 kişilik takımlar hâlâ eksik. Kadro tamamlamak isteyen tek tek de gelebilir, sahada eşleştiriyoruz.',
+   day:13, mon:'MAR', dow:'CUM', time:'19:30', dur:'1s 30d', ago:'5 saat önce', att:22},
+  {id:'e3', src:'club', cat:'Sanat', author:'Fotoğrafçılık Kulübü', color:'#E8601C', icon:'photo_camera',
+   title:'Analog Fotoğraf Yürüyüşü', place:'Kampüs Göleti — Güney kapı buluşma',
+   desc:'35mm film ve kamerasını getiren herkes davetli. Yürüyüş sonunda karanlık oda demosu yapacağız.',
+   day:14, mon:'MAR', dow:'CTS', time:'10:30', dur:'3s', ago:'1 gün önce', att:31},
+  {id:'e4', src:'club', cat:'Müzik', author:'Müzik Kulübü', color:'#7B3FF2', icon:'music_note',
+   title:'Akustik Sahne: Bahar Konseri', place:'Atatürk Konferans Salonu',
+   desc:'Kulüp gruplarından akustik setler. Giriş serbest, salon kapasitesi 400 kişi.',
+   day:16, mon:'MAR', dow:'PZT', time:'20:00', dur:'2s', ago:'2 gün önce', att:186},
+  {id:'e5', src:'student', cat:'Akademik', author:'Elif K. · Öğrenci', color:'#135BEC', icon:'menu_book',
+   title:'Ders Notu Takası — Hukuk 2. Sınıf', place:'Merkez Kütüphane, 2. kat çalışma alanı',
+   desc:'Borçlar ve Ceza Hukuku notlarını takas ediyoruz. Fotokopi için ortak kasa toplayacağız.',
+   day:12, mon:'MAR', dow:'PER', time:'13:00', dur:'1s', ago:'3 saat önce', att:9},
+  {id:'e6', src:'student', cat:'Spor', author:'Deniz Y. · Öğrenci', color:'#168A5B', icon:'directions_run',
+   title:'Sabah Koşusu Grubu — Haftalık', place:'Olbia Yolu, kütüphane önü',
+   desc:'Her sabah 5 km, tempo serbest. Yeni başlayanlar için ayrı grup var.',
+   day:15, mon:'MAR', dow:'PAZ', time:'07:30', dur:'1s', ago:'4 gün önce', att:14}
+];
+
+const AV = [['A','#135BEC'],['M','#E8601C'],['Z','#7B3FF2'],['S','#168A5B'],['B','#BA1A1A'],['K','#0F7B8A']];
+
+function grad(c){ return 'linear-gradient(135deg,' + c + 'f2,' + c + '7a,#135BEC85)'; }
+function tint(c){ return c + '24'; }
+
+const pill = (on) => 'flex:1;height:40px;border:0;border-radius:22px;cursor:pointer;font:800 13px Roboto;' +
+  (on ? 'background:#fff;color:' + P + ';box-shadow:0 2px 6px rgba(0,0,0,.08)' : 'background:transparent;color:' + OSV);
+
+const chip = (on) => 'flex:none;display:flex;align-items:center;gap:7px;height:44px;padding:0 16px;border-radius:22px;cursor:pointer;font:700 13px Roboto;' +
+  (on ? 'background:' + P + ';color:#fff;border:1px solid ' + P : 'background:#fff;color:#171A22;border:1px solid ' + OV);
+
+const catChip = (on, c) => 'flex:none;height:36px;padding:0 15px;border-radius:18px;cursor:pointer;font:800 12px Roboto;' +
+  (on ? 'background:' + c + ';color:#fff;border:1px solid ' + c : 'background:#F2F5FA;color:' + OSV + ';border:1px solid transparent');
+
+class Component extends DCLogic {
+  state = {
+    srcA:'all', timeA:'all',
+    clubB:'ALL', ctxFollow:true, joinedB:{e1:true},
+    dayC:12, catC:'Hepsi',
+    joined:false, following:false, saved:false,
+    clubTab:'events', authorTab:'club', createCat:'Sanat', quota:true,
+    cat2:'Hepsi', src2:'all'
+  };
+
+  set(k, v){ this.setState({[k]: v}); }
+
+  decorate(e){
+    return Object.assign({}, e, {
+      gradient: grad(e.color),
+      tintBg: tint(e.color),
+      datePill: e.day + ' ' + e.mon + ', ' + e.time,
+      dateLong: e.day + ' Mart, ' + e.time,
+      timeLabel: e.time,
+      durLabel: e.dur,
+      catLabel: e.cat.toUpperCase(),
+      srcBadge: e.src === 'club' ? 'KULÜP' : 'ÖĞRENCİ',
+      srcBadgeStyle: 'margin-left:auto;flex:none;padding:4px 8px;border-radius:9px;font:800 9px Roboto;letter-spacing:.05em;' +
+        (e.src === 'club' ? 'background:#E8F0FF;color:#082B76' : 'background:#FFE7D6;color:#662500'),
+      avatars: AV.slice(0, 3).map(a => ({ch:a[0], bg:a[1]})),
+      attLabel: '+' + e.att
+    });
+  }
+
+  vals2(){
+    const s = this.state;
+    const CATS2 = [
+      {id:'Hepsi', label:'Hepsi', icon:'apps', color:P},
+      {id:'Teknoloji', label:'Teknoloji', icon:'memory', color:'#135BEC'},
+      {id:'Spor', label:'Spor', icon:'sports_soccer', color:'#168A5B'},
+      {id:'Sanat', label:'Sanat', icon:'photo_camera', color:'#E8601C'},
+      {id:'Müzik', label:'Müzik', icon:'music_note', color:'#7B3FF2'},
+      {id:'Akademik', label:'Akademik', icon:'menu_book', color:'#0F7B8A'}
+    ];
+    const catStrip2 = CATS2.map(c => {
+      const on = s.cat2 === c.id;
+      return {
+        name: c.label, icon: c.icon,
+        iconColor: on ? '#fff' : c.color,
+        ringStyle: on ? 'background:' + c.color + ';box-shadow:0 0 0 3px #fff,0 0 0 5px ' + c.color
+                      : 'background:' + tint(c.color) + ';border:1px solid ' + OV,
+        labelColor: on ? '#171A22' : OSV,
+        labelWeight: on ? 800 : 600,
+        onClick: () => this.set('cat2', c.id)
+      };
+    });
+
+    const srcTabs2 = [['all','Tümü','apps'],['club','Kulüp etkinlikleri','groups_2'],['student','Öğrenci etkinlikleri','person']].map(([k,label,icon]) => ({
+      label, icon,
+      style: 'flex:none;display:flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:19px;cursor:pointer;font:800 12px Roboto;' +
+        (s.src2 === k ? 'background:#171A22;color:#fff;border:1px solid #171A22' : 'background:#fff;color:' + OSV + ';border:1px solid ' + OV),
+      onClick: () => this.set('src2', k)
+    }));
+
+    const list2 = EV.filter(e => (s.cat2 === 'Hepsi' || e.cat === s.cat2) && (s.src2 === 'all' || e.src === s.src2));
+    const feed2 = list2.map(e => {
+      const d = this.decorate(e);
+      const isStu = e.src === 'student';
+      d.authorName = isStu ? e.author.split(' · ')[0] : e.author;
+      d.authorMeta = isStu ? 'Öğrenci paylaşımı · ' + e.ago : 'Kulüp · ' + e.ago;
+      d.isStudent = isStu;
+      d.logoIcon = isStu ? '' : e.icon;
+      d.logoChar = isStu ? e.author[0] : '';
+      d.logoStyle = 'width:46px;height:46px;border-radius:15px;flex:none;display:flex;align-items:center;justify-content:center;' +
+        (isStu ? 'background:' + e.color + ';color:#fff;font:900 18px Roboto' : 'background:' + tint(e.color) + ';border:1px solid ' + OV);
+      d.badgeStyle = 'flex:none;padding:5px 10px;border-radius:10px;font:800 10px Roboto;letter-spacing:.04em;' +
+        (isStu ? 'background:#FFE7D6;color:#662500' : 'background:#E8F0FF;color:#082B76');
+      d.badgeLabel = isStu ? 'ÖĞRENCİ' : 'KULÜP';
+      const on = !!s.joinedB[e.id];
+      d.joinLabel = on ? 'Katılıyorsun' : 'Katıl';
+      d.joinStyle = 'flex:none;height:44px;padding:0 22px;border-radius:16px;cursor:pointer;font:800 14px Roboto;' +
+        (on ? 'background:#E8F0FF;color:#082B76;border:1.5px solid ' + P : 'background:' + P + ';color:#fff;border:0');
+      d.onJoin = () => this.setState(st => ({joinedB: Object.assign({}, st.joinedB, {[e.id]: !st.joinedB[e.id]})}));
+      return d;
+    });
+
+    const curCat = CATS2.find(c => c.id === s.cat2) || CATS2[0];
+    return {
+      catStrip2, srcTabs2, feed2,
+      countLabel2: feed2.length + ' etkinlik',
+      catTitle2: s.cat2 === 'Hepsi' ? 'Tüm kategoriler' : curCat.label
+    };
+  }
+
+  renderVals(){
+    const s = this.state;
+
+    const srcTabs = [['all','Tümü'],['club','Kulüpler'],['student','Öğrenciler']].map(([k,label]) => ({
+      label, style: pill(s.srcA === k), onClick: () => this.set('srcA', k)
+    }));
+
+    const timeChips = [['all','Hepsi','apps'],['today','Bugün','today'],['upcoming','Yakında','event_available'],['past','Geçmiş','history']].map(([k,label,icon]) => ({
+      label, icon, style: chip(s.timeA === k), onClick: () => this.set('timeA', k)
+    }));
+
+    let feedA = EV.filter(e => s.srcA === 'all' || e.src === s.srcA);
+    if (s.timeA === 'today') feedA = feedA.filter(e => e.day === 12);
+    else if (s.timeA === 'upcoming') feedA = feedA.filter(e => e.day >= 13);
+    else if (s.timeA === 'past') feedA = [];
+
+    const CLUBS = [
+      {id:'ALL', name:'Tümü', icon:'apps', color:P},
+      {id:'ACM', name:'ACM', icon:'memory', color:'#135BEC'},
+      {id:'FOTO', name:'Fotoğraf', icon:'photo_camera', color:'#E8601C'},
+      {id:'MUZ', name:'Müzik', icon:'music_note', color:'#7B3FF2'},
+      {id:'SPOR', name:'Spor', icon:'sports_soccer', color:'#168A5B'},
+      {id:'STU', name:'Öğrenciler', icon:'groups_2', color:'#0F7B8A'}
+    ];
+    const clubStrip = CLUBS.map(c => {
+      const on = s.clubB === c.id;
+      return {
+        name: c.name, icon: c.icon,
+        iconColor: on ? '#fff' : c.color,
+        ringStyle: on ? 'background:' + c.color + ';box-shadow:0 0 0 3px #fff,0 0 0 5px ' + c.color
+                      : 'background:' + tint(c.color) + ';border:1px solid ' + OV,
+        labelColor: on ? '#171A22' : OSV,
+        labelWeight: on ? 800 : 600,
+        onClick: () => this.set('clubB', c.id)
+      };
+    });
+
+    const cur = CLUBS.find(c => c.id === s.clubB) || CLUBS[0];
+    const byClub = {ACM:'e1', FOTO:'e3', MUZ:'e4'};
+    let feedB = EV;
+    if (s.clubB === 'STU') feedB = EV.filter(e => e.src === 'student');
+    else if (s.clubB === 'SPOR') feedB = EV.filter(e => e.cat === 'Spor');
+    else if (byClub[s.clubB]) feedB = EV.filter(e => e.id === byClub[s.clubB]);
+
+    const ctxMeta = {
+      ALL:  ['Tüm topluluklar', '6 yeni paylaşım · 4 kulüp'],
+      ACM:  ['ACM Bilgisayar Kulübü', '1.248 takipçi · 4 yaklaşan'],
+      FOTO: ['Fotoğrafçılık Kulübü', '842 takipçi · 2 yaklaşan'],
+      MUZ:  ['Müzik Kulübü', '1.906 takipçi · 3 yaklaşan'],
+      SPOR: ['Spor Kulübü', '2.310 takipçi · 5 yaklaşan'],
+      STU:  ['Öğrenci paylaşımları', 'Herkesin açtığı etkinlikler']
+    }[s.clubB];
+
+    const decB = feedB.map(e => {
+      const d = this.decorate(e);
+      const on = !!s.joinedB[e.id];
+      d.joinLabel = on ? 'Katılıyorsun' : 'Katıl';
+      d.joinStyle = 'flex:none;height:34px;padding:0 14px;border-radius:17px;cursor:pointer;font:800 12px Roboto;' +
+        (on ? 'background:#E8F0FF;color:#082B76;border:1px solid #E8F0FF' : 'background:' + P + ';color:#fff;border:1px solid ' + P);
+      d.onJoin = () => this.setState(st => ({joinedB: Object.assign({}, st.joinedB, {[e.id]: !st.joinedB[e.id]})}));
+      return d;
+    });
+
+    const DAYS = [[11,'ÇAR'],[12,'PER'],[13,'CUM'],[14,'CTS'],[15,'PAZ'],[16,'PZT'],[17,'SAL']];
+    const days = DAYS.map(([num, dow]) => {
+      const on = s.dayC === num;
+      return {
+        num, dow,
+        style: 'flex:none;width:52px;height:74px;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;' +
+          (on ? 'background:#fff;color:' + P : 'background:rgba(255,255,255,.16);color:#fff'),
+        dotStyle: 'width:5px;height:5px;border-radius:50%;margin-top:6px;background:' + (EV.some(e => e.day === num) ? (on ? P : 'rgba(255,255,255,.9)') : 'transparent'),
+        onClick: () => this.set('dayC', num)
+      };
+    });
+
+    const CATS = ['Hepsi','Teknoloji','Spor','Sanat','Müzik','Akademik'];
+    const catTabs = CATS.map(label => ({
+      label,
+      style: catChip(s.catC === label, P),
+      onClick: () => this.set('catC', label)
+    }));
+
+    const decC = EV.filter(e => s.catC === 'Hepsi' || e.cat === s.catC).map(e => {
+      const d = this.decorate(e);
+      const on = !!s.joinedB[e.id];
+      d.joinLabel = on ? 'Katılıyorsun' : 'Katıl';
+      d.joinWideStyle = 'flex:1;height:40px;border-radius:14px;cursor:pointer;font:800 13px Roboto;' +
+        (on ? 'background:#E8F0FF;color:#082B76;border:1px solid #E8F0FF' : 'background:' + P + ';color:#fff;border:0');
+      d.onJoin = () => this.setState(st => ({joinedB: Object.assign({}, st.joinedB, {[e.id]: !st.joinedB[e.id]})}));
+      return d;
+    });
+
+    const clubTabs = [['events','Etkinlikler'],['about','Hakkında']].map(([k,label]) => ({
+      label, style: pill(s.clubTab === k), onClick: () => this.set('clubTab', k)
+    }));
+    const clubBody = (s.clubTab === 'events' ? EV.filter(e => e.author.indexOf('ACM') === 0 || e.cat === 'Teknoloji' || e.cat === 'Akademik') : EV.slice(0,1)).map(e => this.decorate(e));
+
+    const authorTabs = [['self','Kendi adıma','person'],['club','ACM Kulübü','groups_2']].map(([k,label,icon]) => ({
+      label, icon,
+      style: 'flex:1;display:flex;align-items:center;justify-content:center;gap:8px;height:52px;border-radius:16px;cursor:pointer;font:800 13px Roboto;' +
+        (s.authorTab === k ? 'background:#E8F0FF;color:#082B76;border:1.5px solid ' + P : 'background:#fff;color:' + OSV + ';border:1px solid ' + OV),
+      onClick: () => this.set('authorTab', k)
+    }));
+
+    const createCats = ['Teknoloji','Spor','Sanat','Müzik','Akademik','Sosyal'].map(label => ({
+      label, style: catChip(s.createCat === label, P), onClick: () => this.set('createCat', label)
+    }));
+
+    const joinCount = 48 + (s.joined ? 1 : 0);
+
+    return Object.assign(this.vals2(), {
+      srcTabs, timeChips, feedA: feedA.map(e => this.decorate(e)),
+      clubStrip, feedB: decB,
+      ctxBg: 'linear-gradient(120deg,' + cur.color + ',' + cur.color + 'c4)',
+      ctxIcon: cur.icon, ctxTitle: ctxMeta[0], ctxSub: ctxMeta[1],
+      ctxBtnLabel: s.ctxFollow ? 'Takipte' : 'Takip Et',
+      ctxBtnStyle: 'flex:none;height:36px;padding:0 14px;border-radius:18px;cursor:pointer;font:800 12px Roboto;' +
+        (s.ctxFollow ? 'background:rgba(255,255,255,.22);color:#fff;border:1px solid rgba(255,255,255,.45)' : 'background:#fff;color:' + cur.color + ';border:0'),
+      toggleCtxFollow: () => this.set('ctxFollow', !s.ctxFollow),
+      days, catTabs, feedC: decC,
+      clubTabs, clubBody,
+      authorTabs, createCats,
+      quotaTrackStyle: 'width:52px;height:32px;border-radius:16px;cursor:pointer;display:flex;align-items:center;padding:3px;transition:background .18s;background:' + (s.quota ? P : '#D6DCE8'),
+      quotaKnobStyle: 'width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:margin-left .18s;margin-left:' + (s.quota ? '20px' : '0'),
+      toggleQuota: () => this.set('quota', !s.quota),
+      attendees: AV.slice(0,5).map(a => ({ch:a[0], bg:a[1]})),
+      joinCount, leftCount: 60 - joinCount,
+      comments: [
+        {ch:'Z', bg:'#7B3FF2', name:'Zeynep A.', ago:'1 sa', text:'Laptopu olmayan biri için yedek makine olacak mı?'},
+        {ch:'B', bg:'#BA1A1A', name:'Burak T.', ago:'40 dk', text:'2 kişilik masalarda çalışacağız, eşleştirme yapacağız 👍'}
+      ],
+      commentCount: 2,
+      saveFill: s.saved ? 1 : 0,
+      toggleSave: () => this.set('saved', !s.saved),
+      followLabel: s.following ? 'Takipte' : 'Takip Et',
+      followStyle: 'flex:none;height:38px;padding:0 16px;border-radius:19px;cursor:pointer;font:800 13px Roboto;' +
+        (s.following ? 'background:#E8F0FF;color:#082B76;border:1px solid #E8F0FF' : 'background:' + P + ';color:#fff;border:0'),
+      followBigStyle: 'flex:1;height:46px;border-radius:23px;cursor:pointer;font:800 14px Roboto;' +
+        (s.following ? 'background:#fff;color:' + P + ';border:1.5px solid ' + P : 'background:' + P + ';color:#fff;border:0'),
+      toggleFollow: () => this.set('following', !s.following),
+      joinCtaLabel: s.joined ? 'Katılıyorsun' : 'Katıl',
+      joinCtaIcon: s.joined ? 'check_circle' : 'add_circle',
+      joinCtaStyle: 'flex:1;height:56px;border-radius:16px;cursor:pointer;font:800 16px Roboto;display:flex;align-items:center;justify-content:center;gap:8px;' +
+        (s.joined ? 'background:#E8F0FF;color:#082B76;border:1.5px solid ' + P : 'background:' + P + ';color:#fff;border:0'),
+      toggleJoin: () => this.set('joined', !s.joined)
+    });
+  }
+}
+</script>
+</body>
+</html>
