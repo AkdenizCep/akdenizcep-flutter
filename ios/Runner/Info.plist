@@ -26,8 +26,12 @@
 	<true/>
 	<key>MapsApiKey</key>
 	<string>$(MAPS_API_KEY)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Etkinlik kapak görseli çekebilmen için kamera kullanılır.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Sana en yakın ring durağını gösterebilmek için konumun kullanılır.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Etkinlik kapak görseli seçebilmen için fotoğraflarına erişilir.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
