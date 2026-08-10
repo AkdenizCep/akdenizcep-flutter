@@ -44,7 +44,7 @@ Features: auth, board, cafeteria, community, home, map, ring, student_events.
 ## Firebase
 
 - Project ID: `akdeniz-cep-36d3f`
-- Firestore + Auth + Realtime DB + Storage all used.
+- Firestore + Auth + Realtime DB used. Firebase Storage is **not** used — images go to Cloudinary via `lib/shared/services/cloudinary_service.dart` (unsigned upload preset; config in `lib/shared/config/cloudinary_config.dart`).
 - Realtime DB holds cafeteria menus and ring schedules (manually entered data by the university — never used for comments/events, which belong in Firestore).
 - Firestore holds users, clubs, club-events, announcements, student-events, cafeteria_ratings.
 - Auth: email+password only, restricted to `@ogr.akdeniz.edu.tr` domain. No Google Sign-In.
