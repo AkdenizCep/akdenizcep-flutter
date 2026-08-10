@@ -27,18 +27,29 @@ class StudentEventsService {
 
   Future<void> createEvent({
     required String authorUid,
+    required String authorName,
     required String title,
     required DateTime date,
     required String location,
     required String description,
+    String category = '',
+    String imageUrl = '',
+    int? capacity,
   }) async {
     try {
       await _db.collection('student-events').add({
         'authorUid': authorUid,
+        'authorName': authorName,
         'title': title,
         'date': Timestamp.fromDate(date),
         'location': location,
         'description': description,
+        'category': category,
+        'imageUrl': imageUrl,
+        'capacity': capacity,
+        // Etkinliği paylaşan kişi otomatik olarak katılımcıdır.
+        'attendeeIds': [authorUid],
+        'attendeeCount': 1,
         'createdAt': FieldValue.serverTimestamp(),
       });
     } on FirebaseException catch (e) {

@@ -5,6 +5,7 @@ class AppUser {
   final String studentId;
   final List<String> followedClubs;
   final List<String> ratedMealIds;
+  final List<String> savedEventIds;
   final DateTime createdAt;
 
   AppUser({
@@ -14,6 +15,7 @@ class AppUser {
     required this.studentId,
     required this.followedClubs,
     this.ratedMealIds = const [],
+    this.savedEventIds = const [],
     required this.createdAt,
   });
 
@@ -24,6 +26,7 @@ class AppUser {
     studentId: json['studentId'] as String? ?? '',
     followedClubs: List<String>.from(json['followedClubs'] ?? []),
     ratedMealIds: List<String>.from(json['ratedMealIds'] ?? []),
+    savedEventIds: List<String>.from(json['savedEventIds'] ?? []),
     createdAt: json['createdAt'] != null
         ? (json['createdAt'] as dynamic).toDate()
         : DateTime.now(),
@@ -36,6 +39,7 @@ class AppUser {
     'studentId': studentId,
     'followedClubs': followedClubs,
     'ratedMealIds': ratedMealIds,
+    'savedEventIds': savedEventIds,
     'createdAt': createdAt,
   };
 
@@ -46,6 +50,7 @@ class AppUser {
     String? studentId,
     List<String>? followedClubs,
     List<String>? ratedMealIds,
+    List<String>? savedEventIds,
     DateTime? createdAt,
   }) => AppUser(
     id: id ?? this.id,
@@ -54,6 +59,7 @@ class AppUser {
     studentId: studentId ?? this.studentId,
     followedClubs: followedClubs ?? this.followedClubs,
     ratedMealIds: ratedMealIds ?? this.ratedMealIds,
+    savedEventIds: savedEventIds ?? this.savedEventIds,
     createdAt: createdAt ?? this.createdAt,
   );
 }
