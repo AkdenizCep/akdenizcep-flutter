@@ -6,46 +6,48 @@ import '../../../../shared/providers/user_provider.dart';
 import '../../../../shared/utils/error_message.dart';
 import '../../models/meal_review.dart';
 import '../../providers/cafeteria_provider.dart';
+import 'cafeteria_card.dart';
+import 'score_card.dart';
 
+/// Secili gunun yorumlari. Yorum yoksa hicbir sey cizmez — bos bir baslik
+/// birakmamak icin baslik da bu bilesenin icinde.
 class MealReviewsList extends ConsumerWidget {
-  final String mealType;
-
-  const MealReviewsList({super.key, required this.mealType});
+  const MealReviewsList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final reviewsAsync = ref.watch(mealReviewsProvider(mealType));
+    final reviewsAsync = ref.watch(reviewsProvider);
     final colorScheme = Theme.of(context).colorScheme;
     final currentUid = ref.watch(currentUserProvider).valueOrNull?.id;
 
     return reviewsAsync.when(
       data: (reviews) {
-        if (reviews.isEmpty) {
-          return Text(
-            'Henüz yorum yok, ilk yorumu sen yaz!',
-            style: TextStyle(
-              color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-          );
-        }
+        if (reviews.isEmpty) return const SizedBox.shrink();
 
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            for (var i = 0; i < reviews.length; i++) ...[
-              if (i > 0) const SizedBox(height: 10),
-              _ReviewRow(
-                review: reviews[i],
-                mealType: mealType,
-                currentUid: currentUid,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 24, 4, 12),
+              child: Text(
+                'YORUMLAR',
+                style: TextStyle(
+                  color: colorScheme.onSurfaceVariant,
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.8,
+                ),
               ),
+            ),
+            for (var i = 0; i < reviews.length; i++) ...[
+              if (i > 0) const SizedBox(height: 12),
+              _ReviewCard(review: reviews[i], currentUid: currentUid),
             ],
           ],
         );
       },
       loading: () => const SizedBox(
-        height: 32,
+        height: 48,
         child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
       ),
       error: (_, _) => const SizedBox.shrink(),
@@ -53,16 +55,11 @@ class MealReviewsList extends ConsumerWidget {
   }
 }
 
-class _ReviewRow extends ConsumerWidget {
+class _ReviewCard extends ConsumerWidget {
   final MealReview review;
-  final String mealType;
   final String? currentUid;
 
-  const _ReviewRow({
-    required this.review,
-    required this.mealType,
-    required this.currentUid,
-  });
+  const _ReviewCard({required this.review, required this.currentUid});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -71,24 +68,20 @@ class _ReviewRow extends ConsumerWidget {
         ? review.authorName[0].toUpperCase()
         : '?';
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.42),
-        borderRadius: BorderRadius.circular(16),
-      ),
+    return CafeteriaCard(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
-            radius: 18,
+            radius: 17,
             backgroundColor: colorScheme.primaryContainer,
             child: Text(
               initial,
               style: TextStyle(
                 color: colorScheme.primary,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
               ),
             ),
           ),
@@ -108,40 +101,31 @@ class _ReviewRow extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: colorScheme.onSurface,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12.5,
                         ),
                       ),
                     ),
+                    const SizedBox(width: 8),
                     Text(
                       _relativeCreatedAt(review.createdAt),
                       style: TextStyle(
                         color: colorScheme.onSurfaceVariant,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 11.5,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                Row(
-                  children: List.generate(5, (i) {
-                    return Icon(
-                      Icons.star_rounded,
-                      size: 14,
-                      color: i < review.rating
-                          ? colorScheme.secondary
-                          : colorScheme.outlineVariant,
-                    );
-                  }),
-                ),
+                const SizedBox(height: 5),
+                StarRow(value: review.rating.toDouble(), size: 14),
                 if (review.comment.isNotEmpty) ...[
                   const SizedBox(height: 6),
                   Text(
                     review.comment,
                     style: TextStyle(
                       color: colorScheme.onSurfaceVariant,
-                      fontSize: 13.5,
+                      fontSize: 13,
+                      height: 1.48,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -177,7 +161,6 @@ class _ReviewRow extends ConsumerWidget {
           .read(cafeteriaServiceProvider)
           .voteReview(
             date: date,
-            mealName: mealType,
             reviewUid: review.uid,
             voterUid: uid,
             value: nextValue,
@@ -221,8 +204,6 @@ class _VoteControls extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final myVote = currentUid != null ? review.voteOf(currentUid!) : 0;
     final enabled = currentUid != null && !isOwnReview;
-    final upActive = myVote == 1;
-    final downActive = myVote == -1;
 
     return Opacity(
       opacity: isOwnReview ? 0.4 : 1,
@@ -230,7 +211,7 @@ class _VoteControls extends StatelessWidget {
         children: [
           _VoteButton(
             icon: Icons.thumb_up_alt_rounded,
-            active: upActive,
+            active: myVote == 1,
             activeColor: colorScheme.primary,
             onPressed: enabled ? () => onVote(1) : null,
           ),
@@ -240,13 +221,13 @@ class _VoteControls extends StatelessWidget {
             style: TextStyle(
               color: colorScheme.onSurfaceVariant,
               fontSize: 12.5,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(width: 4),
           _VoteButton(
             icon: Icons.thumb_down_alt_rounded,
-            active: downActive,
+            active: myVote == -1,
             activeColor: colorScheme.error,
             onPressed: enabled ? () => onVote(-1) : null,
           ),

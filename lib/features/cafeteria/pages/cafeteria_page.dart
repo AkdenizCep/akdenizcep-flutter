@@ -9,153 +9,116 @@ import '../../../shared/providers/nav_visibility_provider.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../shared/utils/error_message.dart';
 import '../../auth/models/app_user.dart';
-import '../models/meal_rating.dart';
-import '../models/menu_item.dart';
 import '../providers/cafeteria_provider.dart';
-import 'components/cafeteria_empty_state.dart';
-import 'components/cafeteria_header.dart';
+import 'components/cafeteria_date_sheet.dart';
+import 'components/cafeteria_hero.dart';
 import 'components/cafeteria_info_sheet.dart';
-import 'components/date_strip.dart';
-import 'components/meal_hero_card.dart';
 import 'components/meal_reviews_list.dart';
-import 'components/meal_type_segment.dart';
+import 'components/menu_card.dart';
 import 'components/rate_meal_sheet.dart';
-import 'components/rating_row.dart';
+import 'components/score_card.dart';
 
 class CafeteriaPage extends ConsumerWidget {
   const CafeteriaPage({super.key});
 
+  /// Menusu goruntulenebilen aralik. Universite menuyu bir hafta oncesinden
+  /// giriyor; geriye dogru gecmis menuler puanlariyla birlikte kaliyor.
+  static const _daysBack = 30;
+  static const _daysForward = 7;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final menuAsync = ref.watch(menuProvider);
-    final ratingsAsync = ref.watch(ratingsProvider);
     final selectedDate = ref.watch(selectedDateProvider);
-    final currentUser = ref.watch(currentUserProvider).valueOrNull;
+    final entries = ref.watch(menuEntriesProvider);
+
+    final bottomInset = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
-      body: SafeArea(
-        bottom: false,
-        child: menuAsync.when(
-          data: (menus) {
-            return CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CafeteriaHeader(
-                        onPickDate: () => _pickDate(context, ref, selectedDate),
-                        onShowInfo: () => _showInfoSheet(context, ref),
-                      ),
-                      const SizedBox(height: 22),
-                      DateStrip(
-                        selectedDate: selectedDate,
-                        onChanged: (date) {
-                          ref.read(selectedDateProvider.notifier).state = date;
-                        },
-                      ),
-                    ],
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CafeteriaHero(
+              date: selectedDate,
+              subtitle: menuAsync.isLoading
+                  ? 'Yükleniyor…'
+                  : entries.isEmpty
+                  ? 'Menü girilmemiş'
+                  : '${entries.length} çeşit · Günün menüsü',
+              onPreviousDay: _canGoTo(selectedDate, -1)
+                  ? () => _shiftDay(ref, selectedDate, -1)
+                  : null,
+              onNextDay: _canGoTo(selectedDate, 1)
+                  ? () => _shiftDay(ref, selectedDate, 1)
+                  : null,
+              onPickDate: () => _pickDate(context, ref, selectedDate),
+              onShowInfo: () => _showInfoSheet(context, ref),
+            ),
+            // Kartlar basligin uzerine biner. Transform yerlesimi degistirmedigi
+            // icin alttaki bosluktan ayni miktar dusuluyor.
+            Transform.translate(
+              offset: const Offset(0, -CafeteriaHero.overlap),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  0,
+                  16,
+                  130 + bottomInset - CafeteriaHero.overlap,
+                ),
+                child: menuAsync.when(
+                  data: (_) => _MenuBody(date: selectedDate),
+                  loading: () => const Padding(
+                    padding: EdgeInsets.only(top: 60),
+                    child: LoadingOverlay(),
+                  ),
+                  error: (e, _) => Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: ErrorView(message: errorMessage(e)),
                   ),
                 ),
-                if (menus.isEmpty)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: CafeteriaEmptyState(date: selectedDate),
-                  )
-                else
-                  _buildMenuContent(
-                    context,
-                    ref,
-                    menus,
-                    ratingsAsync.valueOrNull ?? const [],
-                    currentUser,
-                  ),
-              ],
-            );
-          },
-          loading: () => const LoadingOverlay(),
-          error: (e, _) => ErrorView(message: errorMessage(e)),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildMenuContent(
+  static bool _canGoTo(DateTime from, int deltaDays) {
+    final target = DateUtils.dateOnly(from).add(Duration(days: deltaDays));
+    final today = DateUtils.dateOnly(DateTime.now());
+    return !target.isBefore(today.subtract(const Duration(days: _daysBack))) &&
+        !target.isAfter(today.add(const Duration(days: _daysForward)));
+  }
+
+  static void _shiftDay(WidgetRef ref, DateTime from, int deltaDays) {
+    ref.read(selectedDateProvider.notifier).state = DateUtils.dateOnly(
+      from,
+    ).add(Duration(days: deltaDays));
+  }
+
+  Future<void> _pickDate(
     BuildContext context,
     WidgetRef ref,
-    List<MenuItem> menus,
-    List<MealRating> ratings,
-    AppUser? currentUser,
-  ) {
-    final mealTypes = menus.map((m) => m.mealType).toList();
-    final selectedMealType = ref.watch(selectedMealTypeProvider);
-    final activeMealType = mealTypes.contains(selectedMealType)
-        ? selectedMealType!
-        : mealTypes.first;
-    final activeMenu = menus.firstWhere((m) => m.mealType == activeMealType);
+    DateTime selectedDate,
+  ) async {
+    final today = DateUtils.dateOnly(DateTime.now());
 
-    final matchingRating = ratings.where((r) => r.mealName == activeMealType);
-    final avgRating = matchingRating.isNotEmpty
-        ? matchingRating.first.avgRating
-        : null;
-    final ratingCount = matchingRating.isNotEmpty
-        ? matchingRating.first.ratingCount
-        : 0;
-
-    final selectedDate = ref.read(selectedDateProvider);
-
-    return SliverPadding(
-      padding: EdgeInsets.fromLTRB(
-        22,
-        26,
-        22,
-        132 + MediaQuery.of(context).padding.bottom,
-      ),
-      sliver: SliverList.list(
-        children: [
-          Text(
-            DateFormat('d MMMM EEEE', 'tr').format(selectedDate).toUpperCase(),
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF64748B),
-              letterSpacing: 1.6,
-            ),
-          ),
-          const SizedBox(height: 16),
-          if (mealTypes.length > 1) ...[
-            MealTypeSegment(
-              mealTypes: mealTypes,
-              selected: activeMealType,
-              onChanged: (mealType) {
-                ref.read(selectedMealTypeProvider.notifier).state = mealType;
-              },
-            ),
-            const SizedBox(height: 22),
-          ],
-          MealHeroCard(
-            menu: activeMenu,
-            avgRating: avgRating,
-            ratingCount: ratingCount,
-          ),
-          const SizedBox(height: 18),
-          RatingRow(
-            avgRating: avgRating,
-            enabled: currentUser != null,
-            onStarTap: (rating) => _openRateSheet(
-              context,
-              ref,
-              currentUser,
-              selectedDate,
-              activeMealType,
-              rating,
-            ),
-          ),
-          const SizedBox(height: 18),
-          MealReviewsList(mealType: activeMealType),
-        ],
-      ),
-    );
+    ref.read(bottomNavVisibleProvider.notifier).state = false;
+    try {
+      final date = await CafeteriaDateSheet.show(
+        context,
+        selectedDate: DateUtils.dateOnly(selectedDate),
+        firstDate: today.subtract(const Duration(days: _daysBack)),
+        lastDate: today.add(const Duration(days: _daysForward)),
+      );
+      if (date != null) {
+        ref.read(selectedDateProvider.notifier).state = date;
+      }
+    } finally {
+      ref.read(bottomNavVisibleProvider.notifier).state = true;
+    }
   }
 
   Future<void> _showInfoSheet(BuildContext context, WidgetRef ref) async {
@@ -171,32 +134,51 @@ class CafeteriaPage extends ConsumerWidget {
       ref.read(bottomNavVisibleProvider.notifier).state = true;
     }
   }
+}
+
+class _MenuBody extends ConsumerWidget {
+  final DateTime date;
+
+  const _MenuBody({required this.date});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final entries = ref.watch(menuEntriesProvider);
+    final rating = ref.watch(ratingProvider).valueOrNull;
+    final currentUser = ref.watch(currentUserProvider).valueOrNull;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        MenuCard(entries: entries, date: date),
+        if (entries.isNotEmpty) ...[
+          const SizedBox(height: 14),
+          ScoreCard(
+            rating: rating,
+            canRate: currentUser != null,
+            onRate: () => _openRateSheet(context, ref, currentUser),
+          ),
+        ],
+        const MealReviewsList(),
+      ],
+    );
+  }
 
   Future<void> _openRateSheet(
     BuildContext context,
     WidgetRef ref,
     AppUser? currentUser,
-    DateTime selectedDate,
-    String mealType,
-    int initialRating,
   ) async {
     if (currentUser == null) return;
+
     ref.read(bottomNavVisibleProvider.notifier).state = false;
     try {
       await showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         builder: (context) => RateMealSheet(
-          initialRating: initialRating,
-          onSubmit: (rating, comment) => _rateMeal(
-            context,
-            ref,
-            currentUser,
-            selectedDate,
-            mealType,
-            rating,
-            comment,
-          ),
+          onSubmit: (rating, comment) =>
+              _rateMeal(context, ref, currentUser, rating, comment),
         ),
       );
     } finally {
@@ -207,20 +189,16 @@ class CafeteriaPage extends ConsumerWidget {
   Future<void> _rateMeal(
     BuildContext context,
     WidgetRef ref,
-    AppUser? currentUser,
-    DateTime selectedDate,
-    String mealType,
+    AppUser currentUser,
     int rating,
     String comment,
   ) async {
-    if (currentUser == null) return;
     try {
       await ref
           .read(cafeteriaServiceProvider)
           .rateMeal(
             uid: currentUser.id,
-            date: DateFormat('yyyy-MM-dd').format(selectedDate),
-            mealName: mealType,
+            date: DateFormat('yyyy-MM-dd').format(date),
             rating: rating,
             authorName: currentUser.name,
             comment: comment,
@@ -240,22 +218,6 @@ class CafeteriaPage extends ConsumerWidget {
           accentColor: Theme.of(context).colorScheme.secondary,
         );
       }
-    }
-  }
-
-  Future<void> _pickDate(
-    BuildContext context,
-    WidgetRef ref,
-    DateTime selectedDate,
-  ) async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime.now().subtract(const Duration(days: 30)),
-      lastDate: DateTime.now().add(const Duration(days: 7)),
-    );
-    if (date != null) {
-      ref.read(selectedDateProvider.notifier).state = date;
     }
   }
 }

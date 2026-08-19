@@ -83,23 +83,30 @@ class _SectionTitle extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Row(
+      // Buyuk yazi tipi olceginde baslik iki satira inebilir; cubuk ilk
+      // satirla hizali kalsin.
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           width: 4,
           height: 14,
+          margin: const EdgeInsets.only(top: 2),
           decoration: BoxDecoration(
             color: colorScheme.primary,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
         const SizedBox(width: 8),
-        Text(
-          title.toUpperCase(),
-          style: TextStyle(
-            color: colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.w800,
-            fontSize: 12.5,
-            letterSpacing: 0.8,
+        Expanded(
+          child: Text(
+            title.toUpperCase(),
+            style: TextStyle(
+              color: colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w800,
+              fontSize: 12.5,
+              height: 1.35,
+              letterSpacing: 0.8,
+            ),
           ),
         ),
       ],

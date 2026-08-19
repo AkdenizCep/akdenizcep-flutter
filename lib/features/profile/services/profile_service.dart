@@ -35,9 +35,9 @@ class ProfileService {
         });
   }
 
-  /// [mealDocIds], users/{uid}.ratedMealIds alanindan gelir (her biri
-  /// '${date}_$mealName' formatinda). Sorgu degil dogrudan get() kullanir,
-  /// boylece collection-group index gerektirmez.
+  /// [mealDocIds], users/{uid}.ratedMealIds alanindan gelir (her biri bir
+  /// tarih, 'YYYY-MM-DD'). Sorgu degil dogrudan get() kullanir, boylece
+  /// collection-group index gerektirmez.
   Future<List<ProfileRatedMeal>> getMyRatedMeals(
     String uid,
     List<String> mealDocIds,

@@ -1,0 +1,661 @@
+<title>Yemekhane — Önce / Sonra</title>
+<style>
+  /* ============ sunum çerçevesi ============ */
+  :root{
+    --wrap-bg:#EDEFF3;
+    --wrap-surface:#FFFFFF;
+    --wrap-ink:#131720;
+    --wrap-ink-muted:#59616F;
+    --wrap-line:#D7DBE3;
+    --wrap-accent:#135BEC;
+    --wrap-accent-wash:#E6ECFB;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --wrap-bg:#090C12; --wrap-surface:#11151D; --wrap-ink:#E7EAF1;
+      --wrap-ink-muted:#868E9C; --wrap-line:#232A36;
+      --wrap-accent:#8CB2FF; --wrap-accent-wash:#16203A;
+    }
+  }
+  :root[data-theme="dark"]{
+    --wrap-bg:#090C12; --wrap-surface:#11151D; --wrap-ink:#E7EAF1;
+    --wrap-ink-muted:#868E9C; --wrap-line:#232A36;
+    --wrap-accent:#8CB2FF; --wrap-accent-wash:#16203A;
+  }
+
+  /* ============ uygulama jetonları ============ */
+  :root{
+    --ground:#F1F4F9;
+    --card:#FFFFFF;
+    --ink:#141922;
+    --ink-2:#5A6373;
+    --ink-3:#96A0AE;
+    --hair:#EAEEF4;
+    --line:#D6DCE5;
+    --accent:#135BEC;
+    --accent-deep:#0B3FA8;
+    --accent-wash:#E7EDFC;
+    --on-accent:#FFFFFF;
+    --gold:#B4750B;
+    --card-lift:0 2px 4px rgba(20,25,34,.04), 0 18px 40px -24px rgba(11,63,168,.45);
+    --btn-lift:0 6px 16px -8px rgba(19,91,236,.6);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#0A101B;
+      --card:#151C2A;
+      --ink:#E8ECF3;
+      --ink-2:#949FB1;
+      --ink-3:#606B7E;
+      --hair:#232D3E;
+      --line:#2E394C;
+      --accent:#5E92FF;
+      --accent-deep:#0A2E7A;
+      --accent-wash:#18233A;
+      --on-accent:#FFFFFF;
+      --gold:#E9B24E;
+      --card-lift:0 2px 4px rgba(0,0,0,.5), 0 18px 40px -24px rgba(0,0,0,.9);
+      --btn-lift:0 6px 16px -8px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0A101B;
+    --card:#151C2A;
+    --ink:#E8ECF3;
+    --ink-2:#949FB1;
+    --ink-3:#606B7E;
+    --hair:#232D3E;
+    --line:#2E394C;
+    --accent:#5E92FF;
+    --accent-deep:#0A2E7A;
+    --accent-wash:#18233A;
+    --on-accent:#FFFFFF;
+    --gold:#E9B24E;
+    --card-lift:0 2px 4px rgba(0,0,0,.5), 0 18px 40px -24px rgba(0,0,0,.9);
+    --btn-lift:0 6px 16px -8px rgba(0,0,0,.7);
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--wrap-bg); color:var(--wrap-ink);
+    font-family:Roboto,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  svg{ display:block; }
+
+  .studio{ max-width:1180px; margin:0 auto; padding:56px 24px 96px; }
+  .studio-head{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    gap:24px; flex-wrap:wrap; border-bottom:1px solid var(--wrap-line);
+    padding-bottom:28px; margin-bottom:40px;
+  }
+  .kicker{
+    font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--wrap-accent); font-weight:600; margin:0 0 10px;
+  }
+  h1{
+    font-size:clamp(26px,3.4vw,36px); line-height:1.14; font-weight:700;
+    letter-spacing:-.015em; margin:0 0 10px; text-wrap:balance; max-width:660px;
+  }
+  .lede{ font-size:15px; line-height:1.62; color:var(--wrap-ink-muted); max-width:540px; margin:0; }
+  .theme-toggle{
+    font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;
+    font-size:12px; font-weight:600; letter-spacing:.04em;
+    background:var(--wrap-surface); color:var(--wrap-ink);
+    border:1px solid var(--wrap-line); border-radius:10px;
+    padding:10px 14px; cursor:pointer; white-space:nowrap;
+  }
+  .theme-toggle:hover{ border-color:var(--wrap-accent); }
+  .theme-toggle:focus-visible{ outline:2px solid var(--wrap-accent); outline-offset:2px; }
+
+  .compare{ display:grid; grid-template-columns:1fr 1fr; gap:44px; align-items:start; }
+  @media (max-width:880px){ .compare{ grid-template-columns:1fr; } }
+  .column{ display:flex; flex-direction:column; gap:16px; }
+  .col-label{ display:flex; align-items:center; gap:10px; }
+  .col-tag{
+    font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;
+    font-size:11px; letter-spacing:.08em; font-weight:700;
+    padding:5px 10px; border-radius:6px;
+    background:var(--wrap-accent-wash); color:var(--wrap-accent);
+  }
+  .col-tag.muted{ background:transparent; border:1px solid var(--wrap-line); color:var(--wrap-ink-muted); }
+  .col-title{ font-size:15px; font-weight:700; margin:0; }
+  .col-note{ font-size:13px; color:var(--wrap-ink-muted); margin:0; line-height:1.55; }
+
+  .phone-shell{
+    background:var(--wrap-surface); border:1px solid var(--wrap-line);
+    border-radius:32px; padding:13px; box-shadow:0 24px 60px -32px rgba(0,0,0,.4);
+  }
+  .phone-screen{
+    width:100%; max-width:336px; margin:0 auto; aspect-ratio:336/700;
+    background:var(--ground); color:var(--ink); border-radius:22px;
+    overflow:hidden; position:relative; display:flex; flex-direction:column;
+  }
+  .statusbar{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:11px 20px 0; font-size:11px; font-weight:700;
+    font-variant-numeric:tabular-nums;
+  }
+  .screen-body{ flex:1; overflow-y:auto; }
+  .tabbar{
+    position:absolute; left:16px; right:16px; bottom:13px; height:52px;
+    background:var(--card); border-radius:26px;
+    box-shadow:0 2px 4px rgba(20,25,34,.05), 0 14px 30px -18px rgba(20,25,34,.4);
+    display:flex; align-items:center; justify-content:space-around; color:var(--ink-3);
+  }
+  .tabbar .on{ color:var(--accent); }
+
+  /* ================= SOL: mevcut ================= */
+  .b-body{ padding:12px 18px 92px; display:flex; flex-direction:column; gap:15px; }
+  .b-head{ display:flex; align-items:center; gap:11px; }
+  .b-icon{
+    width:44px; height:44px; border-radius:14px; flex-shrink:0;
+    background:var(--accent-wash); color:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .b-title{ font-weight:800; font-size:14px; line-height:1.2; }
+  .b-sub{ font-size:11.5px; color:var(--ink-2); font-weight:500; margin-top:2px; }
+  .b-acts{ margin-left:auto; display:flex; gap:6px; color:var(--ink-2); }
+  .b-strip{ display:flex; gap:7px; overflow-x:auto; padding-bottom:2px; }
+  .b-chip{
+    flex:0 0 auto; width:42px; padding:8px 0; border-radius:14px;
+    background:#E3E8F1; text-align:center; font-weight:800;
+  }
+  .b-chip .d{ font-size:9.5px; color:var(--ink-2); }
+  .b-chip .n{ font-size:14px; margin-top:2px; }
+  .b-chip.sel{ background:var(--accent); color:#fff; }
+  .b-chip.sel .d{ color:rgba(255,255,255,.82); }
+  .b-caption{ font-size:11px; font-weight:800; letter-spacing:.1em; color:var(--ink-2); text-transform:uppercase; }
+  .b-toggle{ display:flex; background:#E3E8F1; border-radius:16px; padding:3px; }
+  .b-toggle span{
+    flex:1; text-align:center; padding:8px 0; font-size:11px; font-weight:800;
+    letter-spacing:.04em; border-radius:13px; color:var(--ink-2);
+  }
+  .b-toggle span.on{ background:#fff; color:var(--accent); box-shadow:0 5px 12px -6px rgba(0,0,0,.3); }
+  .b-card{
+    background:#135BEC; color:#fff; border-radius:20px; padding:17px;
+    position:relative; overflow:hidden; box-shadow:0 16px 32px -18px rgba(19,91,236,.7);
+  }
+  .b-ghost{ position:absolute; right:-18px; bottom:-16px; opacity:.13; }
+  .b-cardtop{ display:flex; justify-content:space-between; align-items:center; }
+  .b-cardlabel{ font-size:11px; font-weight:900; letter-spacing:.1em; opacity:.85; }
+  .b-cardrate{
+    background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.28);
+    border-radius:14px; padding:4px 9px; font-size:11px; font-weight:800;
+    display:flex; align-items:center; gap:4px;
+  }
+  .b-items{ margin-top:13px; display:flex; flex-direction:column; gap:8px; position:relative; }
+  .b-item{
+    background:rgba(255,255,255,.14); border-radius:12px; padding:9px 10px;
+    display:flex; align-items:center; gap:9px; font-size:12.5px; font-weight:700;
+  }
+  .b-item .ic{
+    width:24px; height:24px; border-radius:999px; background:rgba(255,255,255,.18);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .b-rate{
+    background:var(--card); border-radius:16px; padding:12px;
+    display:flex; align-items:center; gap:10px;
+    box-shadow:0 2px 4px rgba(20,25,34,.05), 0 12px 26px -18px rgba(20,25,34,.4);
+  }
+  .b-grad{
+    width:32px; height:32px; border-radius:10px; flex-shrink:0;
+    background:linear-gradient(135deg,#E8A317,#E85D17);
+    display:flex; align-items:center; justify-content:center; color:#fff;
+  }
+  .b-rate .lbl{ font-size:11.5px; font-weight:700; flex:1; }
+
+  /* ================= SAĞ: öneri ================= */
+  .a-body{ padding:0 0 92px; }
+
+  /* --- renkli başlık alanı --- */
+  .hero{
+    background:var(--accent);
+    background-image:
+      radial-gradient(120% 90% at 82% 6%, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 58%),
+      linear-gradient(178deg, var(--accent) 0%, var(--accent-deep) 100%);
+    color:var(--on-accent);
+    border-radius:0 0 26px 26px;
+    padding:12px 18px 44px;
+  }
+  .hero-top{ display:flex; align-items:center; gap:2px; margin-bottom:14px; }
+  .hero-top .spacer{ flex:1; }
+  .h-btn{
+    width:34px; height:34px; border-radius:999px; border:none;
+    background:rgba(255,255,255,.14); color:#fff;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .h-btn + .h-btn{ margin-left:6px; }
+  .h-btn:hover:not(:disabled){ background:rgba(255,255,255,.26); }
+  .h-btn:focus-visible{ outline:2px solid #fff; outline-offset:2px; }
+  .h-btn:disabled{ opacity:.3; cursor:default; }
+
+  .hero-date{ text-align:center; }
+  .hd-eyebrow{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:10.5px; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
+    color:rgba(255,255,255,.78);
+  }
+  .hd-eyebrow .today{
+    background:rgba(255,255,255,.22); border-radius:999px;
+    padding:3px 8px; letter-spacing:.1em; color:#fff;
+  }
+  .hd-date{
+    font-size:27px; font-weight:800; letter-spacing:-.02em;
+    line-height:1.15; margin-top:7px;
+  }
+  .hd-sub{
+    font-size:12.5px; font-weight:500; color:rgba(255,255,255,.76); margin-top:5px;
+  }
+
+  /* --- menü kartı (başlığın üstüne biner) --- */
+  .card{
+    background:var(--card); border-radius:18px;
+    margin:-28px 16px 0; padding:4px 18px;
+    box-shadow:var(--card-lift); position:relative;
+  }
+  .card.is-empty{ padding:38px 20px; text-align:center; }
+  .dish{
+    display:grid; grid-template-columns:1fr auto; align-items:baseline; gap:14px;
+    padding:14px 0; border-bottom:1px solid var(--hair);
+  }
+  .dish .name{ font-size:15.5px; font-weight:500; line-height:1.3; letter-spacing:-.005em; }
+  .dish .kcal{
+    font-size:12px; font-weight:600; color:var(--ink-3);
+    font-variant-numeric:tabular-nums; white-space:nowrap;
+  }
+  .total{
+    display:grid; grid-template-columns:1fr auto; gap:14px; align-items:baseline;
+    padding:13px 0 15px;
+    font-size:10.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-2);
+  }
+  .total .v{
+    font-size:13px; letter-spacing:0; color:var(--ink);
+    font-variant-numeric:tabular-nums; font-weight:700;
+  }
+  .empty-t{ font-size:15px; font-weight:700; }
+  .empty-s{ font-size:13px; color:var(--ink-2); margin-top:7px; line-height:1.5; }
+
+  /* --- puan --- */
+  .score{
+    margin:18px 16px 0; padding:16px 18px;
+    background:var(--card); border-radius:18px;
+    box-shadow:0 2px 4px rgba(20,25,34,.04), 0 12px 28px -20px rgba(20,25,34,.4);
+    display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:14px;
+  }
+  .score-num{
+    font-size:32px; font-weight:800; line-height:.9;
+    font-variant-numeric:tabular-nums lining-nums; letter-spacing:-.035em;
+  }
+  .score-mid .stars{ display:flex; gap:1.5px; }
+  .score-mid .cnt{ font-size:11.5px; color:var(--ink-2); margin-top:5px; font-weight:500; }
+  .score-cta{
+    border:none; background:var(--accent); color:#fff;
+    border-radius:999px; padding:11px 18px; font-size:12.5px; font-weight:700;
+    font-family:inherit; cursor:pointer; white-space:nowrap; box-shadow:var(--btn-lift);
+  }
+  .score-cta:hover{ filter:brightness(1.08); }
+  .score-cta:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+
+  .rv-head{
+    font-size:10.5px; font-weight:700; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--ink-2); padding:24px 18px 12px; margin:0 16px;
+  }
+  .rv{
+    display:flex; gap:12px; margin:0 16px; padding:15px 18px;
+    background:var(--card); border-radius:18px;
+    box-shadow:0 2px 4px rgba(20,25,34,.04), 0 12px 28px -20px rgba(20,25,34,.4);
+  }
+  .rv .av{
+    width:34px; height:34px; border-radius:999px; flex-shrink:0;
+    background:var(--accent-wash); color:var(--accent);
+    display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700;
+  }
+  .rv .who{ font-size:12.5px; font-weight:700; display:flex; align-items:center; gap:7px; }
+  .rv .who .when{ font-weight:400; color:var(--ink-3); font-size:11.5px; }
+  .rv .rvstars{ display:flex; gap:1.5px; margin-top:5px; }
+  .rv .body{ font-size:13px; color:var(--ink-2); margin-top:6px; line-height:1.48; }
+
+  .fade{ animation:rise .3s cubic-bezier(.22,.61,.36,1) both; }
+  @keyframes rise{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:none; } }
+  @media (prefers-reduced-motion:reduce){ .fade{ animation:none; } }
+
+  /* ============ açıklama ============ */
+  .legend{
+    margin-top:20px; padding-top:18px; border-top:1px solid var(--wrap-line);
+    display:flex; flex-direction:column; gap:12px;
+  }
+  .legend-item{ display:flex; gap:11px; font-size:13px; line-height:1.55; }
+  .legend-item b{
+    flex-shrink:0; width:19px; height:19px; border-radius:999px; margin-top:1px;
+    background:var(--wrap-accent-wash); color:var(--wrap-accent);
+    font-size:10.5px; display:flex; align-items:center; justify-content:center;
+    font-family:ui-monospace,monospace; font-weight:700;
+  }
+  .legend-item p{ margin:0; color:var(--wrap-ink-muted); }
+  .legend-item p strong{ color:var(--wrap-ink); font-weight:600; }
+  code{
+    font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;
+    font-size:.88em; background:var(--wrap-accent-wash); color:var(--wrap-accent);
+    padding:1px 5px; border-radius:4px;
+  }
+  .plan{
+    margin-top:60px; background:var(--wrap-surface);
+    border:1px solid var(--wrap-line); border-radius:14px; padding:30px 32px;
+  }
+  .plan h2{ font-size:18px; margin:0 0 8px; }
+  .plan-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:22px; }
+  @media (max-width:780px){ .plan-grid{ grid-template-columns:1fr; } }
+  .plan-grid h3{
+    font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;
+    font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--wrap-accent); margin:0 0 11px; font-weight:700;
+  }
+  .plan-grid p{ font-size:13px; line-height:1.62; color:var(--wrap-ink-muted); margin:0; }
+  .swatches{ display:flex; gap:7px; margin-bottom:12px; }
+  .sw{ width:30px; height:30px; border-radius:7px; border:1px solid var(--wrap-line); }
+  .warn{
+    margin-top:22px; padding:16px 18px; border-radius:10px;
+    background:var(--wrap-accent-wash); border:1px solid var(--wrap-line);
+    font-size:13px; line-height:1.6; color:var(--wrap-ink-muted);
+  }
+  .warn strong{ color:var(--wrap-ink); font-weight:600; }
+</style>
+
+<div class="studio">
+  <div class="studio-head">
+    <div>
+      <p class="kicker">Akdeniz Cep · Yemekhane · 3. tur</p>
+      <h1>Sade düzenin üstüne rengi geri koymak</h1>
+      <p class="lede">Bir önceki turun yapısı duruyor — tek liste, ikon yok, öğün ayrımı yok. Eksik olan renkti: ekran baştan sona beyaz-gri olunca düz duruyordu. Renk geri geldi ama içi haplarla dolu bir kart olarak değil, üstte bir başlık alanı olarak; menü kartı onun üzerine biniyor.</p>
+    </div>
+    <button class="theme-toggle" id="themeToggle"><span id="themeLabel">Koyu temaya geç</span></button>
+  </div>
+
+  <div class="compare">
+    <!-- ============ MEVCUT ============ -->
+    <div class="column">
+      <div class="col-label">
+        <span class="col-tag muted">MEVCUT</span>
+        <p class="col-title">Bugünkü ekran</p>
+      </div>
+      <p class="col-note">Renk var ama her şeyin altında: kartın içinde haplar, hapların içinde ikonlar, arkada dev bir dekor ikonu.</p>
+
+      <div class="phone-shell">
+        <div class="phone-screen">
+          <div class="statusbar"><span>8:52</span><span>LTE</span></div>
+          <div class="screen-body">
+            <div class="b-body">
+              <div class="b-head">
+                <div class="b-icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 3v9a2 2 0 0 0 4 0V3M9 12v9M17 3c-1.5 2-2 4-2 6s.5 3 2 3v9"/></svg></div>
+                <div>
+                  <div class="b-title">Akdeniz Cep</div>
+                  <div class="b-sub">Yemekhane Menüsü</div>
+                </div>
+                <div class="b-acts">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01" stroke-linecap="round"/></svg>
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke-linecap="round"/></svg>
+                </div>
+              </div>
+              <div class="b-strip">
+                <div class="b-chip"><div class="d">CUM</div><div class="n">7</div></div>
+                <div class="b-chip"><div class="d">CMT</div><div class="n">8</div></div>
+                <div class="b-chip"><div class="d">PAZ</div><div class="n">9</div></div>
+                <div class="b-chip"><div class="d">PZT</div><div class="n">10</div></div>
+                <div class="b-chip sel"><div class="d">SAL</div><div class="n">11</div></div>
+                <div class="b-chip"><div class="d">ÇAR</div><div class="n">12</div></div>
+              </div>
+              <div class="b-caption">4 Ağustos Salı</div>
+              <div class="b-toggle"><span class="on">LUNCH</span><span>DINNER</span></div>
+              <div class="b-card">
+                <svg class="b-ghost" width="112" height="112" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 0 0-9 9h18a9 9 0 0 0-9-9zM2 14h20v2H2z"/></svg>
+                <div class="b-cardtop">
+                  <div class="b-cardlabel">LUNCH</div>
+                  <div class="b-cardrate"><svg width="12" height="12" viewBox="0 0 24 24" fill="#FFC107"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>3.0 (1 oy)</div>
+                </div>
+                <div class="b-items">
+                  <div class="b-item"><span class="ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 11h16a8 8 0 0 1-16 0z"/><path d="M12 3v4" stroke-linecap="round"/></svg></span>Düğün Çorbası</div>
+                  <div class="b-item"><span class="ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 12h18M5 16h14M7 8h10" stroke-linecap="round"/></svg></span>Fırında Makarna</div>
+                  <div class="b-item"><span class="ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="8"/></svg></span>Zeytinyağlı Taze Fasulye</div>
+                  <div class="b-item"><span class="ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M5 16h14l-2 5H7z"/><path d="M8 12a4 4 0 0 1 8 0"/></svg></span>Kemalpaşa Tatlısı</div>
+                </div>
+              </div>
+              <div class="b-rate">
+                <div class="b-grad"><svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg></div>
+                <div class="lbl">Bu yemeği puanla</div>
+                <div style="display:flex;gap:1px">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="#E8A317"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="#E8A317"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="#E8A317"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="#D5DAE3"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="#D5DAE3"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+            <svg class="on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 3v9a2 2 0 0 0 4 0V3M9 12v9M17 3c-1.5 2-2 4-2 6s.5 3 2 3v9"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="12" rx="2"/><path d="M4 10h16M7 20h2M15 20h2" stroke-linecap="round"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke-linecap="round"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ ÖNERİ ============ -->
+    <div class="column">
+      <div class="col-label">
+        <span class="col-tag">ÖNERİ</span>
+        <p class="col-title">Başlık alanı + binen kart</p>
+      </div>
+      <p class="col-note">Renk yukarıda, okunacak metin aşağıda. Kart başlığın üstüne binerek derinlik veriyor; menü hâlâ ikonsuz düz bir liste.</p>
+
+      <div class="phone-shell">
+        <div class="phone-screen">
+          <div class="statusbar" style="color:#fff"><span>8:52</span><span>LTE</span></div>
+          <div class="screen-body">
+            <div class="a-body">
+              <div class="hero">
+                <div class="hero-top">
+                  <button class="h-btn" id="prevDay" aria-label="Önceki gün">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>
+                  </button>
+                  <button class="h-btn" id="nextDay" aria-label="Sonraki gün">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>
+                  </button>
+                  <span class="spacer"></span>
+                  <button class="h-btn" aria-label="Yemekhane bilgileri">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01" stroke-linecap="round"/></svg>
+                  </button>
+                  <button class="h-btn" aria-label="Tarih seç">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+                <div class="hero-date" id="heroDate"></div>
+              </div>
+              <div id="stage"></div>
+            </div>
+          </div>
+
+          <div class="tabbar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+            <svg class="on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 3v9a2 2 0 0 0 4 0V3M9 12v9M17 3c-1.5 2-2 4-2 6s.5 3 2 3v9"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="12" rx="2"/><path d="M4 10h16M7 20h2M15 20h2" stroke-linecap="round"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke-linecap="round"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><b>1</b><p><strong>Renk yukarı toplandı.</strong> Mavi artık her yemeğin arkasında değil, yalnızca başlık alanında. Menü beyaz zemine düşünce yemek adları da gerçekten okunuyor — mavi üzerine beyaz metin, siyah üzerine beyazdan her zaman daha yorucudur.</p></div>
+        <div class="legend-item"><b>2</b><p><strong>Kart başlığın üstüne biniyor.</strong> 28 piksellik bindirme ekrana derinlik veriyor; bu, dekor eklemeden "tasarlanmış" hissi veren tek hamle. Gölge de bu yüzden mavi tonlu — kartın maviden yükseldiğini gösteriyor.</p></div>
+        <div class="legend-item"><b>3</b><p><strong>Gün şeridi hâlâ yok.</strong> Oklar bir gün ileri/geri, takvim düğmesi uzak bir tarihe. Tarih başlıkta tek yerde yazıyor, dört yerde değil.</p></div>
+        <div class="legend-item"><b>4</b><p><strong>İkonlar ve öğün ayrımı hâlâ yok.</strong> Menü düz bir liste, satırlar ince çizgiyle ayrılıyor, kalori sağda tabular sütun ve altında toplam.</p></div>
+        <div class="legend-item"><b>5</b><p><strong>Puanlama ayrı bir kart oldu</strong> ve "Puanla" düğmesi artık dolu mavi — sayfadaki tek birincil eylem olduğu için görünür olması gerekiyor. Gradyanlı ikon kutusu yok.</p></div>
+        <div class="legend-item"><b>6</b><p><strong>Gün değişince kartlar aşağıdan yükseliyor</strong> (300 ms). Oklarla dene: 5 Ağustos menüsüz günü, 3 Ağustos henüz puanlanmamış günü gösteriyor.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="plan">
+    <h2>Tasarım notu</h2>
+    <p class="lede">Yeni yazı tipi yok, yeni renk yok. <code>theme.dart</code>'taki mavi ve Roboto olduğu gibi kalıyor.</p>
+    <div class="plan-grid">
+      <div>
+        <h3>Renk</h3>
+        <div class="swatches">
+          <div class="sw" style="background:#135BEC"></div>
+          <div class="sw" style="background:#0B3FA8"></div>
+          <div class="sw" style="background:#FFFFFF"></div>
+          <div class="sw" style="background:#F1F4F9"></div>
+          <div class="sw" style="background:#B4750B"></div>
+        </div>
+        <p>Mavi tek bir yerde ve dolu kullanılıyor: başlık alanı. Aynı rengin koyusu (<code>#0B3FA8</code>) yalnızca dikey bir derinlik için, çok hafif. Yıldız sarısı beyaz üzerinde okunabilirlik eşiğine çekildi.</p>
+      </div>
+      <div>
+        <h3>Tipografi</h3>
+        <p>Roboto. Tarih 27px/800 tek vurgu; yemek adları 15,5px/500 — okunacak asıl metin bu, kalın değil <em>net</em> olması gerekiyor. Etiketler 10,5px, geniş harf aralıklı. Mevcut ekranda 800–900 ağırlık altı ayrı yerde; burada bir yerde.</p>
+      </div>
+      <div>
+        <h3>Düzen</h3>
+        <p>Üç kart: menü, puan, yorum. Hepsi 18px yarıçapta, hepsi aynı gölgede, hepsi 16px kenar boşluğunda. Kart içinde kart yok, hap yok. Ekrandaki her öğe ya veri ya düğme.</p>
+      </div>
+    </div>
+
+    <div class="warn">
+      <strong>Uygulama sonucu:</strong> öğün ayrımı kalktığı için puanlama anahtarı <code>${date}_${mealName}</code> yerine <code>${date}</code> olur — <code>cafeteria_service.dart</code>'taki <code>rateMeal</code>, <code>getReviews</code> ve <code>voteReview</code> sadeleşir, ama mevcut puanlar yeni anahtarla eşleşmez. RTDB'de de <code>cafeteria_menu/{tarih}</code> altındaki <code>lunch</code>/<code>dinner</code> düğümlerinin tek listeye inmesi gerekir.
+    </div>
+  </div>
+</div>
+
+<script>
+  var root = document.documentElement;
+  var tgl = document.getElementById('themeToggle');
+  var lbl = document.getElementById('themeLabel');
+  var dark = false;
+  tgl.addEventListener('click', function(){
+    dark = !dark;
+    root.setAttribute('data-theme', dark ? 'dark' : 'light');
+    lbl.textContent = dark ? 'Açık temaya geç' : 'Koyu temaya geç';
+  });
+
+  var days = [
+    { date:'3 Ağustos', day:'Pazartesi', now:false,
+      items:[['Mercimek Çorbası',180],['Etli Kuru Fasulye',520],['Pirinç Pilavı',310],['Turşu',25]],
+      avg:null, count:0, review:null },
+    { date:'4 Ağustos', day:'Salı', now:true,
+      items:[['Düğün Çorbası',210],['Fırında Makarna',480],['Zeytinyağlı Taze Fasulye',190],['Kemalpaşa Tatlısı',340]],
+      avg:3.0, count:1,
+      review:{ who:'Arda Akıncı', when:'3 gün önce', stars:3,
+               text:'Makarnası beklediğimden iyiydi, çorba biraz tuzluydu.' } },
+    { date:'5 Ağustos', day:'Çarşamba', now:false,
+      items:[], avg:null, count:0, review:null }
+  ];
+
+  var i = 1;
+  var stage = document.getElementById('stage');
+  var heroDate = document.getElementById('heroDate');
+  var prev = document.getElementById('prevDay');
+  var next = document.getElementById('nextDay');
+
+  function star(on){
+    return '<svg width="15" height="15" viewBox="0 0 24 24" fill="' +
+      (on ? 'var(--gold)' : 'var(--line)') +
+      '"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>';
+  }
+  function stars(n){
+    var s = '';
+    for (var k = 1; k <= 5; k++) s += star(k <= Math.round(n));
+    return s;
+  }
+  function tr(n){ return n.toLocaleString('tr-TR'); }
+
+  function render(){
+    var d = days[i];
+    prev.disabled = i === 0;
+    next.disabled = i === days.length - 1;
+
+    heroDate.innerHTML =
+      '<span class="hd-eyebrow">' +
+        d.day.toUpperCase() +
+        (d.now ? '<span class="today">Bugün</span>' : '') +
+      '</span>' +
+      '<div class="hd-date">' + d.date + '</div>' +
+      '<div class="hd-sub">' +
+        (d.items.length ? d.items.length + ' çeşit · Günün menüsü' : 'Menü girilmemiş') +
+      '</div>';
+
+    var html = '';
+
+    if (d.items.length === 0){
+      html =
+        '<div class="card is-empty">' +
+          '<div class="empty-t">Menü henüz girilmemiş</div>' +
+          '<div class="empty-s">' + d.date + ' için üniversite bir menü eklemedi.<br>Oklarla başka bir güne geçebilirsin.</div>' +
+        '</div>';
+      stage.className = 'fade';
+      stage.innerHTML = html;
+      void stage.offsetWidth;
+      return;
+    }
+
+    var total = d.items.reduce(function(s,it){ return s + it[1]; }, 0);
+
+    html +=
+      '<div class="card">' +
+        d.items.map(function(it){
+          return '<div class="dish"><span class="name">' + it[0] + '</span>' +
+                 '<span class="kcal">' + tr(it[1]) + ' kcal</span></div>';
+        }).join('') +
+        '<div class="total"><span>Toplam</span><span class="v">' + tr(total) + ' kcal</span></div>' +
+      '</div>';
+
+    if (d.avg === null){
+      html +=
+        '<div class="score">' +
+          '<div class="score-mid" style="grid-column:1/3">' +
+            '<div class="stars">' + stars(0) + '</div>' +
+            '<div class="cnt">Henüz puan verilmedi</div>' +
+          '</div>' +
+          '<button class="score-cta">İlk oyu sen ver</button>' +
+        '</div>';
+    } else {
+      html +=
+        '<div class="score">' +
+          '<div class="score-num">' + d.avg.toFixed(1).replace('.', ',') + '</div>' +
+          '<div class="score-mid">' +
+            '<div class="stars">' + stars(d.avg) + '</div>' +
+            '<div class="cnt">' + d.count + ' öğrenci puanladı</div>' +
+          '</div>' +
+          '<button class="score-cta">Puanla</button>' +
+        '</div>';
+    }
+
+    if (d.review){
+      html +=
+        '<div class="rv-head">Yorumlar</div>' +
+        '<div class="rv">' +
+          '<div class="av">' + d.review.who.charAt(0) + '</div>' +
+          '<div>' +
+            '<div class="who">' + d.review.who + '<span class="when">' + d.review.when + '</span></div>' +
+            '<div class="rvstars">' + stars(d.review.stars) + '</div>' +
+            '<div class="body">' + d.review.text + '</div>' +
+          '</div>' +
+        '</div>';
+    }
+
+    stage.className = 'fade';
+    stage.innerHTML = html;
+    void stage.offsetWidth;
+  }
+
+  prev.addEventListener('click', function(){ if (i > 0){ i--; render(); } });
+  next.addEventListener('click', function(){ if (i < days.length - 1){ i++; render(); } });
+  render();
+</script>

@@ -49,7 +49,8 @@ Features: auth, board, cafeteria, community, home, map, ring, student_events.
 - Firestore holds users, clubs, club-events, announcements, student-events, cafeteria_ratings.
 - Auth: email+password only, restricted to `@ogr.akdeniz.edu.tr` domain. No Google Sign-In.
 - Club event creation is restricted to the club's `adminUid` via Firestore Security Rules. Student events (`student-events`) can be created by any logged-in student; edit/delete restricted to the `authorUid` match.
-- Meal ratings use Firestore transactions for atomic `avgRating`/`ratingCount` updates — never written directly from the client. One rating per user per meal per day enforced by checking for the existence of the `ratings/{uid}` subcollection doc before allowing a new one.
+- Cafeteria has **no meal-type split** (no lunch/dinner). `cafeteria_menu/{date}` in Realtime DB is a flat array; `cafeteria_ratings/{date}` in Firestore is keyed by the date itself. `DailyMenu.fromRtdb` still reads the pre-split `{lunch: [...], dinner: [...]}` shape and merges it into one list, so production data can migrate late.
+- Meal ratings use Firestore transactions for atomic `avgRating`/`ratingCount` updates — never written directly from the client. One rating per user per day enforced by checking for the existence of the `ratings/{uid}` subcollection doc before allowing a new one.
 - OBS page is a `WebView` — no native OBS integration. Campus map uses Google Maps with static markers.
 
 ## Conventions

@@ -1,28 +1,17 @@
 import 'package:flutter/material.dart';
 
 class RateMealSheet extends StatefulWidget {
-  final int initialRating;
   final void Function(int rating, String comment) onSubmit;
 
-  const RateMealSheet({
-    super.key,
-    required this.initialRating,
-    required this.onSubmit,
-  });
+  const RateMealSheet({super.key, required this.onSubmit});
 
   @override
   State<RateMealSheet> createState() => _RateMealSheetState();
 }
 
 class _RateMealSheetState extends State<RateMealSheet> {
-  late int _rating;
+  int _rating = 0;
   final _commentController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _rating = widget.initialRating;
-  }
 
   @override
   void dispose() {
@@ -46,7 +35,7 @@ class _RateMealSheetState extends State<RateMealSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Bu yemeği puanla',
+            'Bugünün menüsünü puanla',
             style: Theme.of(
               context,
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),

@@ -228,6 +228,38 @@ class AppTheme {
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
+      datePickerTheme: DatePickerThemeData(
+        backgroundColor: colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        headerBackgroundColor: colorScheme.primary,
+        headerForegroundColor: colorScheme.onPrimary,
+        headerHeadlineStyle: textTheme.headlineSmall?.copyWith(
+          color: colorScheme.onPrimary,
+          fontWeight: FontWeight.w800,
+        ),
+        headerHelpStyle: textTheme.labelMedium?.copyWith(
+          color: colorScheme.onPrimary.withValues(alpha: 0.82),
+          letterSpacing: 1.2,
+        ),
+        weekdayStyle: textTheme.labelMedium?.copyWith(
+          color: colorScheme.onSurfaceVariant,
+          fontWeight: FontWeight.w800,
+        ),
+        dayStyle: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+        todayBorder: BorderSide(color: colorScheme.primary, width: 1.4),
+        dividerColor: Colors.transparent,
+      ),
+      timePickerTheme: TimePickerThemeData(
+        backgroundColor: colorScheme.surface,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        dialBackgroundColor: colorScheme.surfaceContainer,
+        hourMinuteShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
     );
   }
 

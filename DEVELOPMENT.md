@@ -298,27 +298,34 @@ student-events/{seventId}
   description: string
   createdAt: timestamp
 
-cafeteria_ratings/{date_mealKey}        # örn: "2024-01-15_tavuk-sis"
-  mealName: string
+cafeteria_ratings/{date}                # döküman kimliği tarihin kendisi: "2026-08-04"
   date: string                          # "YYYY-MM-DD"
-  avgRating: number                     # Cloud Function ile güncellenir
-  ratingCount: number                   # Cloud Function ile güncellenir
+  avgRating: number                     # client transaction ile güncellenir
+  ratingCount: number                   # client transaction ile güncellenir
 
   ratings/{uid}                         # alt koleksiyon — kullanıcı başına 1 döküman
     rating: number                      # 1–5
     comment: string                     # opsiyonel, boş string olabilir
     authorName: string                  # yazma anında AppUser.name'den denormalize edilir
+    votes: map<uid, number>             # yorum başına faydalı(1)/faydasız(-1) oyları
     createdAt: timestamp
 ```
+
+> **Öğün ayrımı yoktur.** Puanlama gün bazlıdır — bir öğrenci bir güne yalnızca
+> bir kez oy verebilir. Döküman kimliği doğrudan tarihtir; `users/{uid}.ratedMealIds`
+> de bu tarihleri tutar.
 
 ### Realtime Database
 
 ```json
 {
   "cafeteria_menu": {
-    "2024-01-15": {
-      "lunch": ["Mercimek çorbası", "Tavuk şiş", "Pilav"]
-    }
+    "2026-08-04": [
+      "Düğün Çorbası - 210 kcal",
+      "Fırında Makarna - 480 kcal",
+      "Zeytinyağlı Taze Fasulye",
+      "Kemalpaşa Tatlısı"
+    ]
   },
   "ring_stops": {
     "rektorluk": { "name": "Rektörlük", "lat": 36.8969, "lng": 30.6364 },
@@ -339,6 +346,19 @@ cafeteria_ratings/{date_mealKey}        # örn: "2024-01-15_tavuk-sis"
   }
 }
 ```
+
+#### Yemekhane veri kuralları
+
+- `cafeteria_menu/{tarih}` **düz bir dizidir**, öğün alt düğümü yoktur.
+  Üniversite gün başına tek bir liste yayınlar.
+- Kalori isteğe bağlıdır ve satırın sonuna `- 450 kcal` biçiminde yazılır.
+  Girilmeyen satırlar kalori sütununda boş kalır; hiçbiri girilmemişse toplam
+  satırı hiç gösterilmez.
+- `DailyMenu.fromRtdb` eski `{"lunch": [...], "dinner": [...]}` biçimini de
+  okur ama **yalnızca ilk öğünü** alır (kahvaltı < öğle < akşam sırasıyla).
+  İkisini birleştirmek günün menüsünü iki katına çıkarıp yanıltıcı oluyordu.
+  Bu yalnızca veri düz diziye taşınana kadar geçerli bir ara çözümdür; taşıma
+  bittiğinde geriye dönük destek kaldırılabilir.
 
 #### Ring veri kuralları
 

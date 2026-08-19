@@ -3,9 +3,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 import '../../../firebase_options.dart';
+import '../models/daily_menu.dart';
 import '../models/meal_rating.dart';
 import '../models/meal_review.dart';
-import '../models/menu_item.dart';
 
 class CafeteriaService {
   final _db = FirebaseFirestore.instance;
@@ -14,38 +14,28 @@ class CafeteriaService {
     databaseURL: DefaultFirebaseOptions.databaseURL,
   ).ref();
 
-  Stream<List<MenuItem>> getMenu(String date) {
-    return _rtdb.child('cafeteria_menu').child(date).onValue.map((event) {
-      final data = event.snapshot.value as Map<dynamic, dynamic>?;
-      if (data == null) return <MenuItem>[];
+  /// Ogun ayrimi yoktur: `cafeteria_menu/{date}` gunun tek listesidir.
+  Stream<DailyMenu> getMenu(String date) {
+    return _rtdb
+        .child('cafeteria_menu')
+        .child(date)
+        .onValue
+        .map((event) => DailyMenu.fromRtdb(date, event.snapshot.value));
+  }
 
-      return data.entries.map((entry) {
-        return MenuItem(
-          date: date,
-          mealType: entry.key as String,
-          items: List<String>.from(entry.value as List),
-        );
-      }).toList();
+  Stream<MealRating?> getRating(String date) {
+    return _db.collection('cafeteria_ratings').doc(date).snapshots().map((
+      snap,
+    ) {
+      if (!snap.exists) return null;
+      return MealRating.fromJson(snap.data()!..['date'] = snap.id);
     });
   }
 
-  Stream<List<MealRating>> getRatings(String date) {
+  Stream<List<MealReview>> getReviews(String date) {
     return _db
         .collection('cafeteria_ratings')
-        .where('date', isEqualTo: date)
-        .snapshots()
-        .map(
-          (snap) => snap.docs
-              .map((d) => MealRating.fromJson(d.data()..['id'] = d.id))
-              .toList(),
-        );
-  }
-
-  Stream<List<MealReview>> getReviews(String date, String mealName) {
-    final docId = '${date}_$mealName';
-    return _db
-        .collection('cafeteria_ratings')
-        .doc(docId)
+        .doc(date)
         .collection('ratings')
         .orderBy('createdAt', descending: true)
         .snapshots()
@@ -66,7 +56,6 @@ class CafeteriaService {
   /// veya 0 (oyu geri al) olabilir. Kullanıcı kendi yorumuna oy veremez.
   Future<void> voteReview({
     required String date,
-    required String mealName,
     required String reviewUid,
     required String voterUid,
     required int value,
@@ -75,10 +64,9 @@ class CafeteriaService {
       throw Exception('Kendi yorumunuza oy veremezsiniz.');
     }
 
-    final docId = '${date}_$mealName';
     final reviewRef = _db
         .collection('cafeteria_ratings')
-        .doc(docId)
+        .doc(date)
         .collection('ratings')
         .doc(reviewUid);
 
@@ -93,31 +81,29 @@ class CafeteriaService {
     }
   }
 
-  /// Kullanicinin ayni gune ait rating'i varsa islem reddedilir.
+  /// Kullanicinin ayni gune ait puani varsa islem reddedilir.
   /// avgRating ve ratingCount atomik olarak transaction ile guncellenir.
   Future<void> rateMeal({
     required String uid,
     required String date,
-    required String mealName,
     required int rating,
     required String authorName,
     String comment = '',
   }) async {
-    final docId = '${date}_$mealName';
     final ratingDocRef = _db
         .collection('cafeteria_ratings')
-        .doc(docId)
+        .doc(date)
         .collection('ratings')
         .doc(uid);
 
     try {
       final existingRating = await ratingDocRef.get();
       if (existingRating.exists) {
-        throw Exception('Bu yemege bugun zaten oy verdiniz.');
+        throw Exception('Bu günün menüsüne zaten oy verdiniz.');
       }
 
       await _db.runTransaction((transaction) async {
-        final mealRef = _db.collection('cafeteria_ratings').doc(docId);
+        final mealRef = _db.collection('cafeteria_ratings').doc(date);
         final mealSnap = await transaction.get(mealRef);
 
         double currentAvg = 0;
@@ -132,7 +118,6 @@ class CafeteriaService {
         final newAvg = ((currentAvg * currentCount) + rating) / newCount;
 
         transaction.set(mealRef, {
-          'mealName': mealName,
           'date': date,
           'avgRating': newAvg,
           'ratingCount': newCount,
@@ -141,7 +126,6 @@ class CafeteriaService {
         transaction.set(ratingDocRef, {
           'uid': uid,
           'date': date,
-          'mealName': mealName,
           'rating': rating,
           'comment': comment,
           'authorName': authorName,
@@ -149,11 +133,12 @@ class CafeteriaService {
         });
 
         transaction.set(_db.collection('users').doc(uid), {
-          'ratedMealIds': FieldValue.arrayUnion([docId]),
+          'ratedMealIds': FieldValue.arrayUnion([date]),
         }, SetOptions(merge: true));
       });
     } on FirebaseException catch (e) {
       throw Exception('Oy verilemedi: ${e.message}');
     }
   }
+
 }

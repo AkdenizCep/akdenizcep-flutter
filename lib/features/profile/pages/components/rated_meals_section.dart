@@ -6,18 +6,6 @@ import '../../../../shared/utils/error_message.dart';
 import '../../models/profile_rated_meal.dart';
 import '../../providers/profile_provider.dart';
 
-String _formatMealName(String raw) {
-  switch (raw.toLowerCase()) {
-    case 'lunch':
-      return 'Öğle Yemeği';
-    case 'dinner':
-      return 'Akşam Yemeği';
-    case 'breakfast':
-      return 'Kahvaltı';
-  }
-  return raw;
-}
-
 class RatedMealsSection extends ConsumerWidget {
   const RatedMealsSection({super.key});
 
@@ -91,7 +79,9 @@ class _RatedMealTile extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  _formatMealName(meal.mealName),
+                  parsedDate != null
+                      ? DateFormat('d MMMM yyyy', 'tr').format(parsedDate)
+                      : meal.date,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -101,16 +91,15 @@ class _RatedMealTile extends StatelessWidget {
                   ),
                 ),
               ),
-              Text(
-                parsedDate != null
-                    ? DateFormat('d MMMM yyyy', 'tr').format(parsedDate)
-                    : meal.date,
-                style: TextStyle(
-                  color: colorScheme.onSurfaceVariant,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+              if (parsedDate != null)
+                Text(
+                  DateFormat('EEEE', 'tr').format(parsedDate),
+                  style: TextStyle(
+                    color: colorScheme.onSurfaceVariant,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
             ],
           ),
           const SizedBox(height: 6),
