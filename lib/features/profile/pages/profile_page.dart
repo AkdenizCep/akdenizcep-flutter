@@ -43,7 +43,7 @@ class ProfilePage extends ConsumerWidget {
               children: [
                 ProfileInfoCard(user: user),
                 const SizedBox(height: 28),
-                _SectionTitle(title: 'Takip Edilen Kulüpler'),
+                _SectionTitle(title: 'Takip Edilen Topluluklar'),
                 const SizedBox(height: 12),
                 const FollowedClubsSection(),
                 const SizedBox(height: 28),

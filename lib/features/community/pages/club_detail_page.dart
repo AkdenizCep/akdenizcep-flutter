@@ -436,7 +436,7 @@ class _EventsTab extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: Text(
-          'Bu kulübün henüz etkinliği yok.',
+          'Bu topluluğun henüz etkinliği yok.',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
@@ -449,8 +449,7 @@ class _EventsTab extends StatelessWidget {
         for (final event in events) ...[
           ClubEventRow(
             event: event,
-            onTap: () =>
-                context.go('/home/community/$clubId/event/${event.id}'),
+            onTap: () => context.push('/club/$clubId/event/${event.id}'),
           ),
           const SizedBox(height: 12),
         ],
@@ -482,7 +481,7 @@ class _AboutTab extends StatelessWidget {
         children: [
           Text(
             club.description.isEmpty
-                ? 'Bu kulüp henüz bir tanıtım metni eklemedi.'
+                ? 'Bu topluluk henüz bir tanıtım metni eklemedi.'
                 : club.description,
             style: textTheme.bodyLarge?.copyWith(fontSize: 15, height: 1.5),
           ),

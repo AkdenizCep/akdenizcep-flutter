@@ -61,7 +61,7 @@ class EventFeedCard extends ConsumerWidget {
                   Positioned(
                     right: 14,
                     top: 14,
-                    child: _SourceBadge(isClubEvent: event.isClubEvent),
+                    child: _CategoryBadge(category: category),
                   ),
                 ],
               ),
@@ -177,32 +177,26 @@ class _DateBadge extends StatelessWidget {
   }
 }
 
-class _SourceBadge extends StatelessWidget {
-  final bool isClubEvent;
+class _CategoryBadge extends StatelessWidget {
+  final EventCategory category;
 
-  const _SourceBadge({required this.isClubEvent});
+  const _CategoryBadge({required this.category});
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: isClubEvent
-            ? colorScheme.primaryContainer
-            : colorScheme.secondaryContainer,
+        color: category.color,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
-        isClubEvent ? 'KULÜP' : 'ÖĞRENCİ',
+        category.label.toUpperCase(),
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
           fontSize: 10,
           letterSpacing: 0.4,
           fontWeight: FontWeight.w800,
-          color: isClubEvent
-              ? colorScheme.onPrimaryContainer
-              : colorScheme.onSecondaryContainer,
+          color: Colors.white,
         ),
       ),
     );
@@ -225,7 +219,7 @@ class _AuthorRow extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final subtitle = event.isClubEvent
-        ? 'Kulüp · ${relativeTime(event.createdAt)}'
+        ? 'Topluluk · ${relativeTime(event.createdAt)}'
         : 'Öğrenci paylaşımı · ${relativeTime(event.createdAt)}';
 
     return GestureDetector(

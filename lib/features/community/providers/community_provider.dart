@@ -20,3 +20,24 @@ final clubEventsProvider = StreamProvider.family<List<ClubEvent>, String>((
 ) {
   return ref.watch(communityServiceProvider).getClubEvents(clubId);
 });
+
+final clubSearchQueryProvider = StateProvider<String>((ref) => '');
+final clubCategoryFilterProvider = StateProvider<String>((ref) => 'Tümü');
+
+final filteredClubsProvider = Provider<AsyncValue<List<Club>>>((ref) {
+  final clubsAsync = ref.watch(clubsProvider);
+  final query = ref.watch(clubSearchQueryProvider).trim().toLowerCase();
+  final category = ref.watch(clubCategoryFilterProvider);
+
+  return clubsAsync.whenData((clubs) {
+    return clubs.where((club) {
+      final matchesQuery = query.isEmpty ||
+          club.name.toLowerCase().contains(query) ||
+          club.description.toLowerCase().contains(query) ||
+          club.category.toLowerCase().contains(query);
+      final matchesCategory = category == 'Tümü' || club.category == category;
+      return matchesQuery && matchesCategory;
+    }).toList();
+  });
+});
+

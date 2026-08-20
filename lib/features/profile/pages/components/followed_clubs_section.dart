@@ -18,7 +18,7 @@ class FollowedClubsSection extends ConsumerWidget {
       data: (clubs) {
         if (clubs.isEmpty) {
           return Text(
-            'Henüz kulüp takip etmiyorsun.',
+            'Henüz topluluk takip etmiyorsun.',
             style: TextStyle(
               color: colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
@@ -71,7 +71,7 @@ class _ClubTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         child: InkWell(
           borderRadius: BorderRadius.circular(18),
-          onTap: () => context.go('/home/community/${club.id}'),
+          onTap: () => context.push('/club/${club.id}'),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Row(

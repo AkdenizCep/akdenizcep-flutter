@@ -40,7 +40,9 @@ class StudentEventsPage extends ConsumerWidget {
               const SliverToBoxAdapter(child: SourceFilterRow()),
               SliverToBoxAdapter(
                 child: _ResultRow(
-                  categoryLabel: selectedCategory.label,
+                  categoryLabel: selectedCategory.id == EventCategory.all.id
+                      ? 'Tüm kategoriler'
+                      : selectedCategory.label,
                   count: events.length,
                 ),
               ),
@@ -60,11 +62,9 @@ class StudentEventsPage extends ConsumerWidget {
                       final event = events[index];
                       return EventFeedCard(
                         event: event,
-                        onTap: () => context.go(_detailRoute(event.ref)),
+                        onTap: () => context.push(_detailRoute(event.ref)),
                         onAuthorTap: event.isClubEvent
-                            ? () => context.go(
-                                '/home/community/${event.clubId}',
-                              )
+                            ? () => context.push('/club/${event.clubId}')
                             : null,
                       );
                     },
@@ -80,8 +80,8 @@ class StudentEventsPage extends ConsumerWidget {
   }
 
   String _detailRoute(EventRef ref) => ref.clubId != null
-      ? '/home/community/${ref.clubId}/event/${ref.eventId}'
-      : '/student-events/${ref.eventId}';
+      ? '/club/${ref.clubId}/event/${ref.eventId}'
+      : '/event/${ref.eventId}';
 }
 
 class _ResultRow extends StatelessWidget {

@@ -52,7 +52,7 @@ class CommunityService {
 
       await batch.commit();
     } on FirebaseException catch (e) {
-      throw Exception('Kulup takip edilemedi: ${e.message}');
+      throw Exception('Topluluk takip edilemedi: ${e.message}');
     }
   }
 
@@ -69,7 +69,7 @@ class CommunityService {
 
       await batch.commit();
     } on FirebaseException catch (e) {
-      throw Exception('Kulup takipten cikilamadi: ${e.message}');
+      throw Exception('Topluluk takipten cikilamadi: ${e.message}');
     }
   }
 }
