@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../shared/components/akdeniz_cep_logo.dart';
 import '../../../shared/utils/error_message.dart';
 import '../providers/auth_provider.dart';
 
@@ -109,12 +110,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    'Akdeniz Cep',
-                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  const AkdenizCepLogo(fontSize: 34),
                   const SizedBox(height: 8),
                   Text(
                     'Akdeniz Universitesi Ogrenci Uygulamasi',
