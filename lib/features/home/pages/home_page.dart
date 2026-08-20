@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../shared/components/akdeniz_cep_logo.dart';
+import '../../../shared/components/app_top_bar.dart';
 import '../../../shared/components/error_view.dart';
 import '../../../shared/components/loading_overlay.dart';
 import '../../../shared/providers/nav_visibility_provider.dart';
@@ -191,7 +193,7 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
                             Icons.calendar_month_outlined,
                             3,
                           ),
-                          _navItem(context, Icons.menu, Icons.menu_outlined, 4),
+                          _navItem(context, Icons.map, Icons.map_outlined, 4),
                         ],
                       ),
                     ],
@@ -258,47 +260,17 @@ class HomeContentPage extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
+              // Header — Home'da bilinçli istisna: logo ve avatar tek satırda,
+              // sayfa adı yok.
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 12, 0),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundColor: Theme.of(
-                            context,
-                          ).colorScheme.primaryContainer,
-                          child: Icon(
-                            Icons.school,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          'Akdeniz Cep',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    GestureDetector(
-                      onTap: () => context.go('/home/profile'),
-                      child: CircleAvatar(
-                        radius: 20,
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.primaryContainer,
-                        child: Text(
-                          userInitial,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
+                    const AkdenizCepLogo(fontSize: 24),
+                    AppTopBarAction.avatar(
+                      initial: userInitial,
+                      onTap: () => context.push('/profile'),
                     ),
                   ],
                 ),
@@ -505,8 +477,7 @@ class HomeContentPage extends ConsumerWidget {
                         final event = events[index];
                         return EventCard(
                           event: event,
-                          onTap: () =>
-                              context.go('/student-events/${event.id}'),
+                          onTap: () => context.push('/event/${event.id}'),
                         );
                       },
                     ),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../app/theme.dart';
+import '../../../../shared/components/akdeniz_cep_logo.dart';
+import '../../../../shared/components/app_top_bar.dart';
 
-/// Sayfanin ust basligi: gun gezinme oklari, tarih ve yardimci dugmeler.
-/// Menu karti bu alanin uzerine biner — bindirme payi [overlap] kadardir.
+/// Sayfanin ust basligi: standart [AppTopBar] (gradyan uzerinde beyaz
+/// varyant) + gun gezinme oklari/tarih. Menu karti bu alanin uzerine biner
+/// — bindirme payi [overlap] kadardir.
 class CafeteriaHero extends StatelessWidget {
   static const overlap = 28.0;
 
@@ -30,19 +32,21 @@ class CafeteriaHero extends StatelessWidget {
 
   bool get _isToday => DateUtils.isSameDay(date, DateTime.now());
 
-  /// Baslik zemini her iki temada da marka mavisidir — `colorScheme.primary`
-  /// koyu temada acik maviye donuyor ve uzerindeki beyaz metni okunmaz
-  /// birakiyor. Koyulastirma siyaha karistirarak degil HSL parlakligi
+  /// Baslik zemini logo paletinden turetilir — ustte camgobegi (koyulastirilmis),
+  /// altta logo laciverti. Koyulastirma siyaha karistirarak degil HSL parlakligi
   /// dusurulerek yapiliyor; siyaha karistirmak rengi soluklastiriyor.
   static ({Color top, Color bottom}) _gradientColors(bool isDark) {
-    final hsl = HSLColor.fromColor(AppTheme.primaryColor);
-    Color shade(double delta) =>
-        hsl.withLightness((hsl.lightness - delta).clamp(0.0, 1.0)).toColor();
+    final cyanHsl = HSLColor.fromColor(AkdenizCepLogo.defaultCyan);
+    final navyHsl = HSLColor.fromColor(AkdenizCepLogo.defaultNavy);
 
-    return (
-      top: isDark ? shade(0.10) : AppTheme.primaryColor,
-      bottom: shade(isDark ? 0.26 : 0.16),
-    );
+    final top = cyanHsl
+        .withLightness((cyanHsl.lightness - (isDark ? 0.14 : 0.08)).clamp(0.0, 1.0))
+        .toColor();
+    final bottom = navyHsl
+        .withLightness((navyHsl.lightness - (isDark ? 0.05 : 0.0)).clamp(0.0, 1.0))
+        .toColor();
+
+    return (top: top, bottom: bottom);
   }
 
   @override
@@ -76,32 +80,31 @@ class CafeteriaHero extends StatelessWidget {
         ),
         child: SafeArea(
           bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(14, 6, 14, 16 + overlap),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    _HeroButton(
-                      icon: Icons.info_outline_rounded,
-                      tooltip: 'Yemekhane bilgileri',
-                      onPressed: onShowInfo,
-                    ),
-                    const SizedBox(width: 6),
-                    _HeroButton(
-                      icon: Icons.calendar_month_rounded,
-                      tooltip: 'Tarih seç',
-                      onPressed: onPickDate,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AppTopBar(
+                title: 'Yemekhane',
+                onGradient: true,
+                actions: [
+                  AppTopBarAction.translucent(
+                    icon: Icons.info_outline_rounded,
+                    tooltip: 'Yemekhane bilgileri',
+                    onTap: onShowInfo,
+                  ),
+                  AppTopBarAction.translucent(
+                    icon: Icons.calendar_month_rounded,
+                    tooltip: 'Tarih seç',
+                    onTap: onPickDate,
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 26, 14, 16 + overlap),
                 // Gun gezinme oklari dogrudan tarihin yaninda — ayri bir
                 // arac cubugu satiri yerine hangi metni degistirdiklerini
                 // gosteriyorlar.
-                Row(
+                child: Row(
                   children: [
                     _HeroButton(
                       icon: Icons.chevron_left_rounded,
@@ -122,8 +125,8 @@ class CafeteriaHero extends StatelessWidget {
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
