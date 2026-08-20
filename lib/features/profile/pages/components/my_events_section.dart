@@ -71,7 +71,7 @@ class _EventTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         child: InkWell(
           borderRadius: BorderRadius.circular(18),
-          onTap: () => context.go('/student-events/${event.id}'),
+          onTap: () => context.push('/event/${event.id}'),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Row(

@@ -65,6 +65,46 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/verify-email',
         builder: (context, state) => const VerifyEmailPage(),
       ),
+      // Birden fazla sekmeden açılabilen detay sayfaları — kök navigator'a
+      // eklenir ki geri tuşu, hangi sekmeden açıldığına bakmaksızın direkt
+      // açılan sayfayı kapatıp kaldığımız yere dönsün.
+      GoRoute(
+        path: '/club/:clubId',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) =>
+            ClubDetailPage(clubId: state.pathParameters['clubId']!),
+        routes: [
+          GoRoute(
+            path: 'event/:eventId',
+            parentNavigatorKey: _rootNavigatorKey,
+            builder: (context, state) => EventDetailPage(
+              clubId: state.pathParameters['clubId']!,
+              eventId: state.pathParameters['eventId']!,
+            ),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/event/:eventId',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) =>
+            StudentEventDetailPage(eventId: state.pathParameters['eventId']!),
+      ),
+      GoRoute(
+        path: '/community',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const CommunityPage(),
+      ),
+      GoRoute(
+        path: '/board',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const BoardPage(),
+      ),
+      GoRoute(
+        path: '/profile',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const ProfilePage(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             HomePage(navigationShell: navigationShell),
@@ -76,37 +116,6 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/home',
                 builder: (context, state) => const HomeContentPage(),
-                routes: [
-                  GoRoute(
-                    path: 'community',
-                    builder: (context, state) => const CommunityPage(),
-                    routes: [
-                      GoRoute(
-                        path: ':clubId',
-                        builder: (context, state) => ClubDetailPage(
-                          clubId: state.pathParameters['clubId']!,
-                        ),
-                        routes: [
-                          GoRoute(
-                            path: 'event/:eventId',
-                            builder: (context, state) => EventDetailPage(
-                              clubId: state.pathParameters['clubId']!,
-                              eventId: state.pathParameters['eventId']!,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  GoRoute(
-                    path: 'board',
-                    builder: (context, state) => const BoardPage(),
-                  ),
-                  GoRoute(
-                    path: 'profile',
-                    builder: (context, state) => const ProfilePage(),
-                  ),
-                ],
               ),
             ],
           ),
@@ -147,12 +156,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'create',
                     builder: (context, state) => const CreateEventPage(),
-                  ),
-                  GoRoute(
-                    path: ':eventId',
-                    builder: (context, state) => StudentEventDetailPage(
-                      eventId: state.pathParameters['eventId']!,
-                    ),
                   ),
                 ],
               ),

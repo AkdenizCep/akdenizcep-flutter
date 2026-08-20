@@ -22,7 +22,7 @@ class EventDetailPage extends ConsumerWidget {
       eventRef: EventRef.club(clubId: clubId, eventId: eventId),
       clubCard: ClubSummaryCard(
         clubId: clubId,
-        onTap: () => context.go('/home/community/$clubId'),
+        onTap: () => context.push('/club/$clubId'),
       ),
     );
   }
