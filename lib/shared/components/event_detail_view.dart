@@ -611,10 +611,8 @@ class _LocationSection extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    // Harita entegrasyonu bu turda kapsam dışı: buton tasarımda
-                    // yer aldığı için duruyor ama bir yere yönlendirmiyor.
                     OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () => context.go('/map'),
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size(0, 40),
                         padding: const EdgeInsets.symmetric(horizontal: 14),
