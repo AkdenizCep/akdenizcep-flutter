@@ -117,7 +117,7 @@ class EventFeedService {
             'createdAt': FieldValue.serverTimestamp(),
           });
     } on FirebaseException catch (e) {
-      throw Exception('Kulup etkinligi olusturulamadi: ${e.message}');
+      throw Exception('Topluluk etkinligi olusturulamadi: ${e.message}');
     }
   }
 
@@ -241,7 +241,7 @@ class EventFeedService {
     data['id'] = doc.id;
     data['source'] = 'club';
     data['clubId'] = clubId;
-    data['authorName'] = club?['name'] as String? ?? 'Kulüp';
+    data['authorName'] = club?['name'] as String? ?? 'Topluluk';
     data['authorLogoUrl'] = club?['logoUrl'] as String? ?? '';
     data['authorUid'] = club?['adminUid'] as String? ?? '';
     return FeedEvent.fromJson(data);

@@ -76,7 +76,8 @@ class FeedEvent {
   EventRef get ref =>
       EventRef(source: source, clubId: clubId, eventId: id);
 
-  bool get isClubEvent => source == EventSource.club;
+  bool get isClubEvent =>
+      source == EventSource.club || (clubId != null && clubId!.isNotEmpty);
 
   bool isJoinedBy(String? uid) =>
       uid != null && uid.isNotEmpty && attendeeIds.contains(uid);
@@ -88,7 +89,9 @@ class FeedEvent {
 
   factory FeedEvent.fromJson(Map<String, dynamic> json) {
     final rawSource = json['source'] as String?;
-    final source = rawSource == 'club' ? EventSource.club : EventSource.student;
+    final clubId = json['clubId'] as String?;
+    final isClub = rawSource == 'club' || (clubId != null && clubId.isNotEmpty);
+    final source = isClub ? EventSource.club : EventSource.student;
     final attendeeIds = List<String>.from(json['attendeeIds'] ?? const []);
 
     return FeedEvent(

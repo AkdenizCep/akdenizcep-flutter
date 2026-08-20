@@ -8,7 +8,7 @@ import '../utils/event_category.dart';
 import 'user_provider.dart';
 
 /// 2a akışındaki kaynak filtresi.
-enum EventSourceFilter { all, club, student }
+enum EventSourceFilter { club, student }
 
 final eventFeedServiceProvider = Provider((_) => EventFeedService());
 
@@ -84,7 +84,7 @@ final selectedCategoryProvider = StateProvider<String>(
 );
 
 final selectedSourceProvider = StateProvider<EventSourceFilter>(
-  (_) => EventSourceFilter.all,
+  (_) => EventSourceFilter.club,
 );
 
 final feedSearchQueryProvider = StateProvider<String>((_) => '');
