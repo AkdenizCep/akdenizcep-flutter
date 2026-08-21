@@ -9,6 +9,7 @@ import '../../../shared/components/loading_overlay.dart';
 import '../../../shared/providers/nav_visibility_provider.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../shared/utils/error_message.dart';
+import '../../../shared/utils/phone_launcher.dart';
 import '../providers/home_provider.dart';
 import 'components/announcement_slider.dart';
 import 'components/event_card.dart';
@@ -193,7 +194,12 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
                             Icons.calendar_month_outlined,
                             3,
                           ),
-                          _navItem(context, Icons.map, Icons.map_outlined, 4),
+                          _navItem(
+                            context,
+                            Icons.location_city_rounded,
+                            Icons.location_city_outlined,
+                            4,
+                          ),
                         ],
                       ),
                     ],
@@ -242,6 +248,15 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
 
 class HomeContentPage extends ConsumerWidget {
   const HomeContentPage({super.key});
+
+  Future<void> _callCampusSecurity(BuildContext context) async {
+    final launched = await launchPhoneCall('02423102222');
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Arama uygulaması açılamadı.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -416,12 +431,12 @@ class HomeContentPage extends ConsumerWidget {
                       onTap: () {},
                     ),
                     _QuickAccessCard(
-                      title: 'Acil Durum',
+                      title: 'Kampüs\nGüvenlik',
                       subtitle: 'Hızlı Arama',
-                      icon: Icons.emergency_outlined,
+                      icon: Icons.phone_in_talk_rounded,
                       iconColor: Theme.of(context).colorScheme.error,
                       iconBgColor: Theme.of(context).colorScheme.errorContainer,
-                      onTap: () {},
+                      onTap: () => _callCampusSecurity(context),
                     ),
                   ],
                 ),

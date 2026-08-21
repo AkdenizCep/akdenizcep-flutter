@@ -8,6 +8,8 @@ import '../features/auth/pages/verify_email_page.dart';
 import '../features/auth/providers/auth_provider.dart';
 import '../features/board/pages/board_page.dart';
 import '../features/cafeteria/pages/cafeteria_page.dart';
+import '../features/campus/pages/campus_page.dart';
+import '../features/campus/pages/emergency_contacts_page.dart';
 import '../features/community/pages/club_detail_page.dart';
 import '../features/community/pages/club_settings_page.dart';
 import '../features/community/pages/community_page.dart';
@@ -28,7 +30,7 @@ final _shellCafeteriaKey = GlobalKey<NavigatorState>(
 );
 final _shellRingKey = GlobalKey<NavigatorState>(debugLabel: 'shellRing');
 final _shellEventsKey = GlobalKey<NavigatorState>(debugLabel: 'shellEvents');
-final _shellMapKey = GlobalKey<NavigatorState>(debugLabel: 'shellMap');
+final _shellCampusKey = GlobalKey<NavigatorState>(debugLabel: 'shellCampus');
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -66,6 +68,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/verify-email',
         builder: (context, state) => const VerifyEmailPage(),
       ),
+      GoRoute(path: '/map', redirect: (context, state) => '/campus/map'),
+      GoRoute(path: '/more', redirect: (context, state) => '/campus'),
+      GoRoute(path: '/more/map', redirect: (context, state) => '/campus/map'),
       // Birden fazla sekmeden açılabilen detay sayfaları — kök navigator'a
       // eklenir ki geri tuşu, hangi sekmeden açıldığına bakmaksızın direkt
       // açılan sayfayı kapatıp kaldığımız yere dönsün.
@@ -168,13 +173,23 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          // 4 — Harita
+          // 4 — Kampüs
           StatefulShellBranch(
-            navigatorKey: _shellMapKey,
+            navigatorKey: _shellCampusKey,
             routes: [
               GoRoute(
-                path: '/map',
-                builder: (context, state) => const MapPage(),
+                path: '/campus',
+                builder: (context, state) => const CampusPage(),
+                routes: [
+                  GoRoute(
+                    path: 'map',
+                    builder: (context, state) => const MapPage(),
+                  ),
+                  GoRoute(
+                    path: 'emergency-contacts',
+                    builder: (context, state) => const EmergencyContactsPage(),
+                  ),
+                ],
               ),
             ],
           ),

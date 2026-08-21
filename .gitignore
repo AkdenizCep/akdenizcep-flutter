@@ -81,6 +81,8 @@ unlinked_spec.ds
 **/ios/Flutter/Generated.xcconfig
 # Maps API anahtari — Secrets.xcconfig.example uzerinden olusturulur
 **/ios/Flutter/Secrets.xcconfig
+# Web Maps API anahtari — maps_config.example.js uzerinden olusturulur
+/web/maps_config.js
 **/ios/Flutter/ephemeral
 **/ios/Flutter/app.flx
 **/ios/Flutter/app.zip
