@@ -1,14 +1,16 @@
 ---
 title: 007 — Kulüp etkinliği yetkisi adminUid'e bağlı
 type: decision
-updated: 2026-07-28
+updated: 2026-08-21
 status: current
 sources:
   - "[[wiki/sources/firestore-rules]]"
   - "[[wiki/sources/development-md]]"
 code_refs:
   - path: firestore.rules
-    sha: 0c42d94
+    sha: 5a84d8d
+  - path: lib/shared/services/event_feed_service.dart
+    sha: 5a84d8d
 ---
 
 # 007 — Kulüp etkinliği yetkisi adminUid'e bağlı
@@ -43,15 +45,20 @@ Kulüp kimliği kurumsal: bir kulüp adına duyurulan etkinlik o kulübü bağla
 **Ödenen:**
 
 - Kural her yazmada bir ek doküman okuması yapıyor (`get()` çağrısı Firestore'da ücretlendirilir)
-- Kulüp başına **tek** yönetici. Yönetim kurulu modeli yok; `adminUid` dizi değil string.
 - Alt koleksiyon seçimi "tüm kulüplerin yaklaşan etkinlikleri" sorgusunu pahalılaştırıyor. [[wiki/features/home]] bu yüzden ana sayfada yalnızca öğrenci etkinliklerini gösteriyor.
 
-## Kural bugün ölü
+## Güncelleme (2026-08-21) — tek yöneticiden yönetici üyelere
 
-> **Çelişki (2026-07-28):** Uygulamada kulüp etkinliği oluşturan **hiçbir arayüz yok**. `community_service.dart` yalnızca okuma yapıyor. Yani `adminUid` kuralı yazılmış ama hiç kullanılmıyor; kulüp etkinlikleri bugün Console'dan giriliyor.
->
-> Kural ileriye dönük yazılmış olabilir (yönetici arayüzü planlanıyor), ya da plan değişmiş ve kural kalmış olabilir. Kaynak yok — bu soru kullanıcıya sorulmalı.
+Karar anında "kulüp başına tek yönetici" kısıtı bilinçliydi; bu artık geçerli değil. `clubs/{id}.adminUids` (string dizisi) eklendi — başkan (`adminUid`), kendi topluluğuna öğrenci numarasıyla **yönetici üyeler** ekleyebiliyor (bkz. [[wiki/data/clubs]], [[wiki/features/community]]). Yönetici üyeler başkanla tam aynı yetkiye sahip: `club-events` yazma ve kulüp profili düzenleme. Üye ekleme/çıkarma yetkisi yalnızca başkanda kalıyor.
+
+`isClubAdmin(clubId)` fonksiyonu genişletildi: `isClubPresident(clubId) || uid in adminUids`. `event_feed_service.dart:getAdminClubs` da `Filter.or(adminUid==uid, adminUids arrayContains uid)` ile aynı ayrımı yapıyor — "kimin adına" seçicisi artık yönetici üyelerin de kulübünü listeliyor.
+
+`adminUids` alanı olmayan eski kulüp dokümanları kırılmıyor: hem kural hem model "alan yoksa boş dizi" davranıyor.
+
+## Kural bugün canlı
+
+> Bu maddenin önceki hâli ("uygulamada kulüp etkinliği oluşturan hiçbir arayüz yok, kural ölü") artık **yanlış**: `lib/features/student_events/pages/create_event_page.dart`, kullanıcı bir kulübün başkanıysa/yönetici üyesiyse "kimin adına" seçiciyle kulüp etkinliği oluşturmayı destekliyor. Çelişki bu güncellemeyle çözüldü, ayrı bir sayfa gerekmedi.
 
 ## Kaynak
 
-`firestore.rules:43-48` ve `55-61`; `DEVELOPMENT.md` → "Önemli Notlar".
+`firestore.rules` → `isClubPresident`, `clubAdminUids`, `isClubAdmin`, `match /clubs/{clubId}`; `DEVELOPMENT.md` → "Önemli Notlar"; `lib/shared/services/event_feed_service.dart:getAdminClubs`.

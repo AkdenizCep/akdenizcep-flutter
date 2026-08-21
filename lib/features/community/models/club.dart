@@ -5,10 +5,10 @@ class Club {
   final String coverUrl;
   final String category;
   final String description;
-  final int? foundedYear;
   final bool verified;
   final int followerCount;
   final String adminUid;
+  final List<String> adminUids;
   final DateTime createdAt;
 
   Club({
@@ -21,9 +21,12 @@ class Club {
     required this.createdAt,
     this.coverUrl = '',
     this.description = '',
-    this.foundedYear,
     this.verified = false,
+    this.adminUids = const [],
   });
+
+  /// [uid] başkan (`adminUid`) ya da yönetici üye (`adminUids`) ise `true`.
+  bool isAdmin(String uid) => uid == adminUid || adminUids.contains(uid);
 
   factory Club.fromJson(Map<String, dynamic> json) => Club(
     id: json['id'] as String? ?? '',
@@ -32,10 +35,10 @@ class Club {
     coverUrl: json['coverUrl'] as String? ?? '',
     category: json['category'] as String? ?? '',
     description: json['description'] as String? ?? '',
-    foundedYear: json['foundedYear'] as int?,
     verified: json['verified'] as bool? ?? false,
     followerCount: json['followerCount'] as int? ?? 0,
     adminUid: json['adminUid'] as String? ?? '',
+    adminUids: (json['adminUids'] as List?)?.cast<String>() ?? const [],
     createdAt: json['createdAt'] != null
         ? (json['createdAt'] as dynamic).toDate()
         : DateTime.now(),
@@ -48,10 +51,10 @@ class Club {
     'coverUrl': coverUrl,
     'category': category,
     'description': description,
-    'foundedYear': foundedYear,
     'verified': verified,
     'followerCount': followerCount,
     'adminUid': adminUid,
+    'adminUids': adminUids,
     'createdAt': createdAt,
   };
 
@@ -62,10 +65,10 @@ class Club {
     String? coverUrl,
     String? category,
     String? description,
-    int? foundedYear,
     bool? verified,
     int? followerCount,
     String? adminUid,
+    List<String>? adminUids,
     DateTime? createdAt,
   }) => Club(
     id: id ?? this.id,
@@ -74,10 +77,10 @@ class Club {
     coverUrl: coverUrl ?? this.coverUrl,
     category: category ?? this.category,
     description: description ?? this.description,
-    foundedYear: foundedYear ?? this.foundedYear,
     verified: verified ?? this.verified,
     followerCount: followerCount ?? this.followerCount,
     adminUid: adminUid ?? this.adminUid,
+    adminUids: adminUids ?? this.adminUids,
     createdAt: createdAt ?? this.createdAt,
   );
 }

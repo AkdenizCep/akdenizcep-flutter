@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/club.dart';
 import '../models/club_event.dart';
+import '../models/club_member.dart';
 import '../services/community_service.dart';
 
 final communityServiceProvider = Provider((_) => CommunityService());
@@ -19,6 +20,13 @@ final clubEventsProvider = StreamProvider.family<List<ClubEvent>, String>((
   clubId,
 ) {
   return ref.watch(communityServiceProvider).getClubEvents(clubId);
+});
+
+final clubMembersProvider = StreamProvider.family<List<ClubMember>, String>((
+  ref,
+  clubId,
+) {
+  return ref.watch(communityServiceProvider).getClubMembers(clubId);
 });
 
 final clubSearchQueryProvider = StateProvider<String>((ref) => '');

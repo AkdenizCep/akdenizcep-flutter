@@ -16,6 +16,34 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
+    function isClubPresident(clubId) {
+      return isAkdenizStudent() &&
+        request.auth.uid == get(/databases/$(database)/documents/clubs/$(clubId)).data.adminUid;
+    }
+
+    function clubAdminUids(clubId) {
+      let club = get(/databases/$(database)/documents/clubs/$(clubId)).data;
+      return 'adminUids' in club ? club.adminUids : [];
+    }
+
+    // Başkan (adminUid) ya da başkanın eklediği yönetici üye (adminUids).
+    function isClubAdmin(clubId) {
+      return isClubPresident(clubId) ||
+        (isAkdenizStudent() && request.auth.uid in clubAdminUids(clubId));
+    }
+
+    // `clubs/{clubId}` dokümanının kendi update kuralı içinde kullanılır —
+    // `resource` zaten kulüp dokümanı olduğundan ek bir get() gerekmez.
+    function isResourceClubPresident() {
+      return isAkdenizStudent() && request.auth.uid == resource.data.adminUid;
+    }
+
+    function isResourceClubAdmin() {
+      return isResourceClubPresident() ||
+        (isAkdenizStudent() &&
+          request.auth.uid in ('adminUids' in resource.data ? resource.data.adminUids : []));
+    }
+
     // "votes" haritasında SADECE çağıranın kendi anahtarı eklenmiş/silinmiş/
     // değiştirilmiş olabilir ve varsa değeri 1 (faydalı) ya da -1 (faydasız)
     // olmak zorunda. Başkasının oyu bu yoldan değiştirilemez.
@@ -55,18 +83,35 @@ service cloud.firestore {
     match /clubs/{clubId} {
       allow read: if isAkdenizStudent();
       allow create, delete: if false;
-      // Sadece "takip et/etme" akışında followerCount güncellenir.
-      allow update: if isAkdenizStudent() &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followerCount']);
+      // "Takip et/etme" akışında followerCount güncellenir; herhangi bir
+      // yönetici (başkan ya da üye) profil alanlarını düzenler; yönetici
+      // üye listesi (adminUids) SADECE başkan tarafından değiştirilebilir.
+      // Takipçi sayısı ve onay rozeti bu yoldan hiç değiştirilemez.
+      allow update: if isAkdenizStudent() && (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followerCount']) ||
+        (isResourceClubAdmin() &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['name', 'description', 'category', 'logoUrl', 'coverUrl', 'foundedYear'])) ||
+        (isResourceClubPresident() &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['adminUids']))
+      );
+
+      // isResourceClubPresident() burada KULLANILAMAZ: bu alt koleksiyondaki
+      // `resource`, üye dokümanına ait olur, kulübe değil — clubId path
+      // değişkeniyle ayrı bir get() yapan isClubPresident() kullanılır.
+      match /members/{memberUid} {
+        allow read: if isAkdenizStudent();
+        allow create, delete: if isClubPresident(clubId);
+        allow update: if false;
+      }
 
       match /club-events/{ceventId} {
         allow read: if isAkdenizStudent();
-        allow create, delete: if isAkdenizStudent() &&
-          request.auth.uid == get(/databases/$(database)/documents/clubs/$(clubId)).data.adminUid;
+        allow create, delete: if isClubAdmin(clubId);
         // Kulüp yöneticisi her alanı düzenler; diğer öğrenciler yalnızca
         // etkinliğe katılır/ayrılır.
         allow update: if isAkdenizStudent() && (
-          request.auth.uid == get(/databases/$(database)/documents/clubs/$(clubId)).data.adminUid ||
+          isClubAdmin(clubId) ||
           isValidAttendanceChange(request.auth.uid)
         );
 

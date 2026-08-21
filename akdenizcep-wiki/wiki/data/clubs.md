@@ -1,7 +1,7 @@
 ---
 title: clubs
 type: data
-updated: 2026-07-28
+updated: 2026-08-21
 status: current
 sources:
   - "[[wiki/sources/firestore-rules]]"
@@ -9,9 +9,11 @@ sources:
   - "[[wiki/sources/development-md]]"
 code_refs:
   - path: lib/features/community/services/community_service.dart
-    sha: 0c42d94
+    sha: 5a84d8d
   - path: lib/features/profile/services/profile_service.dart
     sha: 0c42d94
+  - path: firestore.rules
+    sha: 5a84d8d
 ---
 
 # clubs
@@ -28,21 +30,33 @@ Firestore · `clubs/{clubId}`
 | `logoUrl` | string | Firebase Storage |
 | `category` | string | |
 | `followerCount` | number | Takip akışında güncellenir |
-| `adminUid` | string | Kulüp etkinliği yazma yetkisinin dayanağı — bkz. [[wiki/decisions/007-kulup-etkinligi-adminuid]] |
+| `adminUid` | string | Başkan — kulüp etkinliği yazma yetkisinin ve topluluk ayarları düzenlemenin dayanağı, bkz. [[wiki/decisions/007-kulup-etkinligi-adminuid]] |
+| `adminUids` | string[] | Başkanın öğrenci numarasıyla eklediği **yönetici üyeler** (2026-08-21). Başkanla aynı yetkiye sahip, `adminUid` bu dizide DEĞİL. Alan yoksa kod boş dizi varsayar — eski dokümanlar migration gerektirmez. |
+| `description` | string | |
+| `category` | string (Türkçe etiket, örn. `Teknoloji`) | Ayarlar sayfasındaki dropdown'ın seçtiği değer, bkz. [[wiki/features/community]] |
+| `logoUrl`, `coverUrl` | string | Cloudinary URL'i (`club-logos/{clubId}`, `club-covers/{clubId}`) |
 | `createdAt` | timestamp | |
+
+Alt koleksiyon: **`clubs/{clubId}/members/{uid}`** — `uid`, `name`, `studentId`, `addedAt` (serverTimestamp). Yönetici üyelerin isim/numara görüntüsü için; yetki kontrolü `adminUids`'e dayanır, bu koleksiyona değil.
 
 ## Okuyanlar / Yazanlar
 
 | Feature | İşlem | Nerede |
 | --- | --- | --- |
-| [[wiki/features/community]] | okur (liste + detay), yazar (`followerCount`) | `community_service.dart:11,22,49,66` |
+| [[wiki/features/community]] | okur (liste + detay + üyeler), yazar (`followerCount`, profil alanları, `adminUids`, `members/*`) | `community_service.dart` |
 | [[wiki/features/profile]] | okur (takip edilen kulüpler) | `profile_service.dart:14` |
+| [[wiki/features/student_events]] | okur (`adminUid`/`adminUids` — "kimin adına" seçimi) | `event_feed_service.dart:getAdminClubs` |
 
 ## Kısıtlar
 
 - `read`: her Akdeniz öğrencisi
 - `create`, `delete`: **hiç kimse** — kulüpler yalnızca Firebase Console'dan açılır
-- `update`: yalnızca `followerCount` alanı değişiyorsa. Kural `affectedKeys().hasOnly(['followerCount'])` ile bunu zorluyor.
+- `update`: üç ayrı dal —
+  - herkes: yalnızca `followerCount` (takip akışı)
+  - başkan **ya da** yönetici üye: yalnızca `name, description, category, logoUrl, coverUrl, foundedYear`
+  - **yalnızca başkan**: yalnızca `adminUids` (üye ekleme/çıkarma)
+  Her dal `affectedKeys().hasOnly([...])` ile alan bazında izole edilir.
+- `members/{uid}` alt koleksiyonu: okuma her öğrenciye açık, `create`/`delete` yalnızca başkana (`isClubPresident`), `update` her zaman kapalı — üye kaydı değil, yalnızca eklenip çıkarılır.
 
 ## Notlar
 

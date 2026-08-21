@@ -10,6 +10,17 @@ status: current
 Kronolojik, append-only. En yeni üstte. Girdi biçimi sabittir:
 `grep '^## \[' log.md | head -5` son beş girdiyi verir.
 
+## [2026-08-21] ingest | Kulüp yönetici üyeleri (adminUids + members)
+
+Topluluk ayarları sayfasına (`club_settings_page.dart`) başkanın öğrenci
+numarasıyla yönetici üye eklediği bir "Üyeler" bölümü eklendi. Veri modeli:
+`clubs/{id}.adminUids` (dizi) + `clubs/{id}/members/{uid}` alt koleksiyonu.
+Yönetici üyeler başkanla aynı yetkiye sahip (etkinlik + profil düzenleme),
+üye ekleme/çıkarma yalnızca başkanda. `firestore.rules` içindeki
+`isClubAdmin` genişletildi, `event_feed_service.dart:getAdminClubs`
+`Filter.or` ile iki alanı da kontrol ediyor. Dokunulan sayfalar:
+[[wiki/data/clubs]], [[wiki/decisions/007-kulup-etkinligi-adminuid]].
+
 ## [2026-07-28] setup | Wiki kuruldu ve ilk tohumlama yapıldı
 
 `llm-wiki.md` deseni projeye uygulandı. Şema `../CLAUDE.md`'ye yazıldı, üç operasyon `.claude/commands/` altında slash komutu oldu (`/wiki-ingest`, `/wiki-query`, `/wiki-lint`). `karpathywiki` Obsidian eklentisi devre dışı bırakıldı — tek yazar disiplini.

@@ -72,12 +72,17 @@ class EventFeedService {
     });
   }
 
-  /// Kullanıcının yöneticisi olduğu kulüpler — etkinlik oluşturma formundaki
-  /// "kimin adına" seçimi bunu kullanır.
+  /// Kullanıcının başkan ya da yönetici üye olduğu kulüpler — etkinlik
+  /// oluşturma formundaki "kimin adına" seçimi bunu kullanır.
   Stream<List<ClubOption>> getAdminClubs(String uid) {
     return _db
         .collection('clubs')
-        .where('adminUid', isEqualTo: uid)
+        .where(
+          Filter.or(
+            Filter('adminUid', isEqualTo: uid),
+            Filter('adminUids', arrayContains: uid),
+          ),
+        )
         .snapshots()
         .map(
           (snap) => snap.docs

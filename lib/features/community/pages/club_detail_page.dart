@@ -49,6 +49,7 @@ class _ClubDetailPageState extends ConsumerState<ClubDetailPage> {
     final currentUser = ref.watch(currentUserProvider).valueOrNull;
     final isFollowing =
         currentUser?.followedClubs.contains(widget.clubId) ?? false;
+    final isAdmin = currentUser != null && club.isAdmin(currentUser.id);
 
     final now = DateTime.now();
     final upcomingCount = events.where((e) => e.date.isAfter(now)).length;
@@ -69,7 +70,10 @@ class _ClubDetailPageState extends ConsumerState<ClubDetailPage> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      _ClubLogo(club: club),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 14),
+                        child: _ClubLogo(club: club),
+                      ),
                       const SizedBox(width: 14),
                       FollowButton(
                         clubId: widget.clubId,
@@ -77,6 +81,13 @@ class _ClubDetailPageState extends ConsumerState<ClubDetailPage> {
                         enabled: currentUser != null,
                         expand: true,
                       ),
+                      if (isAdmin) ...[
+                        const SizedBox(width: 10),
+                        _ManageButton(
+                          onTap: () =>
+                              context.push('/club/${widget.clubId}/settings'),
+                        ),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -112,12 +123,6 @@ class _ClubDetailPageState extends ConsumerState<ClubDetailPage> {
                           label: club.category,
                           background: colorScheme.primaryContainer,
                           foreground: colorScheme.onPrimaryContainer,
-                        ),
-                      if (club.foundedYear != null)
-                        _Tag(
-                          label: '${club.foundedYear} kuruluş',
-                          background: colorScheme.surfaceContainer,
-                          foreground: colorScheme.onSurfaceVariant,
                         ),
                     ],
                   ),
@@ -262,6 +267,52 @@ class _ClubLogo extends StatelessWidget {
               color: category.color.withValues(alpha: 0.14),
               child: Icon(category.icon, size: 40, color: category.color),
             ),
+    );
+  }
+}
+
+class _ManageButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _ManageButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    const radius = BorderRadius.all(Radius.circular(23));
+
+    return Material(
+      color: colorScheme.surfaceContainer,
+      borderRadius: radius,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: radius,
+        child: Container(
+          height: 46,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.settings_rounded,
+                size: 18,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'Yönet',
+                style: textTheme.labelLarge?.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -485,16 +536,6 @@ class _AboutTab extends StatelessWidget {
                 : club.description,
             style: textTheme.bodyLarge?.copyWith(fontSize: 15, height: 1.5),
           ),
-          if (club.foundedYear != null) ...[
-            const SizedBox(height: 14),
-            Text(
-              'Kuruluş yılı: ${club.foundedYear}',
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
         ],
       ),
     );

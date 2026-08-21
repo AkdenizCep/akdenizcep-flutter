@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
+import '../../../shared/components/category_dropdown_field.dart';
 import '../../../shared/components/progress_snackbar.dart';
 import '../../../shared/models/club_option.dart';
 import '../../../shared/providers/event_feed_provider.dart';
@@ -277,19 +278,14 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
                         const SizedBox(height: 22),
                         const _SectionLabel('KATEGORİ'),
                         const SizedBox(height: 10),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final category
-                                in EventCategory.selectableItems)
-                              _CategoryChip(
-                                category: category,
-                                selected: category.id == _categoryId,
-                                onTap: () =>
-                                    setState(() => _categoryId = category.id),
-                              ),
-                          ],
+                        CategoryDropdownField(
+                          items: EventCategory.selectableItems,
+                          value: EventCategory.selectableItems.firstWhere(
+                            (c) => c.id == _categoryId,
+                            orElse: () => EventCategory.selectableItems.first,
+                          ),
+                          onChanged: (category) =>
+                              setState(() => _categoryId = category.id),
                         ),
                         const SizedBox(height: 22),
                         const _FieldLabel('Açıklama'),
@@ -684,47 +680,6 @@ class _PickerField extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CategoryChip extends StatelessWidget {
-  final EventCategory category;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _CategoryChip({
-    required this.category,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Material(
-      color: selected ? colorScheme.primary : colorScheme.surfaceContainer,
-      borderRadius: BorderRadius.circular(18),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: Container(
-          height: 36,
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          alignment: Alignment.center,
-          child: Text(
-            category.label,
-            style: textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: selected
-                  ? colorScheme.onPrimary
-                  : colorScheme.onSurfaceVariant,
-            ),
           ),
         ),
       ),

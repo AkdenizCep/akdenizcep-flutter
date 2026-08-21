@@ -9,6 +9,7 @@ import '../features/auth/providers/auth_provider.dart';
 import '../features/board/pages/board_page.dart';
 import '../features/cafeteria/pages/cafeteria_page.dart';
 import '../features/community/pages/club_detail_page.dart';
+import '../features/community/pages/club_settings_page.dart';
 import '../features/community/pages/community_page.dart';
 import '../features/community/pages/event_detail_page.dart';
 import '../features/home/pages/home_page.dart';
@@ -81,6 +82,12 @@ final routerProvider = Provider<GoRouter>((ref) {
               clubId: state.pathParameters['clubId']!,
               eventId: state.pathParameters['eventId']!,
             ),
+          ),
+          GoRoute(
+            path: 'settings',
+            parentNavigatorKey: _rootNavigatorKey,
+            builder: (context, state) =>
+                ClubSettingsPage(clubId: state.pathParameters['clubId']!),
           ),
         ],
       ),
