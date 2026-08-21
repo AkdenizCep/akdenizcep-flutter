@@ -1,5 +1,6 @@
 import 'package:akdenizcep/app/theme.dart';
 import 'package:akdenizcep/features/campus/pages/campus_page.dart';
+import 'package:akdenizcep/features/campus/pages/emergency_contacts_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -21,6 +22,10 @@ void main() {
           builder: (_, _) =>
               const Scaffold(body: Center(child: Text('Harita hedefi'))),
         ),
+        GoRoute(
+          path: '/campus/emergency-contacts',
+          builder: (_, _) => const EmergencyContactsPage(),
+        ),
       ],
     );
     addTearDown(router.dispose);
@@ -34,12 +39,20 @@ void main() {
       'Kampüs Haritası',
       'Kayıp & Buluntu',
       'Kampüs Fotoğrafları',
+      'Acil Numaralar',
     ]) {
       expect(find.text(title), findsOneWidget);
     }
     expect(find.text('Daha Fazla'), findsNothing);
     expect(find.text('Ayarlar'), findsNothing);
     expect(find.text('Geri Bildirim'), findsNothing);
+
+    await tester.tap(find.text('Acil Numaralar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Şimdi Ara'), findsOneWidget);
+
+    router.go('/campus');
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Kayıp & Buluntu'));
     await tester.pump();

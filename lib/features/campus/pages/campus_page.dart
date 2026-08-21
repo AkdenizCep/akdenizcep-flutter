@@ -41,6 +41,15 @@ class CampusPage extends StatelessWidget {
         onTap: () => _showPreparingMessage(context, 'Kampüs Fotoğrafları'),
       ),
     ];
+    final safetyServices = [
+      CampusServiceDestination(
+        title: 'Acil Numaralar',
+        description: 'Güvenlik birimleri ve nöbet noktaları',
+        icon: Icons.phone_in_talk_outlined,
+        tone: CampusServiceTone.alert,
+        onTap: () => context.go('/campus/emergency-contacts'),
+      ),
+    ];
     return Scaffold(
       body: SafeArea(
         bottom: false,
@@ -62,6 +71,10 @@ class CampusPage extends StatelessWidget {
                   const CampusSectionTitle(title: 'Kampüs Yaşamı'),
                   const SizedBox(height: 10),
                   CampusServiceGroup(destinations: campusServices),
+                  const SizedBox(height: 28),
+                  const CampusSectionTitle(title: 'Yardım ve Güvenlik'),
+                  const SizedBox(height: 10),
+                  CampusServiceGroup(destinations: safetyServices),
                 ],
               ),
             ),
