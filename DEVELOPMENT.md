@@ -42,10 +42,21 @@ cp ios/Flutter/Secrets.xcconfig.example ios/Flutter/Secrets.xcconfig
 yoksa build kırılmaz), değer `Info.plist` içindeki `MapsApiKey` anahtarına
 işlenir ve `AppDelegate.swift` oradan okur.
 
+**Web / Chrome** — örnek dosyayı kopyala ve anahtarı doldur:
+
+```bash
+cp web/maps_config.example.js web/maps_config.js
+```
+
+`web/maps_config.js` gitignore'dadır. `index.html`, dosya mevcutsa Google Maps
+JavaScript API'yi bu değerle yükler; dosya veya anahtar yoksa uygulama açılır
+ancak harita boş kalır. Web anahtarı tarayıcıdan görülebileceği için Google
+Cloud Console'da HTTP referrer kısıtlaması zorunludur.
+
 > Anahtarı Google Cloud Console'da mutlaka kısıtla: Android için paket adı +
-> SHA-1, iOS için bundle id. Mobil Maps anahtarları uygulama binary'sinin
-> içinde dağıtıldığı için gerçek anlamda gizlenemez; tek gerçek koruma
-> kısıtlamadır.
+> SHA-1, iOS için bundle id, web için izin verilen HTTP referrer'lar. İstemci
+> anahtarları dağıtılan uygulamadan tamamen gizlenemez; temel koruma platform
+> ve kullanım kısıtlamalarıdır.
 
 ---
 

@@ -29,7 +29,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Etkinlik katılımcı kaydı için QR okutmak ve etkinlik görseli çekmek üzere kamera kullanılır.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Sana en yakın ring durağını gösterebilmek için konumun kullanılır.</string>
+	<string>Akdeniz Cep, kampüs haritasında konumunuzu ve size en yakın ring durağını göstermek için konum izninizi kullanır.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Etkinlik kapak görseli seçebilmen için fotoğraflarına erişilir.</string>
 	<key>UILaunchStoryboardName</key>
