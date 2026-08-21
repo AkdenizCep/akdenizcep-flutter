@@ -31,6 +31,14 @@
 
   <title>akdenizcep</title>
   <link rel="manifest" href="manifest.json">
+  <script src="maps_config.js"></script>
+  <script>
+    if (window.MAPS_API_KEY) {
+      const mapsUrl = 'https://maps.googleapis.com/maps/api/js?key=' +
+          encodeURIComponent(window.MAPS_API_KEY);
+      document.write('<script src="' + mapsUrl + '"><\/script>');
+    }
+  </script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
