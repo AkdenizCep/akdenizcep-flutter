@@ -193,7 +193,12 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
                             Icons.calendar_month_outlined,
                             3,
                           ),
-                          _navItem(context, Icons.map, Icons.map_outlined, 4),
+                          _navItem(
+                            context,
+                            Icons.location_city_rounded,
+                            Icons.location_city_outlined,
+                            4,
+                          ),
                         ],
                       ),
                     ],
