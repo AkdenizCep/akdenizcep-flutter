@@ -52,6 +52,7 @@ class FeedEvent {
   final List<String> attendeeIds;
   final int attendeeCount;
   final int? capacity;
+  final bool qrAttendance;
   final DateTime createdAt;
 
   const FeedEvent({
@@ -71,6 +72,7 @@ class FeedEvent {
     this.attendeeIds = const [],
     this.attendeeCount = 0,
     this.capacity,
+    this.qrAttendance = false,
   });
 
   EventRef get ref =>
@@ -110,6 +112,7 @@ class FeedEvent {
       attendeeIds: attendeeIds,
       attendeeCount: json['attendeeCount'] as int? ?? attendeeIds.length,
       capacity: json['capacity'] as int?,
+      qrAttendance: json['qrAttendance'] as bool? ?? false,
       createdAt: _toDate(json['createdAt']),
     );
   }
@@ -130,6 +133,7 @@ class FeedEvent {
     'attendeeIds': attendeeIds,
     'attendeeCount': attendeeCount,
     'capacity': capacity,
+    'qrAttendance': qrAttendance,
     'createdAt': createdAt,
   };
 
@@ -149,6 +153,7 @@ class FeedEvent {
     List<String>? attendeeIds,
     int? attendeeCount,
     int? capacity,
+    bool? qrAttendance,
     DateTime? createdAt,
   }) => FeedEvent(
     id: id ?? this.id,
@@ -166,6 +171,7 @@ class FeedEvent {
     attendeeIds: attendeeIds ?? this.attendeeIds,
     attendeeCount: attendeeCount ?? this.attendeeCount,
     capacity: capacity ?? this.capacity,
+    qrAttendance: qrAttendance ?? this.qrAttendance,
     createdAt: createdAt ?? this.createdAt,
   );
 

@@ -121,6 +121,16 @@ service cloud.firestore {
             request.auth.uid == request.resource.data.authorUid;
           allow update, delete: if isCommentAuthor();
         }
+
+        // QR ile kapıda alınan yoklama kayıtları. Yalnızca kulüp yöneticileri
+        // okuyup yazabilir; bir kayıt tek sefer oluşturulur, güncellenemez/
+        // silinemez (tekrar okutma "zaten kayıtlı" olarak istemcide ele alınır).
+        match /attendance/{attendeeUid} {
+          allow read: if isClubAdmin(clubId);
+          allow create: if isClubAdmin(clubId) &&
+            request.resource.data.recordedBy == request.auth.uid;
+          allow update, delete: if false;
+        }
       }
     }
 

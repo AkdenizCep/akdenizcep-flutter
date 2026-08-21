@@ -27,6 +27,10 @@ class EventDetailView extends ConsumerStatefulWidget {
   /// Kulüp etkinliklerinde gösterilen kulüp kartı. Öğrenci etkinliklerinde null.
   final Widget? clubCard;
 
+  /// Yalnızca QR kaydı açık kulüp etkinliklerinde, kulüp yöneticisi/üyesi
+  /// için dolu gelir — QR tarayıcıya götüren giriş kartı.
+  final Widget? attendanceCard;
+
   /// Yalnızca etkinliğin sahibi için dolu gelir.
   final Future<void> Function()? onDelete;
 
@@ -34,6 +38,7 @@ class EventDetailView extends ConsumerStatefulWidget {
     super.key,
     required this.eventRef,
     this.clubCard,
+    this.attendanceCard,
     this.onDelete,
   });
 
@@ -153,6 +158,10 @@ class _EventDetailViewState extends ConsumerState<EventDetailView>
                       if (widget.clubCard != null) ...[
                         const SizedBox(height: 14),
                         widget.clubCard!,
+                      ],
+                      if (widget.attendanceCard != null) ...[
+                        const SizedBox(height: 14),
+                        widget.attendanceCard!,
                       ],
                       const SizedBox(height: 22),
                       Text(

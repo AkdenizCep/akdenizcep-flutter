@@ -9,6 +9,7 @@ class ClubEvent {
   final List<String> attendeeIds;
   final int attendeeCount;
   final int? capacity;
+  final bool qrAttendance;
   final DateTime createdAt;
 
   ClubEvent({
@@ -23,6 +24,7 @@ class ClubEvent {
     this.attendeeIds = const [],
     this.attendeeCount = 0,
     this.capacity,
+    this.qrAttendance = false,
   });
 
   factory ClubEvent.fromJson(Map<String, dynamic> json) {
@@ -41,6 +43,7 @@ class ClubEvent {
       attendeeIds: attendeeIds,
       attendeeCount: json['attendeeCount'] as int? ?? attendeeIds.length,
       capacity: json['capacity'] as int?,
+      qrAttendance: json['qrAttendance'] as bool? ?? false,
       createdAt: json['createdAt'] != null
           ? (json['createdAt'] as dynamic).toDate()
           : DateTime.now(),
@@ -58,6 +61,7 @@ class ClubEvent {
     'attendeeIds': attendeeIds,
     'attendeeCount': attendeeCount,
     'capacity': capacity,
+    'qrAttendance': qrAttendance,
     'createdAt': createdAt,
   };
 
@@ -72,6 +76,7 @@ class ClubEvent {
     List<String>? attendeeIds,
     int? attendeeCount,
     int? capacity,
+    bool? qrAttendance,
     DateTime? createdAt,
   }) => ClubEvent(
     id: id ?? this.id,
@@ -84,6 +89,7 @@ class ClubEvent {
     attendeeIds: attendeeIds ?? this.attendeeIds,
     attendeeCount: attendeeCount ?? this.attendeeCount,
     capacity: capacity ?? this.capacity,
+    qrAttendance: qrAttendance ?? this.qrAttendance,
     createdAt: createdAt ?? this.createdAt,
   );
 }

@@ -103,6 +103,7 @@ class EventFeedService {
     String category = '',
     String imageUrl = '',
     int? capacity,
+    bool qrAttendance = false,
   }) async {
     try {
       await _db
@@ -117,6 +118,7 @@ class EventFeedService {
             'category': category,
             'imageUrl': imageUrl,
             'capacity': capacity,
+            'qrAttendance': qrAttendance,
             'attendeeIds': [adminUid],
             'attendeeCount': 1,
             'createdAt': FieldValue.serverTimestamp(),

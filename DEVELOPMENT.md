@@ -282,7 +282,15 @@ clubs/{clubId}
     imageUrl: string
     location: string
     description: string
+    qrAttendance: boolean         # true ise QR ile katılımcı kaydı açık
     createdAt: timestamp
+
+    attendance/{uid}              # QR ile kapıda alınan yoklama (RSVP'den ayrı)
+      uid: string
+      name: string                # kayıt anındaki ad soyad, denormalize
+      studentId: string
+      recordedBy: string          # okutan yöneticinin uid'i
+      checkedInAt: timestamp
 
 announcements/{announcementId}
   imageUrl: string

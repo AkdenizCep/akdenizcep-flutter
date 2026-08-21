@@ -41,6 +41,7 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
   TimeOfDay? _time;
   String _categoryId = EventCategory.technology.id;
   bool _hasQuota = false;
+  bool _qrAttendance = false;
   bool _submitting = false;
 
   @override
@@ -139,6 +140,7 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
               category: _categoryId,
               imageUrl: imageUrl,
               capacity: capacity,
+              qrAttendance: _qrAttendance,
             );
       } else {
         await ref
@@ -198,8 +200,10 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
                           _AuthorModeRow(
                             clubs: adminClubs,
                             selectedClub: _selectedClub,
-                            onChanged: (club) =>
-                                setState(() => _selectedClub = club),
+                            onChanged: (club) => setState(() {
+                              _selectedClub = club;
+                              if (club == null) _qrAttendance = false;
+                            }),
                           ),
                           const SizedBox(height: 22),
                         ],
@@ -307,6 +311,14 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
                           onChanged: (value) =>
                               setState(() => _hasQuota = value),
                         ),
+                        if (_selectedClub != null) ...[
+                          const SizedBox(height: 14),
+                          _QrAttendanceCard(
+                            enabled: _qrAttendance,
+                            onChanged: (value) =>
+                                setState(() => _qrAttendance = value),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -747,6 +759,69 @@ class _QuotaCard extends StatelessWidget {
               decoration: const InputDecoration(
                 labelText: 'Kontenjan',
                 hintText: 'Örn. 60',
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _QrAttendanceCard extends StatelessWidget {
+  final bool enabled;
+  final ValueChanged<bool> onChanged;
+
+  const _QrAttendanceCard({required this.enabled, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colorScheme.outlineVariant),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'QR ile katılımcı kaydı',
+                      style: textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Kapıda öğrenci QR\'ı okutarak yoklama al',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Switch(value: enabled, onChanged: onChanged),
+            ],
+          ),
+          if (enabled) ...[
+            const SizedBox(height: 10),
+            Text(
+              'Etkinlik sayfasında yalnızca topluluk yöneticileri ve üyeleri '
+              'için bir tarayıcı butonu görünür.',
+              style: textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],

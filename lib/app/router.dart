@@ -11,9 +11,12 @@ import '../features/cafeteria/pages/cafeteria_page.dart';
 import '../features/community/pages/club_detail_page.dart';
 import '../features/community/pages/club_settings_page.dart';
 import '../features/community/pages/community_page.dart';
+import '../features/community/pages/event_attendance_list_page.dart';
+import '../features/community/pages/event_attendance_scan_page.dart';
 import '../features/community/pages/event_detail_page.dart';
 import '../features/home/pages/home_page.dart';
 import '../features/map/pages/map_page.dart';
+import '../features/profile/pages/my_qr_page.dart';
 import '../features/profile/pages/profile_page.dart';
 import '../features/ring/pages/ring_page.dart';
 import '../features/ring/pages/ring_stops_page.dart';
@@ -82,6 +85,24 @@ final routerProvider = Provider<GoRouter>((ref) {
               clubId: state.pathParameters['clubId']!,
               eventId: state.pathParameters['eventId']!,
             ),
+            routes: [
+              GoRoute(
+                path: 'scan',
+                parentNavigatorKey: _rootNavigatorKey,
+                builder: (context, state) => EventAttendanceScanPage(
+                  clubId: state.pathParameters['clubId']!,
+                  eventId: state.pathParameters['eventId']!,
+                ),
+              ),
+              GoRoute(
+                path: 'attendance',
+                parentNavigatorKey: _rootNavigatorKey,
+                builder: (context, state) => EventAttendanceListPage(
+                  clubId: state.pathParameters['clubId']!,
+                  eventId: state.pathParameters['eventId']!,
+                ),
+              ),
+            ],
           ),
           GoRoute(
             path: 'settings',
@@ -111,6 +132,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/profile',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ProfilePage(),
+      ),
+      GoRoute(
+        path: '/qr',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const MyQrPage(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>

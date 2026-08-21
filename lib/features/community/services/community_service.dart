@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../models/attendance_record.dart';
 import '../models/club.dart';
 import '../models/club_event.dart';
 import '../models/club_member.dart';
@@ -139,6 +140,64 @@ class CommunityService {
       await batch.commit();
     } on FirebaseException catch (e) {
       throw Exception('Üye çıkarılamadı: ${e.message}');
+    }
+  }
+
+  CollectionReference<Map<String, dynamic>> _attendanceCollection(
+    String clubId,
+    String eventId,
+  ) => _db
+      .collection('clubs')
+      .doc(clubId)
+      .collection('club-events')
+      .doc(eventId)
+      .collection('attendance');
+
+  Stream<List<AttendanceRecord>> getEventAttendance({
+    required String clubId,
+    required String eventId,
+  }) {
+    return _attendanceCollection(clubId, eventId)
+        .orderBy('checkedInAt', descending: true)
+        .snapshots()
+        .map(
+          (snap) => snap.docs
+              .map((d) => AttendanceRecord.fromJson(d.data()))
+              .toList(),
+        );
+  }
+
+  /// Aynı öğrencinin daha önce okutulup okutulmadığını kontrol eder — doküman
+  /// id'si öğrencinin uid'i olduğu için tek bir `get()` yeterli.
+  Future<AttendanceRecord?> getAttendanceRecord({
+    required String clubId,
+    required String eventId,
+    required String uid,
+  }) async {
+    try {
+      final doc = await _attendanceCollection(clubId, eventId).doc(uid).get();
+      if (!doc.exists) return null;
+      return AttendanceRecord.fromJson(doc.data()!);
+    } on FirebaseException catch (e) {
+      throw Exception('Yoklama kontrol edilemedi: ${e.message}');
+    }
+  }
+
+  Future<void> recordAttendance({
+    required String clubId,
+    required String eventId,
+    required AttendanceRecord record,
+  }) async {
+    try {
+      await _attendanceCollection(clubId, eventId).doc(record.uid).set({
+        'uid': record.uid,
+        'name': record.name,
+        'studentId': record.studentId,
+        'recordedBy': record.recordedBy,
+        'checkedInAt': FieldValue.serverTimestamp(),
+      });
+    } on FirebaseException catch (e) {
+      throw Exception('Yoklama kaydedilemedi: ${e.message}');
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/attendance_record.dart';
 import '../models/club.dart';
 import '../models/club_event.dart';
 import '../models/club_member.dart';
@@ -28,6 +29,20 @@ final clubMembersProvider = StreamProvider.family<List<ClubMember>, String>((
 ) {
   return ref.watch(communityServiceProvider).getClubMembers(clubId);
 });
+
+/// `getEventAttendance` için aile anahtarı — `record` tipi `==`/`hashCode`
+/// otomatik sağladığından her build'de yeni bir stream açılmaz.
+typedef EventAttendanceKey = ({String clubId, String eventId});
+
+final eventAttendanceProvider =
+    StreamProvider.family<List<AttendanceRecord>, EventAttendanceKey>((
+      ref,
+      key,
+    ) {
+      return ref
+          .watch(communityServiceProvider)
+          .getEventAttendance(clubId: key.clubId, eventId: key.eventId);
+    });
 
 final clubSearchQueryProvider = StateProvider<String>((ref) => '');
 final clubCategoryFilterProvider = StateProvider<String>((ref) => 'Tümü');

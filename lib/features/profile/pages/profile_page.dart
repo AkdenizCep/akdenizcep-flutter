@@ -9,6 +9,7 @@ import 'components/change_password_button.dart';
 import 'components/feedback_button.dart';
 import 'components/followed_clubs_section.dart';
 import 'components/my_events_section.dart';
+import 'components/my_qr_button.dart';
 import 'components/profile_info_card.dart';
 import 'components/rated_meals_section.dart';
 import 'components/sign_out_button.dart';
@@ -42,6 +43,8 @@ class ProfilePage extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ProfileInfoCard(user: user),
+                const SizedBox(height: 16),
+                const MyQrButton(),
                 const SizedBox(height: 28),
                 _SectionTitle(title: 'Takip Edilen Topluluklar'),
                 const SizedBox(height: 12),
