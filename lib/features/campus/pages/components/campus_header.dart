@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../shared/components/akdeniz_cep_logo.dart';
+import '../../../../shared/components/app_top_bar.dart';
+
 class CampusHeader extends StatelessWidget {
   const CampusHeader({super.key});
 
@@ -20,18 +23,22 @@ class CampusHeader extends StatelessWidget {
             ),
           ),
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.topLeft,
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 285),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const AkdenizCepLogo(fontSize: kTopBarLogoFontSize),
+                  const SizedBox(height: kTopBarTitleGap),
                   Text(
                     'Kampüs',
                     style: textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                       letterSpacing: -0.45,
+                      fontSize: kTopBarTitleFontSize,
+                      
                     ),
                   ),
                   const SizedBox(height: 7),

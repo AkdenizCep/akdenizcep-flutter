@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../shared/components/app_top_bar.dart';
 import 'components/campus_header.dart';
 import 'components/campus_service_group.dart';
 
@@ -55,9 +56,9 @@ class CampusPage extends StatelessWidget {
         bottom: false,
         child: SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
-            20,
-            8,
-            20,
+            kTopBarHPad,
+            4,
+            kTopBarHPad,
             132 + MediaQuery.of(context).padding.bottom,
           ),
           child: Center(
