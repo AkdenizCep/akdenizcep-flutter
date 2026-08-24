@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -117,6 +118,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                           _searchController.clear();
                           ref.read(mapSearchQueryProvider.notifier).state = '';
                         },
+                        onBack: () => context.pop(),
                       ),
                     ),
                   ),

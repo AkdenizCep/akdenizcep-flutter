@@ -10,6 +10,7 @@ class MapSearchPanel extends StatelessWidget {
   final ValueChanged<String> onQueryChanged;
   final ValueChanged<LocationCategory?> onCategoryChanged;
   final VoidCallback onClearQuery;
+  final VoidCallback onBack;
 
   const MapSearchPanel({
     super.key,
@@ -19,6 +20,7 @@ class MapSearchPanel extends StatelessWidget {
     required this.onQueryChanged,
     required this.onCategoryChanged,
     required this.onClearQuery,
+    required this.onBack,
   });
 
   @override
@@ -30,6 +32,7 @@ class MapSearchPanel extends StatelessWidget {
       onQueryChanged: onQueryChanged,
       onCategoryChanged: onCategoryChanged,
       onClearQuery: onClearQuery,
+      onBack: onBack,
     );
   }
 }
@@ -41,6 +44,7 @@ class _PanelContent extends StatelessWidget {
   final ValueChanged<String> onQueryChanged;
   final ValueChanged<LocationCategory?> onCategoryChanged;
   final VoidCallback onClearQuery;
+  final VoidCallback onBack;
 
   const _PanelContent({
     required this.controller,
@@ -49,6 +53,7 @@ class _PanelContent extends StatelessWidget {
     required this.onQueryChanged,
     required this.onCategoryChanged,
     required this.onClearQuery,
+    required this.onBack,
   });
 
   @override
@@ -83,9 +88,14 @@ class _PanelContent extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
             clipBehavior: Clip.antiAlias,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 4, 8, 4),
+              padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
               child: Row(
                 children: [
+                  IconButton(
+                    tooltip: 'Geri',
+                    onPressed: onBack,
+                    icon: const Icon(Icons.arrow_back_rounded),
+                  ),
                   Expanded(
                     child: TextField(
                       controller: controller,
