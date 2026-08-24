@@ -1,14 +1,14 @@
 ---
 title: ring_schedule
 type: data
-updated: 2026-07-28
+updated: 2026-08-24
 status: current
 sources:
   - "[[wiki/sources/realtime-db-json]]"
   - "[[wiki/sources/development-md]]"
 code_refs:
   - path: lib/features/ring/services/ring_service.dart
-    sha: a32558f
+    sha: 26119cf
   - path: lib/features/ring/models/ring_schedule.dart
     sha: a32558f
 ---
@@ -26,8 +26,7 @@ Firestore değil — sık okunan, seyrek değişen ve dokümanı olmayan veri. B
 ```json
 "au_103_gidis": {
   "weekday": ["06:31", "06:51", ...],
-  "weekend": ["06:31", "06:56", ...],
-  "stops": ["durak_1", "durak_2"]
+  "weekend": ["06:31", "06:56", ...]
 }
 ```
 
@@ -35,7 +34,7 @@ Firestore değil — sık okunan, seyrek değişen ve dokümanı olmayan veri. B
 | --- | --- | --- |
 | `weekday` | string[] | `HH:mm`, **kalkış noktasından** ayrılış saatleri |
 | `weekend` | string[] | Aynı |
-| `stops` | string[] | **Opsiyonel.** [[wiki/data/ring-stops]] anahtarlarına sıralı referans |
+| `stops` | string[] | **Artık okunmuyor.** Bkz. aşağısı. |
 
 ## Hat anahtarı sözleşmesi
 
@@ -59,8 +58,19 @@ Realtime Database güvenlik kuralları repoda **yok**. `firestore.rules` yalnız
 
 > **Açık soru (2026-07-28):** RTDB kuralları yalnızca Firebase Console'da yaşıyor, sürüm kontrolünde izi yok. Bu iki riski doğuruyor: (a) `cafeteria_menu` ve `ring_schedule` düğümlerinin kim tarafından okunabildiği/yazılabildiği repodan bilinemez, (b) kurallar yanlışlıkla değiştirilirse geri alacak referans yok. Bkz. [[wiki/concepts/guvenlik-kurallari-ile-yetkilendirme]].
 
+## `stops` alanı emekliye ayrıldı
+
+Hiçbir hatta `stops` alanı girilmemişti ve bu, durak arayüzünün tamamen boş
+kalmasının sebebiydi. Durak–hat üyeliği artık durağın kendi `servedBy` kaydından
+okunuyor; girili olsalar bile bu diziler **yok sayılır**, silinebilirler.
+Bkz. [[wiki/decisions/008-durak-topolojisi-asset]] ve [[wiki/data/ring-stops]].
+
+Hat anahtarındaki yön eki (`gidis` / `donus`), asset'teki `directionId` ile
+`lib/features/ring/models/route_key.dart` üzerinden eşleşir — RTDB ile asset
+arasındaki tek bağ noktası orasıdır.
+
 ## Notlar
 
 Üretimde dört hat var: `au_102` ve `au_103`, her biri gidiş/dönüş. `au_103_gidis` hafta içi 72 kalkış içeriyor; sabah yoğun saatte 10 dakika, gün ortası 15-17 dakika aralık.
 
-Hiçbir hatta `stops` alanı girilmemiş — sonucu [[wiki/data/ring-stops]] sayfasında.
+`RingService` artık yalnızca bu düğümü okuyor; duraklar asset'ten geliyor.

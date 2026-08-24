@@ -1,7 +1,7 @@
 ---
 title: ring
 type: feature
-updated: 2026-07-28
+updated: 2026-08-24
 status: current
 sources:
   - "[[wiki/sources/kod-tabani]]"
@@ -27,7 +27,8 @@ Kampüs ring servisinin kalkış saatlerini ve durak konumlarını göstermek. U
 | Yol | İşlem |
 | --- | --- |
 | [[wiki/data/ring-schedule]] | okur (stream) |
-| [[wiki/data/ring-stops]] | okur (stream) |
+| [[wiki/data/ring-stops]] | okur (asset, RTDB değil) |
+| `assets/routes/au_hatlar.json` | okur (asset) — harita çizgileri |
 | Cihaz konumu | `shared/services/location_service.dart` üzerinden — en yakın durak hesabı |
 
 Firebase'e **hiç yazmıyor**. Tamamen salt okunur bir feature.
@@ -41,11 +42,14 @@ Firebase'e **hiç yazmıyor**. Tamamen salt okunur bir feature.
 
 - **Hat listesi veriden türetilir.** Kodda sabit hat listesi yok; anahtarlar `ring_schedule` düğümünden okunup `RingSchedule.lineCode` ile gruplanıyor. Üniversite yeni hat eklerse kod değişmeden görünür.
 - **Anahtar biçimi ikiliğine savunma.** `au102_gidis` ve `au_103_gidis` biçimleri aynı hatta indirgeniyor — üretim verisindeki tutarsızlığın kodda bıraktığı iz. Ayrıntı: [[wiki/data/ring-schedule]].
-- **Durak verisi yoksa uydurma yok.** `stops` girilmemişse yön seçici "Gidiş / Dönüş"e düşüyor, "Yakındaki Duraklar" hiç gösterilmiyor. Bkz. [[wiki/decisions/006-durak-bazli-saat-yok]].
+- **Durak verisi yoksa uydurma yok.** Bkz. [[wiki/decisions/006-durak-bazli-saat-yok]]. Bu kural sürüyor, ama artık tetiklenmiyor: duraklar asset'ten geldiği için her zaman dolu.
+- **Durak topolojisi asset'te, saatler RTDB'de.** Bkz. [[wiki/decisions/008-durak-topolojisi-asset]]. Yön etiketleri de asset'ten okunuyor; `RingSchedule.stops` dizisine artık bakılmıyor.
 - **Saf hesaplama modeli ayrı.** `ring_departures.dart` Firebase'e bağlı değil — sonraki kalkışların hesabı test edilebilir saf Dart. Projedeki iki test dosyasından ikisi de bu feature'a ait (`test/ring_departures_test.dart`, `test/ring_schedule_test.dart`).
 
 ## Açık sorular
 
-- Bugün üretimde `ring_stops` boş — durak bağlı tüm arayüz (harita, en yakın durak, favori duraklar) çalışmıyor. Bekleyen iş [[wiki/data/ring-stops]]'ta adım adım yazılı.
+- Duraklar asset'e taşındığı için üretim artık dolu; kapanan açık soru
+  [[wiki/decisions/008-durak-topolojisi-asset]]'te. Yeni açık soru: durak
+  değişikliği artık uygulama sürümü gerektiriyor.
 - 18 bileşen tek bir feature için yüksek. Bir kısmı ([[wiki/features/cafeteria]]'daki `soft_segment`, `date_strip` benzerleri) `shared/components/` adayı olabilir.
 - Kalkış saatleri hattın **başlangıç** noktasına ait; ara duraklar için varış tahmini yok ve bilinçli olarak gösterilmiyor. Kullanıcının bunu anlayıp anlamadığı ölçülmedi.

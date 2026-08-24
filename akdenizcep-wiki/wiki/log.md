@@ -1,7 +1,7 @@
 ---
 title: Günlük
 type: log
-updated: 2026-07-28
+updated: 2026-08-24
 status: current
 ---
 
@@ -9,6 +9,18 @@ status: current
 
 Kronolojik, append-only. En yeni üstte. Girdi biçimi sabittir:
 `grep '^## \[' log.md | head -5` son beş girdiyi verir.
+
+## [2026-08-24] ingest | au_duraklar.json + au_hatlar.json (ANTOBÜS GTFS)
+
+Ring durak verisi Realtime Database'den asset'e taşındı. `ring_stops` düğümü uzun
+süredir yer tutucu adlarla boş duruyordu ve hiçbir hattın `stops` dizisi
+girilmemişti; bu yüzden harita, en yakın durak, favoriler ve durak detayı
+bütünüyle çalışmıyordu. GTFS türevi 33 durak (`servedBy` + `stopSequence` ile)
+ve 4 güzergâh çizgisi uygulamayla birlikte geliyor; RTDB'nin ring sorumluluğu
+yalnızca kalkış saatleri kaldı. `RingService.getStops()` ve
+`firebase/ring_stops.seed.json` silindi. Dokunulan sayfalar:
+[[wiki/data/ring-stops]], [[wiki/data/ring-schedule]], [[wiki/features/ring]],
+[[wiki/concepts/elle-girilen-veri]], [[wiki/decisions/008-durak-topolojisi-asset]].
 
 ## [2026-08-21] ingest | Kulüp yönetici üyeleri (adminUids + members)
 

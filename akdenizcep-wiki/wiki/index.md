@@ -1,7 +1,7 @@
 ---
 title: Dizin
 type: index
-updated: 2026-07-28
+updated: 2026-08-24
 status: current
 ---
 
@@ -18,7 +18,7 @@ Başlangıç noktası: [[wiki/overview]] — projenin sentezi ve bugünkü durum
 | [[wiki/features/auth]]           | Kayıt, giriş, e-posta doğrulama. Domain kısıtının uygulandığı yer.                                |
 | [[wiki/features/home]]           | Hem sekme kabuğu hem ana sayfa içeriği. Hızlı erişim kartları henüz bağlı değil.                  |
 | [[wiki/features/cafeteria]]      | Menü, puanlama, yorum ve yorum oylaması. İki veritabanına birden dokunan tek feature.             |
-| [[wiki/features/ring]]           | Ring saatleri ve duraklar. 18 bileşen; durak verisi eksik olduğu için bir kısmı bugün görünmüyor. |
+| [[wiki/features/ring]]           | Ring saatleri, duraklar ve hat çizgileri. Durak verisi asset'e taşındı; arayüz artık dolu.        |
 | [[wiki/features/community]]      | Kulüpler, kulüp etkinlikleri, takip et/bırak.                                                     |
 | [[wiki/features/student_events]] | Öğrencilerin kendi etkinlikleri. Yetki yazarlığa bağlı.                                           |
 | [[wiki/features/board]]          | İlan panosu. Güvenlik kuralı yok — en kritik açık.                                                |
@@ -40,12 +40,17 @@ Başlangıç noktası: [[wiki/overview]] — projenin sentezi ve bugünkü durum
 | [[wiki/data/board]] | İlan panosu. **Güvenlik kuralı yok.** |
 | [[wiki/data/feedback]] | Geri bildirim. Tek yönlü kutu — yazan bile okuyamaz. |
 
+### Asset (uygulamayla gelen)
+
+| Sayfa | Özet |
+| --- | --- |
+| [[wiki/data/ring-stops]] | 33 durak, konum + hat üyeliği + güzergâh sırası. GTFS türevi. |
+
 ### Realtime Database
 
 | Sayfa | Özet |
 | --- | --- |
 | [[wiki/data/ring-schedule]] | Hat kalkış saatleri. Dört hat, anahtar biçimi iki türlü. |
-| [[wiki/data/ring-stops]] | Durak havuzu. **Üretimde yanlış düğümde — bugün boş.** |
 | [[wiki/data/cafeteria-menu]] | Günlük menü. Üretim dökümünde yok. |
 
 ## Kavramlar
@@ -55,7 +60,7 @@ Başlangıç noktası: [[wiki/overview]] — projenin sentezi ve bugünkü durum
 | [[wiki/concepts/katman-disiplini]] | `Model → Service → Provider → Page` kuralının kodda ne kadar tutulduğu. |
 | [[wiki/concepts/ogrenci-dogrulama]] | Üç katmanlı öğrenci kontrolü ve `email_verified` boşluğu. |
 | [[wiki/concepts/guvenlik-kurallari-ile-yetkilendirme]] | Backend olmadığı için tüm yetkinin kurallarda yaşaması. Üç olgunluk seviyesi. |
-| [[wiki/concepts/elle-girilen-veri]] | Üniversitenin Console'dan girdiği veri, getirisi ve bugünkü bedeli. |
+| [[wiki/concepts/elle-girilen-veri]] | Üniversitenin Console'dan girdiği veri, getirisi ve bedeli. Duraklar bu kapsamdan çıktı. |
 | [[wiki/concepts/denormalizasyon]] | Dört kopyalama noktası ve bayatlama riskleri. |
 
 ## Kararlar
@@ -69,6 +74,7 @@ Başlangıç noktası: [[wiki/overview]] — projenin sentezi ve bugünkü durum
 | [[wiki/decisions/005-shell-route-navigasyon]] | Beş sekme, dört gizli feature. |
 | [[wiki/decisions/006-durak-bazli-saat-yok]] | Tahmin üretmeme ilkesi. |
 | [[wiki/decisions/007-kulup-etkinligi-adminuid]] | Kulüp yetkisi vs yazar yetkisi. Kural bugün ölü. |
+| [[wiki/decisions/008-durak-topolojisi-asset]] | Durak topolojisi asset'e taşındı, saatler veritabanında kaldı. |
 
 ## Kaynaklar
 
