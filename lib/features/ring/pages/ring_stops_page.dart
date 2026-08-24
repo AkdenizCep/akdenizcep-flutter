@@ -1,95 +1,284 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../shared/providers/location_provider.dart';
-import '../../../shared/providers/nav_visibility_provider.dart';
+import '../models/ring_stop.dart';
+import '../models/route_shape.dart';
 import '../providers/ring_provider.dart';
-import 'components/stop_detail_sheet.dart';
-import 'components/stop_list_tile.dart';
+import 'components/open_stop_detail.dart';
+import 'components/stop_map_card.dart';
 import 'components/stops_map.dart';
 
-/// Duraklar sayfasi: ustte harita, altta mesafeye gore sirali liste.
+/// Yakındaki duraklar: tam ekran harita + altta yatay kaydırmalı durak kartları.
 ///
-/// Konum izni yoksa sayfa yine acilir — harita kampuse odaklanir, liste
-/// guzergah sirasina gore dizilir ve mesafeler gizlenir.
-class RingStopsPage extends ConsumerWidget {
+/// Konum izni yoksa sayfa yine açılır — harita kampüse odaklanır, kartlar
+/// güzergâh sırasına göre dizilir ve mesafeler gizlenir.
+///
+/// Yüzen alt nav bar görünür kalır; kart şeridi onun üstünde durur.
+class RingStopsPage extends ConsumerStatefulWidget {
   const RingStopsPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final stops = ref.watch(nearbyStopsProvider);
-    final hasLocation = ref.watch(userPositionProvider) != null;
+  ConsumerState<RingStopsPage> createState() => _RingStopsPageState();
+}
 
-    // Veri henuz gelmediyse "durak girilmemis" demek yanlis bilgi olur —
-    // yukleme, bos ve hata durumlari ayri ayri karsilanir.
+class _RingStopsPageState extends ConsumerState<RingStopsPage> {
+  /// Kart şeridi ile pinleri senkron tutar.
+  PageController? _pageController;
+
+  final _searchController = TextEditingController();
+
+  /// Harita tipi yalnızca bu sayfayı ilgilendirir — global state'e taşınmaz.
+  MapType _mapType = MapType.normal;
+
+  /// [StopsMap]'e "kamerayı kullanıcıya döndür" demenin yolu.
+  int _recenterTick = 0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Kart genisligi (274) + aralik (12) ekranin oranina cevrilir; `padEnds`
+    // kapali oldugu icin ilk kart sol kenardan 20 iceride baslar.
+    final width = MediaQuery.of(context).size.width - 20;
+    final fraction = (286 / width).clamp(0.1, 1.0);
+    if (_pageController?.viewportFraction == fraction) return;
+
+    _pageController?.dispose();
+    _pageController = PageController(viewportFraction: fraction);
+  }
+
+  @override
+  void dispose() {
+    _pageController?.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final stops = ref.watch(visibleStopsProvider);
+    final hasLocation = ref.watch(userPositionProvider) != null;
+    final query = ref.watch(stopQueryProvider);
+
+    // Veri henüz gelmediyse "durak girilmemiş" demek yanlış bilgi olur —
+    // yükleme, boş ve hata durumları ayrı ayrı karşılanır.
     final stopsAsync = ref.watch(ringStopsProvider);
+    final allStops = ref.watch(nearbyStopsProvider);
+
+    final selectedId = ref.watch(selectedStopProvider);
+
+    // Şerit ilk dolduğunda — ve arama seçili durağı listeden düşürdüğünde —
+    // ilk kart öne çıkar. Kart ile pin hiçbir zaman ayrı duraklarda kalmaz.
+    if (stops.isNotEmpty &&
+        (selectedId == null ||
+            !stops.any((n) => n.stop.id == selectedId))) {
+      _selectFirstAfterFrame(stops.first.stop.id);
+    }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Yakındaki Duraklar')),
-      body: stops.isEmpty
-          ? switch (stopsAsync) {
-              AsyncLoading() => const _LoadingView(),
-              AsyncError() => const _StopsErrorView(),
-              _ => const _NoStopsView(),
-            }
-          : Column(
-              children: [
-                SizedBox(
-                  height: 240,
-                  child: StopsMap(
-                    stops: stops.map((s) => s.stop).toList(),
-                    onStopTap: (stopId) =>
-                        _openStopDetail(context, ref, stopId),
-                  ),
-                ),
-                if (!hasLocation)
-                  _EnableLocationBanner(
-                    onEnable: () => _requestLocation(context, ref),
-                  ),
-                Expanded(
-                  child: ListView.separated(
-                    // Alt kisim yuzen nav bar'in altinda kalmasin.
-                    padding: EdgeInsets.fromLTRB(
-                      20,
-                      18,
-                      20,
-                      130 + MediaQuery.of(context).padding.bottom,
-                    ),
-                    itemCount: stops.length + 1,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 10),
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Text(
-                            hasLocation ? 'MESAFEYE GÖRE' : 'GÜZERGAH SIRASINA GÖRE',
-                            style: Theme.of(context).textTheme.labelMedium
-                                ?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 1.6,
-                                ),
-                          ),
-                        );
-                      }
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: StopsMap(
+              stops: stops.map((s) => s.stop).toList(),
+              routes: ref.watch(visibleRouteShapesProvider),
+              onRouteTap: _showRouteInfo,
+              mapType: _mapType,
+              recenterTick: _recenterTick,
+              onStopTap: _selectFromMap,
+            ),
+          ),
 
-                      final nearby = stops[index - 1];
-                      return StopListTile(
-                        nearby: nearby,
-                        onTap: () =>
-                            _openStopDetail(context, ref, nearby.stop.id),
-                      );
-                    },
-                  ),
+          // Yüzen kontrollerin harita üzerinde okunabilir kalması için.
+          const Positioned.fill(child: IgnorePointer(child: _MapScrim())),
+
+          // Üst satır: geri + arama
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 8,
+            left: 20,
+            right: 20,
+            child: Row(
+              children: [
+                _RoundMapButton(
+                  icon: Icons.arrow_back_rounded,
+                  tooltip: 'Geri',
+                  onTap: () => context.pop(),
+                ),
+                const SizedBox(width: 10),
+                Expanded(child: _MapSearchField(controller: _searchController)),
+              ],
+            ),
+          ),
+
+          // Sağ kenar: konum ve katman butonları
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 68,
+            right: 20,
+            child: Column(
+              children: [
+                _SquareMapButton(
+                  icon: Icons.my_location_rounded,
+                  tooltip: 'Konumuma dön',
+                  isPrimary: true,
+                  onTap: _recenter,
+                ),
+                const SizedBox(height: 8),
+                _SquareMapButton(
+                  icon: Icons.layers_rounded,
+                  tooltip: 'Harita görünümü',
+                  onTap: () => setState(() {
+                    _mapType = _mapType == MapType.normal
+                        ? MapType.hybrid
+                        : MapType.normal;
+                  }),
                 ),
               ],
             ),
+          ),
+
+          // Sol üst: hat seçici, altında durum çipi.
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 68,
+            left: 20,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const _RouteLineToggle(),
+                const SizedBox(height: 8),
+                _StatusChip(
+                  label: hasLocation
+                      ? '${stops.length} durak yakında'
+                      : 'Konumunu aç',
+                  onTap: hasLocation ? null : () => _requestLocation(context),
+                ),
+              ],
+            ),
+          ),
+
+          // Yükleme / hata / boş durumlar haritanın üstünde bir kart olarak.
+          if (allStops.isEmpty)
+            Center(
+              child: switch (stopsAsync) {
+                AsyncLoading() => const _MapMessageCard(
+                  icon: null,
+                  title: 'Duraklar yükleniyor',
+                ),
+                // Duraklar asset'ten okunuyor; buraya dusmek genelde
+                // "asset paketlenmemis" demektir (yeni asset eklendikten
+                // sonra hot reload yetmez, yeniden baslatmak gerekir).
+                AsyncError(:final error) => _MapMessageCard(
+                  icon: Icons.cloud_off_rounded,
+                  title: 'Durak bilgisi alınamadı.',
+                  subtitle: kDebugMode
+                      ? '$error'
+                      : 'Uygulamayı yeniden başlatmayı dene.',
+                ),
+                _ => const _MapMessageCard(
+                  icon: Icons.location_off_outlined,
+                  title: 'Durak bilgisi henüz girilmemiş.',
+                ),
+              },
+            )
+          else if (stops.isEmpty)
+            Center(
+              child: _MapMessageCard(
+                icon: Icons.search_off_rounded,
+                title: '"$query" için durak yok.',
+              ),
+            ),
+
+          // Alt: yatay kaydırmalı durak kartları
+          if (stops.isNotEmpty)
+            Positioned(
+              left: 0,
+              right: 0,
+              // Yuzen nav bar ekranin altindan 24 bosluk + 68 yukseklik
+              // kapliyor; serit onun 12 ustunde durur.
+              bottom: 104,
+              child: _StopCardStrip(
+                stops: stops,
+                selectedId: selectedId,
+                controller: _pageController!,
+                onPageChanged: (index) =>
+                    ref.read(selectedStopProvider.notifier).state =
+                        stops[index].stop.id,
+                onShowLines: (stopId) => openStopDetail(context, ref, stopId),
+                onWalkingDirections: _openWalkingDirections,
+              ),
+            ),
+        ],
+      ),
     );
   }
 
-  Future<void> _requestLocation(BuildContext context, WidgetRef ref) async {
+  /// Seçim build sırasında yazılamaz (provider'ı build içinde değiştirmek
+  /// hatadır), bu yüzden kare bitiminde uygulanır.
+  void _selectFirstAfterFrame(String stopId) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (ref.read(selectedStopProvider) == stopId) return;
+      ref.read(selectedStopProvider.notifier).state = stopId;
+      if (_pageController?.hasClients ?? false) _pageController!.jumpToPage(0);
+    });
+  }
+
+  /// Haritada bir pine dokunulduğunda ilgili kartı öne getirir.
+  void _selectFromMap(String stopId) {
+    ref.read(selectedStopProvider.notifier).state = stopId;
+
+    final index = ref
+        .read(visibleStopsProvider)
+        .indexWhere((n) => n.stop.id == stopId);
+    if (index < 0) return;
+
+    _pageController?.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeOut,
+    );
+  }
+
+  /// Bir güzergâh çizgisine dokunulduğunda hangi hat olduğunu gösterir.
+  void _showRouteInfo(RouteShape route) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.fromLTRB(20, 0, 20, 104),
+        content: Text(
+          '${route.label} · ${route.lengthKm.toStringAsFixed(1)} km',
+        ),
+      ),
+    );
+  }
+
+  Future<void> _recenter() async {
+    if (ref.read(userPositionProvider) == null) {
+      await _requestLocation(context);
+      return;
+    }
+    setState(() => _recenterTick++);
+  }
+
+  Future<void> _openWalkingDirections(RingStop stop) async {
+    final uri = Uri.parse(
+      'https://www.google.com/maps/dir/?api=1'
+      '&destination=${stop.lat},${stop.lng}&travelmode=walking',
+    );
+
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (launched || !mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Harita uygulaması açılamadı.')),
+    );
+  }
+
+  Future<void> _requestLocation(BuildContext context) async {
     final granted = await ref.read(userPositionProvider.notifier).request();
     if (granted || !context.mounted) return;
 
@@ -115,171 +304,417 @@ class RingStopsPage extends ConsumerWidget {
       ),
     );
   }
-
-  Future<void> _openStopDetail(
-    BuildContext context,
-    WidgetRef ref,
-    String stopId,
-  ) async {
-    ref.read(bottomNavVisibleProvider.notifier).state = false;
-    try {
-      await showModalBottomSheet<void>(
-        context: context,
-        showDragHandle: true,
-        isScrollControlled: true,
-        builder: (context) => StopDetailSheet(stopId: stopId),
-      );
-    } finally {
-      ref.read(bottomNavVisibleProvider.notifier).state = true;
-    }
-  }
 }
 
-class _EnableLocationBanner extends StatelessWidget {
-  final VoidCallback onEnable;
+class _StopCardStrip extends StatelessWidget {
+  final List<NearbyStop> stops;
+  final String? selectedId;
+  final PageController controller;
+  final ValueChanged<int> onPageChanged;
+  final ValueChanged<String> onShowLines;
+  final ValueChanged<RingStop> onWalkingDirections;
 
-  const _EnableLocationBanner({required this.onEnable});
+  const _StopCardStrip({
+    required this.stops,
+    required this.selectedId,
+    required this.controller,
+    required this.onPageChanged,
+    required this.onShowLines,
+    required this.onWalkingDirections,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      width: double.infinity,
-      color: colorScheme.secondaryContainer,
-      padding: const EdgeInsets.fromLTRB(20, 12, 12, 12),
-      child: Row(
-        children: [
-          Icon(
-            Icons.my_location_rounded,
-            size: 18,
-            color: colorScheme.onSecondaryContainer,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              'Mesafeleri görmek için konumunu aç.',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSecondaryContainer,
-                fontWeight: FontWeight.w600,
+    // Kart yuksekligi: 14 padding + 40 baslik + 10 + 24 rozet + 10 + 42 buton
+    // + 14 padding = 154. Serit bundan buyuk olursa kartlar haritanin
+    // ortasinda asili kalir.
+    return SizedBox(
+      height: 156,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 20),
+        child: PageView.builder(
+          controller: controller,
+          padEnds: false,
+          onPageChanged: onPageChanged,
+          itemCount: stops.length,
+          itemBuilder: (context, index) {
+            final nearby = stops[index];
+            return Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: Align(
+                // Rozetsiz bir durak kisa kalabilir; artan bosluk kartin
+                // ustunde birikmeli ki serit alt kenarda hizali dursun.
+                alignment: Alignment.bottomLeft,
+                child: StopMapCard(
+                  nearby: nearby,
+                  isSelected: nearby.stop.id == selectedId,
+                  onShowLines: () => onShowLines(nearby.stop.id),
+                  onWalkingDirections: () => onWalkingDirections(nearby.stop),
+                ),
               ),
-            ),
-          ),
-          TextButton(
-            onPressed: onEnable,
-            style: TextButton.styleFrom(
-              foregroundColor: colorScheme.onSecondaryContainer,
-            ),
-            child: const Text('Aç'),
-          ),
-        ],
+            );
+          },
+        ),
       ),
     );
   }
 }
 
-class _LoadingView extends StatelessWidget {
-  const _LoadingView();
+/// Haritada hangi hattın çizileceğini seçen segment kontrolü.
+///
+/// Seçenekler `assets/routes/au_hatlar.json` içeriğinden türetilir — hat
+/// listesi koda gömülmez. Veri yüklenmediyse hiç çizilmez.
+class _RouteLineToggle extends ConsumerWidget {
+  const _RouteLineToggle();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    final lines = ref.watch(routeLineNamesProvider);
+    if (lines.length < 2) return const SizedBox.shrink();
+
+    final selected = ref.watch(selectedRouteLineProvider);
+    final active = selected != null && lines.contains(selected)
+        ? selected
+        : lines.first;
+
+    return Material(
+      color: colorScheme.surface,
+      borderRadius: BorderRadius.circular(16),
+      elevation: 3,
+      shadowColor: Colors.black.withValues(alpha: 0.3),
+      child: Padding(
+        padding: const EdgeInsets.all(3),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final line in lines)
+              _ToggleSegment(
+                label: line,
+                isActive: line == active,
+                onTap: () =>
+                    ref.read(selectedRouteLineProvider.notifier).state = line,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ToggleSegment extends StatelessWidget {
+  final String label;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _ToggleSegment({
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final radius = BorderRadius.circular(13);
+
+    return Material(
+      color: isActive ? colorScheme.primary : Colors.transparent,
+      borderRadius: radius,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: radius,
+        child: Container(
+          height: 32,
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: isActive ? colorScheme.onPrimary : colorScheme.onSurface,
+              fontSize: 12.5,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Üstte beyaza, altta koyuya çalan ince perde — beyaz butonlar ve beyaz
+/// kartlar açık renkli harita karolarının üzerinde de seçilebilsin diye.
+class _MapScrim extends StatelessWidget {
+  const _MapScrim();
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: const [0, 0.22, 0.6, 1],
+          colors: [
+            Colors.white.withValues(alpha: 0.92),
+            Colors.white.withValues(alpha: 0),
+            Colors.black.withValues(alpha: 0),
+            Colors.black.withValues(alpha: 0.16),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RoundMapButton extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onTap;
+
+  const _RoundMapButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Center(
+    return Material(
+      color: colorScheme.surface,
+      shape: const CircleBorder(),
+      elevation: 3,
+      shadowColor: Colors.black.withValues(alpha: 0.3),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: Tooltip(
+          message: tooltip,
+          child: SizedBox(
+            width: 44,
+            height: 44,
+            child: Icon(icon, size: 23, color: colorScheme.onSurface),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SquareMapButton extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
+  final bool isPrimary;
+  final VoidCallback onTap;
+
+  const _SquareMapButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+    this.isPrimary = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final radius = BorderRadius.circular(15);
+
+    return Material(
+      color: colorScheme.surface,
+      borderRadius: radius,
+      elevation: 3,
+      shadowColor: Colors.black.withValues(alpha: 0.3),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: radius,
+        child: Tooltip(
+          message: tooltip,
+          child: SizedBox(
+            width: 42,
+            height: 42,
+            child: Icon(
+              icon,
+              size: 21,
+              color: isPrimary
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "N durak yakında" / "Konumunu aç". Konum izni akışının giriş noktası —
+/// eski [_EnableLocationBanner] bandının yerini alır.
+class _StatusChip extends StatelessWidget {
+  final String label;
+  final VoidCallback? onTap;
+
+  const _StatusChip({required this.label, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final radius = BorderRadius.circular(16);
+
+    return Material(
+      color: colorScheme.onSurface.withValues(alpha: 0.88),
+      borderRadius: radius,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: radius,
+        child: Container(
+          height: 32,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                onTap == null
+                    ? Icons.place_rounded
+                    : Icons.my_location_rounded,
+                size: 15,
+                color: colorScheme.surface,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  color: colorScheme.surface,
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MapSearchField extends ConsumerWidget {
+  final TextEditingController controller;
+
+  const _MapSearchField({required this.controller});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final radius = BorderRadius.circular(22);
+
+    return Material(
+      color: colorScheme.surface,
+      borderRadius: radius,
+      elevation: 3,
+      shadowColor: Colors.black.withValues(alpha: 0.3),
+      child: SizedBox(
+        height: 44,
+        child: TextField(
+          controller: controller,
+          onChanged: (value) =>
+              ref.read(stopQueryProvider.notifier).state = value,
+          style: TextStyle(
+            color: colorScheme.onSurface,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+          decoration: InputDecoration(
+            isDense: true,
+            hintText: 'Durak ara',
+            hintStyle: TextStyle(
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+            prefixIcon: Padding(
+              padding: const EdgeInsets.only(left: 15, right: 9),
+              child: Icon(
+                Icons.search_rounded,
+                size: 20,
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+              ),
+            ),
+            prefixIconConstraints: const BoxConstraints(
+              minWidth: 44,
+              minHeight: 44,
+            ),
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 13,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Yükleme / hata / boş durumların haritanın üstündeki kart karşılığı.
+class _MapMessageCard extends StatelessWidget {
+  final IconData? icon;
+  final String title;
+  final String? subtitle;
+
+  const _MapMessageCard({required this.icon, required this.title, this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 22),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.14),
+            blurRadius: 28,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
-            width: 26,
-            height: 26,
-            child: CircularProgressIndicator(
-              strokeWidth: 2.6,
-              color: colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: 16),
+          if (icon == null)
+            SizedBox(
+              width: 26,
+              height: 26,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.6,
+                color: colorScheme.primary,
+              ),
+            )
+          else
+            Icon(icon, size: 44, color: colorScheme.onSurfaceVariant),
+          const SizedBox(height: 14),
           Text(
-            'Duraklar yükleniyor',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-            ),
+            title,
+            textAlign: TextAlign.center,
+            style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StopsErrorView extends StatelessWidget {
-  const _StopsErrorView();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.cloud_off_rounded,
-              size: 48,
-              color: colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Durak bilgisi alınamadı.',
-              textAlign: TextAlign.center,
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-            ),
+          if (subtitle != null) ...[
             const SizedBox(height: 6),
             Text(
-              'Bağlantını kontrol edip tekrar dene.',
+              subtitle!,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              style: textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _NoStopsView extends StatelessWidget {
-  const _NoStopsView();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.location_off_outlined,
-              size: 48,
-              color: colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Durak bilgisi henüz girilmemiş.',
-              textAlign: TextAlign.center,
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }

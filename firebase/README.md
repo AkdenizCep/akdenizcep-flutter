@@ -3,70 +3,53 @@
 Bu klasördeki JSON dosyaları Firebase Console üzerinden elle içe aktarılmak
 içindir. Uygulama tarafından okunmaz, derlemeye dahil edilmez.
 
-## ring_stops.seed.json
-
-Ring duraklarının koordinat havuzu. Dosyanın kökü doğrudan durak
-anahtarlarıdır (`durak_1`, `durak_2`, …) — `ring_stops` sarmalayıcısı
-**yoktur**, çünkü içe aktarma `ring_stops` düğümü seçiliyken yapılır.
-
-> Dosya bir zamanlar `ring_stops` sarmalayıcısıyla geliyordu ama içe aktarma
-> talimatı düğümü seçmeyi söylüyordu. Bu çelişki yüzünden duraklar bir kez
-> kök düğüme yazıldı ve uygulama onları göremedi. Sarmalayıcıyı eklemeyin.
-
-### İçe aktarma
-
-1. Firebase Console → **Realtime Database** → `akdeniz-cep-36d3f-default-rtdb`
-2. Ağaçta **`ring_stops`** düğümüne gel (yoksa üst düğümde kal ve aşağıdaki
-   uyarıyı oku)
-3. Sağdaki **⋮** menüsü → **JSON içe aktar** → bu dosyayı seç
-
 > **Uyarı:** İçe aktarma seçili düğümün altındaki her şeyi **değiştirir**,
-> birleştirmez. Kök düğümde içe aktarırsan `cafeteria_menu` ve
-> `ring_schedule` dahil tüm veritabanını silersin. Mutlaka önce
-> `ring_stops` düğümünü seç.
+> birleştirmez. Kök düğümde içe aktarırsan `cafeteria_menu` ve `ring_schedule`
+> dahil tüm veritabanını silersin. Mutlaka önce hedef düğümü seç.
 
-### İçe aktarmadan önce
+## Duraklar artık burada değil
 
-- **Durum:** duraklar `ring_stops` altına yüklendi, ama `name` alanları
-  yer tutucu olarak `durak_1` / `durak_2` / `durak_3` kaldı. Bu adlar
-  doğrudan uygulamada görünür (durak listesi, harita marker'ı, yön seçici,
-  durak detayı) — gerçek durak adlarıyla değiştirilmeli.
-- Anahtarlar (`durak_1`, `durak_2`, `durak_3`) geçicidir. İsimler
-  belirlendiğinde okunabilir slug'lara çevirmek daha iyi olur
-  (`rektorluk`, `ziraat` gibi). Anahtarı değiştirirsen `ring_schedule`
-  içindeki `stops` dizilerini de güncellemen gerekir.
+`ring_stops.seed.json` **kaldırıldı**. Ring durakları — konum, hat üyeliği ve
+güzergâh sırası — uygulamayla birlikte gelen `assets/routes/au_duraklar.json`
+dosyasından okunuyor. `ring_stops` düğümü artık uygulama tarafından
+**okunmuyor**; Console'da duruyorsa silinebilir.
 
-### İkinci adım: hatlara bağlama — **yapıldı**
+Nedeni: duraklar GTFS türevi topolojidir, yılda bir değişir ve elle giriş
+gerektirmesi durak arayüzünün uzun süre boş kalmasına yol açtı. Aynı gerekçeyle
+`ring_schedule` içindeki `stops` dizileri de artık okunmuyor — girili olsalar da
+yok sayılırlar, silinebilirler.
 
-Duraklar tek başına yüklendiğinde durak listesinde hat bilgisi görünmez.
-Her hattın `stops` dizisine, güzergah sırasına göre (kalkış → varış) durak
-anahtarlarının eklenmesi gerekir. Dört hatta da eklendi (koordinat sırasına
-göre, gidiş batıdan doğuya):
+Durak verisi değiştiğinde `assets/routes/au_duraklar.json` güncellenir ve yeni
+bir uygulama sürümü çıkılır.
 
-```
-au_102_gidis / au_103_gidis → ["durak_1", "durak_2", "durak_3"]
-au_102_donus / au_103_donus → ["durak_3", "durak_2", "durak_1"]
-```
+## ring_schedule — RTDB'nin tek ring sorumluluğu
 
-Gerçek güzergah bu sıradan farklıysa dizileri düzeltin. Şema şöyledir:
+Üniversitenin gerçekten güncellediği veri kalkış saatleridir; bu yüzden RTDB'de
+kalır. Şema:
 
 ```json
 "ring_schedule": {
   "au102_gidis": {
     "weekday": ["07:30", "08:00"],
-    "weekend": ["09:00"],
-    "stops": ["durak_1", "durak_2", "durak_3"]
+    "weekend": ["09:00"]
   },
   "au102_donus": {
     "weekday": ["07:45", "08:15"],
-    "weekend": ["09:30"],
-    "stops": ["durak_3", "durak_2", "durak_1"]
+    "weekend": ["09:30"]
   }
 }
 ```
 
-Koordinatlar batıdan doğuya `durak_1 → durak_2 → durak_3` sırasında; gidiş
-yönü bunun tersiyse dizileri ters çevir.
+| Alan | Not |
+| --- | --- |
+| `weekday` / `weekend` | `HH:mm`, **hattın kalkış noktasından** ayrılış saatleri |
+| `stops` | Artık okunmuyor. Bkz. yukarısı. |
 
-Şema kurallarının tamamı için `DEVELOPMENT.md` → Realtime Database bölümüne
-bak.
+Anahtar sözleşmesi `<hatKodu>_<yön>`, yön eki `gidis` veya `donus`. Hat listesi
+kodda sabit değildir, bu anahtarlardan türetilir.
+
+`gidis` eki, `assets/routes/au_hatlar.json` içindeki `directionId: 0` ile
+eşleşir (AÜ102 için "ADLİ TIP → MELTEM KAPISI"). Eşleştirme
+`lib/features/ring/models/route_key.dart` içinde tek bir sabitte durur.
+
+Şema kurallarının tamamı için `DEVELOPMENT.md` → Realtime Database bölümüne bak.

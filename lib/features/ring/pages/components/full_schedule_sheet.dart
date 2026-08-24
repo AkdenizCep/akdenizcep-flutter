@@ -46,7 +46,8 @@ class _FullScheduleSheetState extends ConsumerState<FullScheduleSheet> {
     final textTheme = Theme.of(context).textTheme;
 
     final schedule = ref.watch(selectedScheduleProvider);
-    final stopMap = ref.watch(ringStopMapProvider);
+    final isReturn = ref.watch(isReturnDirectionProvider);
+    final activeShape = ref.watch(activeRouteShapeProvider(isReturn));
     final showWeekend = ref.watch(showWeekendProvider);
     final departures = ref.watch(departuresProvider);
 
@@ -80,7 +81,7 @@ class _FullScheduleSheetState extends ConsumerState<FullScheduleSheet> {
                           schedule == null
                               ? 'Tüm Saatler'
                               : '${lineLabel(schedule.lineCode)} · '
-                                    '${directionSummary(schedule, stopMap)}',
+                                    '${directionSummary(activeShape, isReturn: isReturn)}',
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: textTheme.titleLarge?.copyWith(

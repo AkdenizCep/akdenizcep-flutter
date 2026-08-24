@@ -5,7 +5,10 @@ import '../../../../shared/providers/nav_visibility_provider.dart';
 import 'full_schedule_sheet.dart';
 import 'open_stops_page.dart';
 
-/// "Tüm Tarife" ve "Yakındaki Duraklar" 2'li ızgara aksiyon kartları.
+/// "Tüm Tarife" ve "Haritada Gör" 2'li ızgara aksiyon kartları.
+///
+/// Yakındaki duraklar artık yukarıdaki şeritte olduğu için sağ kart haritayı
+/// açar; başlık ve ikon buna göre değişti.
 class RingGridActions extends ConsumerWidget {
   const RingGridActions({super.key});
 
@@ -20,11 +23,11 @@ class RingGridActions extends ConsumerWidget {
             onTap: () => _openFullSchedule(context, ref),
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 10),
         Expanded(
           child: _ActionCard(
-            icon: Icons.location_on_outlined,
-            title: 'Yakındaki\nDuraklar',
+            icon: Icons.map_rounded,
+            title: 'Haritada Gör',
             onTap: () => openStopsPage(context, ref),
           ),
         ),
@@ -68,52 +71,40 @@ class _ActionCard extends StatelessWidget {
 
     return Material(
       color: colorScheme.surface,
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(20),
       elevation: 0,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         child: Container(
-          height: 150,
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: colorScheme.outlineVariant.withValues(alpha: 0.6),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 16,
-                offset: const Offset(0, 4),
-              ),
-            ],
           ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 58,
-                height: 58,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: colorScheme.primaryContainer.withValues(alpha: 0.5),
-                  shape: BoxShape.circle,
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(
-                  icon,
-                  color: colorScheme.primary,
-                  size: 28,
-                ),
+                child: Icon(icon, color: colorScheme.primary, size: 21),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               Text(
                 title,
-                textAlign: TextAlign.center,
                 style: TextStyle(
                   color: colorScheme.onSurface,
-                  fontSize: 15,
+                  fontSize: 13.5,
                   fontWeight: FontWeight.w800,
-                  height: 1.2,
+                  height: 1.25,
                 ),
               ),
             ],

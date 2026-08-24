@@ -14,10 +14,10 @@ class StopListTile extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    // Ayni hattin iki yonu tek etiket olarak gosterilir — kullaniciyi
-    // ilgilendiren "hangi hat geciyor" bilgisi.
-    final lineCodes = nearby.schedules.map((s) => s.lineCode).toSet().toList()
-      ..sort();
+    // Kullaniciyi ilgilendiren "hangi hat geciyor" bilgisi duragin kendi
+    // verisinde duruyor; RTDB tarifesine bagli degil.
+    final lineNames = nearby.stop.lineNames;
+    final sideNote = stopSideNote(nearby.stop);
 
     return Material(
       color: colorScheme.surface,
@@ -62,9 +62,13 @@ class StopListTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      lineCodes.isEmpty
-                          ? 'Hat bilgisi girilmemiş'
-                          : lineCodes.map(lineLabel).join(' · '),
+                      [
+                        if (lineNames.isEmpty)
+                          'Hat bilgisi girilmemiş'
+                        else
+                          lineNames.join(' · '),
+                        ?sideNote,
+                      ].join(' · '),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: textTheme.bodySmall?.copyWith(

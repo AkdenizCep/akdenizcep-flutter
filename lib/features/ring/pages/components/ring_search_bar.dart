@@ -16,9 +16,10 @@ class RingSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final borderRadius = BorderRadius.circular(28);
+    final borderRadius = BorderRadius.circular(20);
 
     return Container(
+      height: 50,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: colorScheme.surface,
@@ -53,17 +54,18 @@ class RingSearchBar extends StatelessWidget {
               fontSize: 15,
               fontWeight: FontWeight.w400,
             ),
+            isDense: true,
             prefixIcon: Padding(
-              padding: const EdgeInsets.only(left: 18, right: 12),
+              padding: const EdgeInsets.only(left: 16, right: 10),
               child: Icon(
                 Icons.search_rounded,
                 color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                size: 22,
+                size: 21,
               ),
             ),
             prefixIconConstraints: const BoxConstraints(
-              minWidth: 48,
-              minHeight: 48,
+              minWidth: 47,
+              minHeight: 50,
             ),
             border: OutlineInputBorder(
               borderRadius: borderRadius,
@@ -78,8 +80,8 @@ class RingSearchBar extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
             contentPadding: const EdgeInsets.symmetric(
-              horizontal: 18,
-              vertical: 14,
+              horizontal: 16,
+              vertical: 15,
             ),
           ),
         ),

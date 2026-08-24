@@ -50,6 +50,7 @@ dependencies:
   cloudinary_url_gen: ^1.8.0
   http: ^1.6.0
   url_launcher: ^6.3.2
+  shared_preferences: ^2.3.3
   pointer_interceptor: ^0.10.1+2
   qr_flutter: ^4.1.0
   mobile_scanner: ^6.0.2
@@ -75,6 +76,10 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/routes/
+    - assets/images/ring_stop_pin.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

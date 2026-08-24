@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800;900&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=swap" rel="stylesheet"><style>body{margin:0;background:#f0eee9;font-family:Roboto,system-ui,sans-serif}a{color:#135BEC}a:hover{color:#0b3f9f}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08)}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55);max-width:390px}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-note{margin:22px 0 0;font:12px/1.6 system-ui,sans-serif;color:rgba(0,0,0,.55);max-width:760px}.ph::-webkit-scrollbar{display:none}.ph{scrollbar-width:none}</style><script src="./image-slot.js"></script></helmet>
+
+<section class="dv-turn" id="t5">
+<div class="dv-thd"><a class="dv-tid" href="#t5">5</a><span class="dv-tname">Ulaşım ekranı sadeleşti (arama + hatlar kaldırıldı) · durak yaprağı için 3 yeni yön</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="5a"><div class="dv-olabel"><a class="dv-oid" href="#5a">5a</a>Revize ulaşım ekranı: arama ve hatlar bölümü yok · kartın altında önceki / sonraki / son sefer şeridi</div>
+<div style="width:390px;height:844px;position:relative;background:#F7F8FB;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#171A22;flex:none"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="flex:none;display:flex;align-items:center;gap:10px;padding:4px 20px 10px">
+<div style="flex:1;min-width:0"><div style="font:900 14px/1 Roboto;color:#171A22">Akdeniz<span style="color:#135BEC">Cep</span></div><div style="font:900 23px/1.15 Roboto;color:#171A22;margin-top:5px">Ulaşım</div></div>
+<div style="width:40px;height:40px;border-radius:20px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;font:900 15px Roboto;color:#135BEC">E</div>
+</div>
+<div class="ph" style="flex:1;overflow-y:auto;padding:0 20px 130px">
+<div style="background:#135BEC;border-radius:26px;padding:18px;position:relative;overflow:hidden">
+<div style="position:absolute;right:-24px;bottom:-24px;font-family:'Material Symbols Rounded';font-size:150px;line-height:1;color:rgba(255,255,255,.12);font-variation-settings:'FILL' 1">directions_bus</div>
+<div style="position:relative;display:flex;align-items:center;gap:8px">
+<div style="height:32px;padding:0 14px;border-radius:16px;background:#fff;display:flex;align-items:center;font:900 12.5px Roboto;color:#135BEC">AÜ102</div>
+<div style="height:32px;padding:0 14px;border-radius:16px;background:rgba(255,255,255,.22);display:flex;align-items:center;font:900 12.5px Roboto;color:#fff">AÜ103</div>
+<div style="flex:1"></div>
+<div style="width:36px;height:36px;border-radius:18px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;color:#fff">swap_vert</span></div>
+</div>
+<div style="position:relative;display:flex;align-items:baseline;gap:10px;margin-top:16px"><span style="font:900 40px/1 Roboto;color:#fff">06:43</span><span style="font:800 14px Roboto;color:rgba(255,255,255,.92)">durak_3 yönü</span></div>
+<div style="position:relative;display:flex;align-items:center;gap:7px;margin-top:9px"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:rgba(255,255,255,.85)">schedule</span><span style="font:600 12.5px Roboto;color:rgba(255,255,255,.88)">Peron 1'den kalkışa 2 dakika kaldı</span></div>
+<div style="position:relative;display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.22)">
+<div style="flex:1"><div style="font:700 9.5px Roboto;color:rgba(255,255,255,.7);letter-spacing:.08em">ÖNCEKİ</div><div style="font:900 15px Roboto;color:rgba(255,255,255,.65);margin-top:3px">05:58</div></div>
+<div style="flex:1"><div style="font:700 9.5px Roboto;color:rgba(255,255,255,.7);letter-spacing:.08em">SONRAKİ</div><div style="font:900 15px Roboto;color:#fff;margin-top:3px">07:15</div></div>
+<div style="flex:1"><div style="font:700 9.5px Roboto;color:rgba(255,255,255,.7);letter-spacing:.08em">SON SEFER</div><div style="font:900 15px Roboto;color:#fff;margin-top:3px">22:30</div></div>
+</div>
+</div>
+
+<div style="display:flex;gap:10px;margin-top:12px">
+<div style="flex:1;min-width:0;height:50px;border-radius:20px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;gap:10px;padding:0 16px"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#9AA1B0">search</span><span style="flex:1;font:500 13.5px Roboto;color:#9AA1B0">Durak veya bina ara...</span></div>
+<div style="width:50px;height:50px;flex:none;border-radius:20px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">star</span></div>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin:22px 2px 10px"><span style="font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">YAKINDAKİ DURAKLAR</span><span style="display:flex;align-items:center;gap:4px;font:800 11.5px Roboto;color:#135BEC">Tümü<span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">chevron_right</span></span></div>
+<div class="ph" style="display:flex;gap:10px;overflow-x:auto">
+<div style="flex:none;width:176px;background:#fff;border:1px solid #135BEC;border-radius:20px;padding:14px">
+<div style="display:flex;align-items:center;gap:7px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">location_on</span><span style="font:800 14px Roboto;color:#171A22">durak_2</span></div>
+<div style="font:600 11.5px Roboto;color:#44474F;margin-top:5px">76 m · ~1 dk yürüme</div>
+<div style="display:flex;align-items:baseline;gap:6px;margin-top:10px"><span style="font:900 22px/1 Roboto;color:#135BEC">12</span><span style="font:700 11.5px Roboto;color:#44474F">dk sonra</span></div>
+<div style="display:flex;gap:5px;margin-top:10px"><span style="height:22px;padding:0 7px;border-radius:7px;background:#F2F5FA;display:flex;align-items:center;font:900 10px Roboto;color:#44474F">AÜ102</span><span style="height:22px;padding:0 7px;border-radius:7px;background:#F2F5FA;display:flex;align-items:center;font:900 10px Roboto;color:#44474F">AÜ103</span></div>
+</div>
+<div style="flex:none;width:176px;background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:14px">
+<div style="display:flex;align-items:center;gap:7px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#9AA1B0;font-variation-settings:'FILL' 1">location_on</span><span style="font:800 14px Roboto;color:#171A22">durak_1</span></div>
+<div style="font:600 11.5px Roboto;color:#44474F;margin-top:5px">553 m · ~7 dk yürüme</div>
+<div style="display:flex;align-items:baseline;gap:6px;margin-top:10px"><span style="font:900 22px/1 Roboto;color:#135BEC">7</span><span style="font:700 11.5px Roboto;color:#44474F">dk sonra</span></div>
+<div style="display:flex;gap:5px;margin-top:10px"><span style="height:22px;padding:0 7px;border-radius:7px;background:#F2F5FA;display:flex;align-items:center;font:900 10px Roboto;color:#44474F">AÜ102</span><span style="height:22px;padding:0 7px;border-radius:7px;background:#F2F5FA;display:flex;align-items:center;font:900 10px Roboto;color:#44474F">AÜ103</span></div>
+</div>
+<div style="flex:none;width:176px;background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:14px">
+<div style="display:flex;align-items:center;gap:7px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#9AA1B0;font-variation-settings:'FILL' 1">location_on</span><span style="font:800 14px Roboto;color:#171A22">durak_3</span></div>
+<div style="font:600 11.5px Roboto;color:#44474F;margin-top:5px">1.3 km · ~16 dk yürüme</div>
+<div style="display:flex;align-items:baseline;gap:6px;margin-top:10px"><span style="font:900 22px/1 Roboto;color:#135BEC">24</span><span style="font:700 11.5px Roboto;color:#44474F">dk sonra</span></div>
+<div style="display:flex;gap:5px;margin-top:10px"><span style="height:22px;padding:0 7px;border-radius:7px;background:#F2F5FA;display:flex;align-items:center;font:900 10px Roboto;color:#44474F">AÜ102</span><span style="height:22px;padding:0 7px;border-radius:7px;background:#F2F5FA;display:flex;align-items:center;font:900 10px Roboto;color:#44474F">AÜ103</span></div>
+</div>
+</div>
+
+<div style="display:flex;gap:10px;margin-top:20px">
+<div style="flex:1;background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px"><div style="width:40px;height:40px;border-radius:14px;background:#E8F0FF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#135BEC">calendar_month</span></div><div style="font:800 13.5px/1.25 Roboto;color:#171A22">Tüm Tarife</div></div>
+<div style="flex:1;background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px"><div style="width:40px;height:40px;border-radius:14px;background:#E8F0FF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#135BEC">map</span></div><div style="font:800 13.5px/1.25 Roboto;color:#171A22">Haritada Gör</div></div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:20px;right:20px;bottom:22px;height:64px;border-radius:32px;background:#fff;box-shadow:0 8px 28px rgba(16,24,40,.16);display:flex;align-items:center;justify-content:space-around;padding:0 8px">
+<span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">home</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">restaurant</span><span style="width:44px;height:44px;border-radius:22px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">directions_bus</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">calendar_month</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">apartment</span>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="5b"><div class="dv-olabel"><a class="dv-oid" href="#5b">5b</a>Yaprak · kronolojik: hat/yön ayırmadan geliş sırasına göre tek liste, solda dev dakika</div>
+<div style="width:390px;height:844px;position:relative;background:#E9EDE4;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<image-slot id="u-map-5b" shape="rect" placeholder="Arkadaki harita" style="position:absolute;inset:0"></image-slot>
+<div style="position:absolute;inset:0;background:rgba(15,20,30,.45)"></div>
+<div style="position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#fff"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="position:absolute;left:20px;right:20px;top:52px;display:flex;align-items:center;gap:10px">
+<div style="width:44px;height:44px;flex:none;border-radius:22px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.20);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;line-height:1;color:#171A22">arrow_back</span></div>
+<div style="flex:1;font:900 16px Roboto;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.35)">Yakındaki Duraklar</div>
+</div>
+
+<div style="position:absolute;left:0;right:0;bottom:0;height:520px;background:#fff;border-radius:30px 30px 44px 44px;display:flex;flex-direction:column;overflow:hidden">
+<div style="flex:none;display:flex;justify-content:center;padding:10px 0 2px"><div style="width:42px;height:5px;border-radius:3px;background:#D6DCE8"></div></div>
+<div style="flex:none;padding:10px 20px 14px;display:flex;align-items:center;gap:11px">
+<span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">location_on</span>
+<div style="flex:1;min-width:0"><div style="font:900 20px/1.15 Roboto;color:#171A22">durak_1</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">553 m · ~7 dk yürüme</div></div>
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:#F2F5FA;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#135BEC">star</span></div>
+</div>
+<div class="ph" style="flex:1;overflow-y:auto;padding:0 20px 26px">
+<div style="font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em;padding-bottom:6px">SIRADAKİ KALKIŞLAR</div>
+<div style="display:flex;align-items:center;gap:14px;padding:15px 0;border-top:1px solid #E9EDF4">
+<div style="flex:none;width:58px;text-align:center"><div style="font:900 26px/1 Roboto;color:#135BEC">3</div><div style="font:800 9.5px Roboto;color:#135BEC;margin-top:3px">DAKİKA</div></div>
+<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px"><span style="height:23px;padding:0 8px;border-radius:8px;background:#135BEC;display:flex;align-items:center;font:900 10.5px Roboto;color:#fff">AÜ103</span><span style="font:800 14px Roboto;color:#171A22">durak_3 yönü</span></div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:5px">08:51 · sonrası 09:01 · 09:11</div></div>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:15px 0;border-top:1px solid #E9EDF4">
+<div style="flex:none;width:58px;text-align:center"><div style="font:900 26px/1 Roboto;color:#171A22">7</div><div style="font:800 9.5px Roboto;color:#9AA1B0;margin-top:3px">DAKİKA</div></div>
+<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px"><span style="height:23px;padding:0 8px;border-radius:8px;background:#E8F0FF;display:flex;align-items:center;font:900 10.5px Roboto;color:#082B76">AÜ102</span><span style="font:800 14px Roboto;color:#171A22">durak_1 yönü</span></div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:5px">08:55 · sonrası 09:07 · 09:19</div></div>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:15px 0;border-top:1px solid #E9EDF4">
+<div style="flex:none;width:58px;text-align:center"><div style="font:900 26px/1 Roboto;color:#171A22">7</div><div style="font:800 9.5px Roboto;color:#9AA1B0;margin-top:3px">DAKİKA</div></div>
+<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px"><span style="height:23px;padding:0 8px;border-radius:8px;background:#E8F0FF;display:flex;align-items:center;font:900 10.5px Roboto;color:#082B76">AÜ103</span><span style="font:800 14px Roboto;color:#171A22">durak_1 yönü</span></div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:5px">08:55 · sonrası 09:05 · 09:15</div></div>
+</div>
+<div style="display:flex;align-items:center;gap:14px;padding:15px 0;border-top:1px solid #E9EDF4">
+<div style="flex:none;width:58px;text-align:center"><div style="font:900 26px/1 Roboto;color:#171A22">21</div><div style="font:800 9.5px Roboto;color:#9AA1B0;margin-top:3px">DAKİKA</div></div>
+<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px"><span style="height:23px;padding:0 8px;border-radius:8px;background:#E8F0FF;display:flex;align-items:center;font:900 10.5px Roboto;color:#082B76">AÜ102</span><span style="font:800 14px Roboto;color:#171A22">durak_3 yönü</span></div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:5px">09:09 · sonrası 09:21 · 09:33</div></div>
+</div>
+<div style="display:flex;align-items:flex-start;gap:8px;margin-top:16px"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1.2;color:#9AA1B0">info</span><span style="font:500 11.5px/1.45 Roboto;color:#44474F">Saatler hattın kalkış noktasına aittir.</span></div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="5c"><div class="dv-olabel"><a class="dv-oid" href="#5c">5c</a>Yaprak · iki yön iki kolon: hangi yöne gideceğini bir bakışta seç, her kolonda 3 kalkış</div>
+<div style="width:390px;height:844px;position:relative;background:#E9EDE4;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<image-slot id="u-map-5c" shape="rect" placeholder="Arkadaki harita" style="position:absolute;inset:0"></image-slot>
+<div style="position:absolute;inset:0;background:rgba(15,20,30,.45)"></div>
+<div style="position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#fff"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="position:absolute;left:20px;right:20px;top:52px;display:flex;align-items:center;gap:10px">
+<div style="width:44px;height:44px;flex:none;border-radius:22px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.20);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;line-height:1;color:#171A22">arrow_back</span></div>
+<div style="flex:1;font:900 16px Roboto;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.35)">Yakındaki Duraklar</div>
+</div>
+
+<div style="position:absolute;left:0;right:0;bottom:0;height:470px;background:#fff;border-radius:30px 30px 44px 44px;display:flex;flex-direction:column;overflow:hidden">
+<div style="flex:none;display:flex;justify-content:center;padding:10px 0 2px"><div style="width:42px;height:5px;border-radius:3px;background:#D6DCE8"></div></div>
+<div style="flex:none;padding:10px 20px 16px;display:flex;align-items:center;gap:11px">
+<span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">location_on</span>
+<div style="flex:1;min-width:0"><div style="font:900 20px/1.15 Roboto;color:#171A22">durak_1</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">553 m · ~7 dk yürüme</div></div>
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:#F2F5FA;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#135BEC">star</span></div>
+</div>
+<div class="ph" style="flex:1;overflow-y:auto;padding:0 20px 26px">
+<div style="font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em;padding-bottom:12px">NEREYE GİDİYORSUN?</div>
+<div style="display:flex;gap:10px">
+<div style="flex:1;background:#135BEC;border-radius:22px;padding:16px 14px">
+<div style="display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:rgba(255,255,255,.85)">arrow_forward</span><span style="font:800 12.5px Roboto;color:#fff">durak_3</span></div>
+<div style="display:flex;align-items:baseline;gap:5px;margin-top:14px"><span style="font:900 30px/1 Roboto;color:#fff">3</span><span style="font:800 12px Roboto;color:rgba(255,255,255,.85)">dk</span></div>
+<div style="font:700 12.5px Roboto;color:#fff;margin-top:6px">08:51 · AÜ103</div>
+<div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.22);display:flex;flex-direction:column;gap:7px">
+<div style="display:flex;justify-content:space-between"><span style="font:700 12px Roboto;color:rgba(255,255,255,.9)">09:01</span><span style="font:600 11px Roboto;color:rgba(255,255,255,.7)">AÜ103</span></div>
+<div style="display:flex;justify-content:space-between"><span style="font:700 12px Roboto;color:rgba(255,255,255,.9)">09:09</span><span style="font:600 11px Roboto;color:rgba(255,255,255,.7)">AÜ102</span></div>
+</div>
+</div>
+<div style="flex:1;background:#F7F8FB;border:1px solid #E1E6EF;border-radius:22px;padding:16px 14px">
+<div style="display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:#9AA1B0">arrow_back</span><span style="font:800 12.5px Roboto;color:#171A22">durak_1</span></div>
+<div style="display:flex;align-items:baseline;gap:5px;margin-top:14px"><span style="font:900 30px/1 Roboto;color:#171A22">7</span><span style="font:800 12px Roboto;color:#44474F">dk</span></div>
+<div style="font:700 12.5px Roboto;color:#171A22;margin-top:6px">08:55 · AÜ102</div>
+<div style="margin-top:14px;padding-top:12px;border-top:1px solid #E1E6EF;display:flex;flex-direction:column;gap:7px">
+<div style="display:flex;justify-content:space-between"><span style="font:700 12px Roboto;color:#171A22">09:05</span><span style="font:600 11px Roboto;color:#9AA1B0">AÜ103</span></div>
+<div style="display:flex;justify-content:space-between"><span style="font:700 12px Roboto;color:#171A22">09:07</span><span style="font:600 11px Roboto;color:#9AA1B0">AÜ102</span></div>
+</div>
+</div>
+</div>
+<div style="display:flex;gap:8px;margin-top:14px">
+<div style="flex:1;height:46px;border-radius:16px;background:#F2F5FA;display:flex;align-items:center;justify-content:center;gap:7px"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;color:#44474F">directions_walk</span><span style="font:800 12.5px Roboto;color:#171A22">Yol tarifi</span></div>
+<div style="flex:1;height:46px;border-radius:16px;background:#F2F5FA;display:flex;align-items:center;justify-content:center;gap:7px"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;color:#44474F">calendar_month</span><span style="font:800 12.5px Roboto;color:#171A22">Tüm tarife</span></div>
+</div>
+<div style="display:flex;align-items:flex-start;gap:8px;margin-top:14px"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1.2;color:#9AA1B0">info</span><span style="font:500 11.5px/1.45 Roboto;color:#44474F">Saatler hattın kalkış noktasına aittir.</span></div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="5d"><div class="dv-olabel"><a class="dv-oid" href="#5d">5d</a>Yaprak · tek büyük geri sayım: ilk otobüs dev puntoyla, kalanlar tek satırlık ince liste</div>
+<div style="width:390px;height:844px;position:relative;background:#E9EDE4;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<image-slot id="u-map-5d" shape="rect" placeholder="Arkadaki harita" style="position:absolute;inset:0"></image-slot>
+<div style="position:absolute;inset:0;background:rgba(15,20,30,.45)"></div>
+<div style="position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#fff"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="position:absolute;left:20px;right:20px;top:52px;display:flex;align-items:center;gap:10px">
+<div style="width:44px;height:44px;flex:none;border-radius:22px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.20);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;line-height:1;color:#171A22">arrow_back</span></div>
+<div style="flex:1;font:900 16px Roboto;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.35)">Yakındaki Duraklar</div>
+</div>
+
+<div style="position:absolute;left:0;right:0;bottom:0;height:498px;background:#fff;border-radius:30px 30px 44px 44px;display:flex;flex-direction:column;overflow:hidden">
+<div style="flex:none;display:flex;justify-content:center;padding:10px 0 2px"><div style="width:42px;height:5px;border-radius:3px;background:#D6DCE8"></div></div>
+<div style="flex:none;padding:10px 20px 0;display:flex;align-items:center;gap:11px">
+<span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">location_on</span>
+<div style="flex:1;min-width:0"><div style="font:900 20px/1.15 Roboto;color:#171A22">durak_1</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">553 m · ~7 dk yürüme</div></div>
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:#F2F5FA;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#135BEC">star</span></div>
+</div>
+<div style="flex:none;margin:18px 20px 0;display:flex;align-items:flex-end;gap:16px">
+<div style="flex:none"><div style="display:flex;align-items:baseline;gap:6px"><span style="font:900 76px/.85 Roboto;color:#135BEC">3</span><span style="font:900 18px Roboto;color:#135BEC">dk</span></div></div>
+<div style="flex:1;min-width:0;padding-bottom:6px">
+<div style="display:flex;align-items:center;gap:8px"><span style="height:24px;padding:0 9px;border-radius:8px;background:#135BEC;display:flex;align-items:center;font:900 11px Roboto;color:#fff">AÜ103</span><span style="font:800 14px Roboto;color:#171A22">durak_3 yönü</span></div>
+<div style="font:600 12px Roboto;color:#44474F;margin-top:6px">08:51'de kalkıyor · yürüme 7 dk</div>
+</div>
+</div>
+<div style="flex:none;margin:14px 20px 0;height:46px;border-radius:16px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;color:#082B76">notifications_active</span><span style="font:800 12.5px Roboto;color:#082B76">Kalkmadan önce hatırlat</span></div>
+<div class="ph" style="flex:1;overflow-y:auto;padding:20px 20px 26px">
+<div style="font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em;padding-bottom:4px">SONRAKİ OTOBÜSLER</div>
+<div style="display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid #E9EDF4">
+<span style="font:900 15px Roboto;color:#171A22;width:48px">08:55</span>
+<span style="height:23px;padding:0 8px;border-radius:8px;background:#F2F5FA;display:flex;align-items:center;font:900 10.5px Roboto;color:#44474F">AÜ102</span>
+<span style="flex:1;font:600 12.5px Roboto;color:#44474F">durak_1 yönü</span>
+<span style="font:800 12px Roboto;color:#135BEC">7 dk</span>
+</div>
+<div style="display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid #E9EDF4">
+<span style="font:900 15px Roboto;color:#171A22;width:48px">09:01</span>
+<span style="height:23px;padding:0 8px;border-radius:8px;background:#F2F5FA;display:flex;align-items:center;font:900 10.5px Roboto;color:#44474F">AÜ103</span>
+<span style="flex:1;font:600 12.5px Roboto;color:#44474F">durak_3 yönü</span>
+<span style="font:800 12px Roboto;color:#135BEC">13 dk</span>
+</div>
+<div style="display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid #E9EDF4">
+<span style="font:900 15px Roboto;color:#171A22;width:48px">09:05</span>
+<span style="height:23px;padding:0 8px;border-radius:8px;background:#F2F5FA;display:flex;align-items:center;font:900 10.5px Roboto;color:#44474F">AÜ103</span>
+<span style="flex:1;font:600 12.5px Roboto;color:#44474F">durak_1 yönü</span>
+<span style="font:800 12px Roboto;color:#135BEC">17 dk</span>
+</div>
+<div style="display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid #E9EDF4">
+<span style="font:900 15px Roboto;color:#171A22;width:48px">09:09</span>
+<span style="height:23px;padding:0 8px;border-radius:8px;background:#F2F5FA;display:flex;align-items:center;font:900 10.5px Roboto;color:#44474F">AÜ102</span>
+<span style="flex:1;font:600 12.5px Roboto;color:#44474F">durak_3 yönü</span>
+<span style="font:800 12px Roboto;color:#135BEC">21 dk</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-note">Ulaşım ekranından arama alanı ve hatlar bölümü kaldırıldı; kartın altına önceki / sonraki / son sefer şeridi geldi. Yaprak tasarımlarının üçünde de her kalkışın <b>kaç dakika sonra</b> olduğu görünüyor.</p>
+</section>
+
+<section class="dv-turn" id="t4">
+<div class="dv-thd"><a class="dv-tid" href="#t4">4</a><span class="dv-tname">Ulaşım ana ekranı revizyonu (<a class="dv-oid" href="#1a">1a</a> üzerinden) + durak detayı yarım sayfa yaprak</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="4a"><div class="dv-olabel"><a class="dv-oid" href="#4a">4a</a>Yakındaki duraklar canlı kartın hemen altında, yatay kart şeridi · duyuru yok · buton "Haritada gör"</div>
+<div style="width:390px;height:844px;position:relative;background:#F7F8FB;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#171A22;flex:none"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="flex:none;display:flex;align-items:center;gap:10px;padding:4px 20px 10px">
+<div style="flex:1;min-width:0"><div style="font:900 14px/1 Roboto;color:#171A22">Akdeniz<span style="color:#135BEC">Cep</span></div><div style="font:900 23px/1.15 Roboto;color:#171A22;margin-top:5px">Ulaşım</div></div>
+<div style="width:40px;height:40px;border-radius:20px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;font:900 15px Roboto;color:#135BEC">E</div>
+</div>
+<div class="ph" style="flex:1;overflow-y:auto;padding:0 20px 130px">
+<div style="background:#135BEC;border-radius:26px;padding:18px;position:relative;overflow:hidden">
+<div style="position:absolute;right:-24px;bottom:-24px;font-family:'Material Symbols Rounded';font-size:150px;line-height:1;color:rgba(255,255,255,.12);font-variation-settings:'FILL' 1">directions_bus</div>
+<div style="position:relative;display:flex;align-items:center;gap:8px">
+<div style="height:32px;padding:0 14px;border-radius:16px;background:#fff;display:flex;align-items:center;font:900 12.5px Roboto;color:#135BEC">AÜ102</div>
+<div style="height:32px;padding:0 14px;border-radius:16px;background:rgba(255,255,255,.22);display:flex;align-items:center;font:900 12.5px Roboto;color:#fff">AÜ103</div>
+<div style="flex:1"></div>
+<div style="width:36px;height:36px;border-radius:18px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;color:#fff">swap_vert</span></div>
+</div>
+<div style="position:relative;display:flex;align-items:baseline;gap:10px;margin-top:16px"><span style="font:900 40px/1 Roboto;color:#fff">06:43</span><span style="font:800 14px Roboto;color:rgba(255,255,255,.92)">durak_3 yönü</span></div>
+<div style="position:relative;display:flex;align-items:center;gap:7px;margin-top:9px"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:rgba(255,255,255,.85)">schedule</span><span style="font:600 12.5px Roboto;color:rgba(255,255,255,.88)">Peron 1'den kalkışa 2 dakika kaldı</span></div>
+<div style="position:relative;display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.22)">
+<div style="flex:1"><div style="font:700 9.5px Roboto;color:rgba(255,255,255,.7);letter-spacing:.08em">SONRAKİ</div><div style="font:900 15px Roboto;color:#fff;margin-top:3px">07:15</div></div>
+<div style="flex:1"><div style="font:700 9.5px Roboto;color:rgba(255,255,255,.7);letter-spacing:.08em">SONRA</div><div style="font:900 15px Roboto;color:#fff;margin-top:3px">08:00</div></div>
+<div style="flex:1"><div style="font:700 9.5px Roboto;color:rgba(255,255,255,.7);letter-spacing:.08em">SON SEFER</div><div style="font:900 15px Roboto;color:#fff;margin-top:3px">22:30</div></div>
+</div>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin:20px 2px 10px"><span style="font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">YAKINDAKİ DURAKLAR</span><span style="display:flex;align-items:center;gap:4px;font:800 11.5px Roboto;color:#135BEC">Tümü<span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">chevron_right</span></span></div>
+<div class="ph" style="display:flex;gap:10px;overflow-x:auto">
+<div style="flex:none;width:176px;background:#fff;border:1px solid #135BEC;border-radius:20px;padding:14px">
+<div style="display:flex;align-items:center;gap:7px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">location_on</span><span style="font:800 14px Roboto;color:#171A22">durak_2</span></div>
+<div style="font:600 11.5px Roboto;color:#44474F;margin-top:5px">76 m · ~1 dk yürüme</div>
+<div style="display:flex;align-items:baseline;gap:6px;margin-top:10px"><span style="font:900 22px/1 Roboto;color:#135BEC">12</span><span style="font:700 11.5px Roboto;color:#44474F">dk sonra</span></div>
+<div style="display:flex;gap:5px;margin-top:10px"><span style="height:22px;padding:0 7px;border-radius:7px;background:#F2F5FA;display:flex;align-items:center;font:900 10px Roboto;color:#44474F">AÜ102</span><span style="height:22px;padding:0 7px;border-radius:7px;background:#F2F5FA;display:flex;align-items:center;font:900 10px Roboto;color:#44474F">AÜ103</span></div>
+</div>
+<div style="flex:none;width:176px;background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:14px">
+<div style="display:flex;align-items:center;gap:7px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#9AA1B0;font-variation-settings:'FILL' 1">location_on</span><span style="font:800 14px Roboto;color:#171A22">durak_1</span></div>
+<div style="font:600 11.5px Roboto;color:#44474F;margin-top:5px">553 m · ~7 dk yürüme</div>
+<div style="display:flex;align-items:baseline;gap:6px;margin-top:10px"><span style="font:900 22px/1 Roboto;color:#135BEC">7</span><span style="font:700 11.5px Roboto;color:#44474F">dk sonra</span></div>
+<div style="display:flex;gap:5px;margin-top:10px"><span style="height:22px;padding:0 7px;border-radius:7px;background:#F2F5FA;display:flex;align-items:center;font:900 10px Roboto;color:#44474F">AÜ102</span><span style="height:22px;padding:0 7px;border-radius:7px;background:#F2F5FA;display:flex;align-items:center;font:900 10px Roboto;color:#44474F">AÜ103</span></div>
+</div>
+<div style="flex:none;width:176px;background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:14px">
+<div style="display:flex;align-items:center;gap:7px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#9AA1B0;font-variation-settings:'FILL' 1">location_on</span><span style="font:800 14px Roboto;color:#171A22">durak_3</span></div>
+<div style="font:600 11.5px Roboto;color:#44474F;margin-top:5px">1.3 km · ~16 dk yürüme</div>
+<div style="display:flex;align-items:baseline;gap:6px;margin-top:10px"><span style="font:900 22px/1 Roboto;color:#135BEC">24</span><span style="font:700 11.5px Roboto;color:#44474F">dk sonra</span></div>
+<div style="display:flex;gap:5px;margin-top:10px"><span style="height:22px;padding:0 7px;border-radius:7px;background:#F2F5FA;display:flex;align-items:center;font:900 10px Roboto;color:#44474F">AÜ102</span><span style="height:22px;padding:0 7px;border-radius:7px;background:#F2F5FA;display:flex;align-items:center;font:900 10px Roboto;color:#44474F">AÜ103</span></div>
+</div>
+</div>
+
+<div style="margin-top:14px;height:50px;border-radius:20px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;gap:10px;padding:0 16px"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#9AA1B0">search</span><span style="flex:1;font:500 13.5px Roboto;color:#9AA1B0">Durak veya bina ara...</span></div>
+
+<div style="margin:20px 2px 10px;font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">HATLAR</div>
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:22px;overflow:hidden">
+<div style="padding:14px 16px;display:flex;align-items:center;gap:12px">
+<div style="height:26px;padding:0 10px;border-radius:9px;background:#135BEC;display:flex;align-items:center;font:900 11.5px Roboto;color:#fff">AÜ102</div>
+<div style="flex:1;min-width:0"><div style="font:800 13.5px Roboto;color:#171A22">Kampüs → Şehir Merkezi</div><div style="font:600 11px Roboto;color:#44474F;margin-top:3px">12 durak · her 45 dk</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+<div style="padding:14px 16px;border-top:1px solid #EDF1F7;display:flex;align-items:center;gap:12px">
+<div style="height:26px;padding:0 10px;border-radius:9px;background:#135BEC;display:flex;align-items:center;font:900 11.5px Roboto;color:#fff">AÜ103</div>
+<div style="flex:1;min-width:0"><div style="font:800 13.5px Roboto;color:#171A22">Kampüs Ring</div><div style="font:600 11px Roboto;color:#44474F;margin-top:3px">9 durak · her 30 dk</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+</div>
+
+<div style="display:flex;gap:10px;margin-top:12px">
+<div style="flex:1;background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px"><div style="width:40px;height:40px;border-radius:14px;background:#E8F0FF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#135BEC">calendar_month</span></div><div style="font:800 13.5px/1.25 Roboto;color:#171A22">Tüm Tarife</div></div>
+<div style="flex:1;background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px"><div style="width:40px;height:40px;border-radius:14px;background:#E8F0FF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#135BEC">map</span></div><div style="font:800 13.5px/1.25 Roboto;color:#171A22">Haritada Gör</div></div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:20px;right:20px;bottom:22px;height:64px;border-radius:32px;background:#fff;box-shadow:0 8px 28px rgba(16,24,40,.16);display:flex;align-items:center;justify-content:space-around;padding:0 8px">
+<span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">home</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">restaurant</span><span style="width:44px;height:44px;border-radius:22px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">directions_bus</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">calendar_month</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">apartment</span>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="4b"><div class="dv-olabel"><a class="dv-oid" href="#4b">4b</a>En yakın durak birleşik kartta: canlı sefer o durağın verisi · altında diğer duraklar liste, "Haritada gör" satır içi</div>
+<div style="width:390px;height:844px;position:relative;background:#F7F8FB;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#171A22;flex:none"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="flex:none;display:flex;align-items:center;gap:10px;padding:4px 20px 10px">
+<div style="flex:1;min-width:0"><div style="font:900 14px/1 Roboto;color:#171A22">Akdeniz<span style="color:#135BEC">Cep</span></div><div style="font:900 23px/1.15 Roboto;color:#171A22;margin-top:5px">Ulaşım</div></div>
+<div style="width:40px;height:40px;border-radius:20px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;font:900 15px Roboto;color:#135BEC">E</div>
+</div>
+<div class="ph" style="flex:1;overflow-y:auto;padding:0 20px 130px">
+<div style="background:#135BEC;border-radius:26px;padding:18px;position:relative;overflow:hidden">
+<div style="position:absolute;right:-24px;bottom:-30px;font-family:'Material Symbols Rounded';font-size:150px;line-height:1;color:rgba(255,255,255,.12);font-variation-settings:'FILL' 1">directions_bus</div>
+<div style="position:relative;display:flex;align-items:center;gap:8px">
+<span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;color:#fff;font-variation-settings:'FILL' 1">location_on</span>
+<span style="font:900 15px Roboto;color:#fff">durak_2</span>
+<span style="height:22px;padding:0 8px;border-radius:7px;background:rgba(255,255,255,.22);display:flex;align-items:center;font:800 10.5px Roboto;color:#fff">EN YAKIN · 76 m</span>
+<div style="flex:1"></div>
+<div style="width:34px;height:34px;border-radius:17px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#fff">swap_vert</span></div>
+</div>
+<div style="position:relative;display:flex;align-items:baseline;gap:10px;margin-top:14px"><span style="font:900 40px/1 Roboto;color:#fff">06:43</span><span style="font:800 13.5px Roboto;color:rgba(255,255,255,.92)">AÜ102 · durak_3 yönü</span></div>
+<div style="position:relative;display:flex;align-items:center;gap:7px;margin-top:8px"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:rgba(255,255,255,.85)">schedule</span><span style="font:600 12.5px Roboto;color:rgba(255,255,255,.88)">Kalkışa 2 dakika · Peron 1</span></div>
+<div style="position:relative;display:flex;gap:8px;margin-top:15px;padding-top:14px;border-top:1px solid rgba(255,255,255,.22)">
+<div style="flex:1"><div style="font:700 9.5px Roboto;color:rgba(255,255,255,.7);letter-spacing:.08em">SONRAKİ</div><div style="font:900 15px Roboto;color:#fff;margin-top:3px">07:15</div></div>
+<div style="flex:1"><div style="font:700 9.5px Roboto;color:rgba(255,255,255,.7);letter-spacing:.08em">SONRA</div><div style="font:900 15px Roboto;color:#fff;margin-top:3px">08:00</div></div>
+<div style="flex:1"><div style="font:700 9.5px Roboto;color:rgba(255,255,255,.7);letter-spacing:.08em">SON SEFER</div><div style="font:900 15px Roboto;color:#fff;margin-top:3px">22:30</div></div>
+</div>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin:20px 2px 10px"><span style="font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">YAKINDAKİ DİĞER DURAKLAR</span><span style="font:800 11.5px Roboto;color:#135BEC">Haritada gör</span></div>
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:22px;overflow:hidden">
+<div style="padding:14px 16px;display:flex;align-items:center;gap:12px">
+<div style="width:42px;height:42px;flex:none;border-radius:14px;background:#F2F5FA;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font:900 13px/1 Roboto;color:#171A22">553</span><span style="font:800 8px/1.4 Roboto;color:#44474F">M</span></div>
+<div style="flex:1;min-width:0"><div style="font:800 14px Roboto;color:#171A22">durak_1</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">~7 dk yürüme · AÜ102 · AÜ103</div></div>
+<div style="text-align:right"><div style="font:900 14px Roboto;color:#135BEC">7 dk</div><div style="font:600 10.5px Roboto;color:#9AA1B0;margin-top:2px">06:37</div></div>
+</div>
+<div style="padding:14px 16px;border-top:1px solid #EDF1F7;display:flex;align-items:center;gap:12px">
+<div style="width:42px;height:42px;flex:none;border-radius:14px;background:#F2F5FA;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font:900 12px/1 Roboto;color:#171A22">1.3</span><span style="font:800 8px/1.4 Roboto;color:#44474F">KM</span></div>
+<div style="flex:1;min-width:0"><div style="font:800 14px Roboto;color:#171A22">durak_3</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">~16 dk yürüme · AÜ102 · AÜ103</div></div>
+<div style="text-align:right"><div style="font:900 14px Roboto;color:#135BEC">24 dk</div><div style="font:600 10.5px Roboto;color:#9AA1B0;margin-top:2px">06:25</div></div>
+</div>
+<div style="padding:13px 16px;border-top:1px solid #EDF1F7;display:flex;align-items:center;justify-content:center;gap:7px"><span style="font:800 12.5px Roboto;color:#135BEC">Tüm yakındaki duraklar</span><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#135BEC">chevron_right</span></div>
+</div>
+
+<div style="margin-top:14px;height:50px;border-radius:20px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;gap:10px;padding:0 16px"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#9AA1B0">search</span><span style="flex:1;font:500 13.5px Roboto;color:#9AA1B0">Durak veya bina ara...</span></div>
+
+<div style="margin:20px 2px 10px;font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">HATLAR</div>
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:22px;overflow:hidden">
+<div style="padding:14px 16px;display:flex;align-items:center;gap:12px">
+<div style="height:26px;padding:0 10px;border-radius:9px;background:#135BEC;display:flex;align-items:center;font:900 11.5px Roboto;color:#fff">AÜ102</div>
+<div style="flex:1;min-width:0"><div style="font:800 13.5px Roboto;color:#171A22">Kampüs → Şehir Merkezi</div><div style="font:600 11px Roboto;color:#44474F;margin-top:3px">12 durak · her 45 dk</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+<div style="padding:14px 16px;border-top:1px solid #EDF1F7;display:flex;align-items:center;gap:12px">
+<div style="height:26px;padding:0 10px;border-radius:9px;background:#135BEC;display:flex;align-items:center;font:900 11.5px Roboto;color:#fff">AÜ103</div>
+<div style="flex:1;min-width:0"><div style="font:800 13.5px Roboto;color:#171A22">Kampüs Ring</div><div style="font:600 11px Roboto;color:#44474F;margin-top:3px">9 durak · her 30 dk</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+</div>
+
+<div style="margin-top:12px;background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:16px;display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:14px;background:#E8F0FF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#135BEC">calendar_month</span></div><div style="flex:1;font:800 13.5px Roboto;color:#171A22">Tüm Tarife</div><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span></div>
+</div>
+</div>
+<div style="position:absolute;left:20px;right:20px;bottom:22px;height:64px;border-radius:32px;background:#fff;box-shadow:0 8px 28px rgba(16,24,40,.16);display:flex;align-items:center;justify-content:space-around;padding:0 8px">
+<span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">home</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">restaurant</span><span style="width:44px;height:44px;border-radius:22px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">directions_bus</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">calendar_month</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">apartment</span>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="4c"><div class="dv-olabel"><a class="dv-oid" href="#4c">4c</a>Yakındaki duraklar en üstte harita şeridiyle · canlı sefer kartı altında kompakt</div>
+<div style="width:390px;height:844px;position:relative;background:#F7F8FB;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#171A22;flex:none"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="flex:none;display:flex;align-items:center;gap:10px;padding:4px 20px 10px">
+<div style="flex:1;min-width:0"><div style="font:900 14px/1 Roboto;color:#171A22">Akdeniz<span style="color:#135BEC">Cep</span></div><div style="font:900 23px/1.15 Roboto;color:#171A22;margin-top:5px">Ulaşım</div></div>
+<div style="width:40px;height:40px;border-radius:20px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;font:900 15px Roboto;color:#135BEC">E</div>
+</div>
+<div class="ph" style="flex:1;overflow-y:auto;padding:0 20px 130px">
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:24px;overflow:hidden">
+<div style="height:112px;position:relative;background:#E9EDE4">
+<image-slot id="u-map-4c" shape="rect" placeholder="Yakındaki duraklar haritası" style="position:absolute;inset:0"></image-slot>
+<div style="position:absolute;right:10px;bottom:10px;height:30px;padding:0 12px;border-radius:15px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.16);display:flex;align-items:center;gap:6px;pointer-events:none"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;color:#135BEC">map</span><span style="font:800 11.5px Roboto;color:#171A22">Haritada gör</span></div>
+<div style="position:absolute;left:12px;top:12px;height:28px;padding:0 11px;border-radius:14px;background:rgba(23,26,34,.88);display:flex;align-items:center;gap:6px;pointer-events:none"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1;color:#fff">place</span><span style="font:800 11px Roboto;color:#fff">3 durak yakında</span></div>
+</div>
+<div style="padding:6px 16px 4px">
+<div style="padding:12px 0;display:flex;align-items:center;gap:12px">
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:#135BEC;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;font-variation-settings:'FILL' 1;color:#fff">location_on</span></div>
+<div style="flex:1;min-width:0"><div style="font:900 14.5px Roboto;color:#171A22">durak_2</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">76 m · ~1 dk yürüme</div></div>
+<div style="text-align:right"><div style="font:900 14px Roboto;color:#135BEC">12 dk</div><div style="font:600 10.5px Roboto;color:#9AA1B0;margin-top:2px">06:31</div></div>
+</div>
+<div style="padding:12px 0;border-top:1px solid #EDF1F7;display:flex;align-items:center;gap:12px">
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:#E8F0FF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;font-variation-settings:'FILL' 1;color:#135BEC">location_on</span></div>
+<div style="flex:1;min-width:0"><div style="font:900 14.5px Roboto;color:#171A22">durak_1</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">553 m · ~7 dk yürüme</div></div>
+<div style="text-align:right"><div style="font:900 14px Roboto;color:#135BEC">7 dk</div><div style="font:600 10.5px Roboto;color:#9AA1B0;margin-top:2px">06:37</div></div>
+</div>
+<div style="padding:12px 0;border-top:1px solid #EDF1F7;display:flex;align-items:center;gap:12px">
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:#E8F0FF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;font-variation-settings:'FILL' 1;color:#135BEC">location_on</span></div>
+<div style="flex:1;min-width:0"><div style="font:900 14.5px Roboto;color:#171A22">durak_3</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">1.3 km · ~16 dk yürüme</div></div>
+<div style="text-align:right"><div style="font:900 14px Roboto;color:#135BEC">24 dk</div><div style="font:600 10.5px Roboto;color:#9AA1B0;margin-top:2px">06:25</div></div>
+</div>
+</div>
+</div>
+
+<div style="margin:18px 2px 10px;font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">SIRADAKİ SEFER</div>
+<div style="background:#135BEC;border-radius:24px;padding:16px;position:relative;overflow:hidden">
+<div style="position:absolute;right:-20px;bottom:-26px;font-family:'Material Symbols Rounded';font-size:120px;line-height:1;color:rgba(255,255,255,.12);font-variation-settings:'FILL' 1">directions_bus</div>
+<div style="position:relative;display:flex;align-items:center;gap:8px">
+<div style="height:28px;padding:0 12px;border-radius:14px;background:#fff;display:flex;align-items:center;font:900 11.5px Roboto;color:#135BEC">AÜ102</div>
+<div style="height:28px;padding:0 12px;border-radius:14px;background:rgba(255,255,255,.22);display:flex;align-items:center;font:900 11.5px Roboto;color:#fff">AÜ103</div>
+<div style="flex:1"></div>
+<div style="width:34px;height:34px;border-radius:17px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#fff">swap_vert</span></div>
+</div>
+<div style="position:relative;display:flex;align-items:baseline;gap:10px;margin-top:13px"><span style="font:900 34px/1 Roboto;color:#fff">06:43</span><span style="font:800 13px Roboto;color:rgba(255,255,255,.92)">durak_3 yönü</span></div>
+<div style="position:relative;display:flex;align-items:center;gap:7px;margin-top:8px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;color:rgba(255,255,255,.85)">schedule</span><span style="font:600 12px Roboto;color:rgba(255,255,255,.88)">Kalkışa 2 dakika · Peron 1</span></div>
+<div style="position:relative;display:flex;gap:8px;margin-top:14px;padding-top:13px;border-top:1px solid rgba(255,255,255,.22)">
+<div style="flex:1"><div style="font:700 9.5px Roboto;color:rgba(255,255,255,.7);letter-spacing:.08em">SONRAKİ</div><div style="font:900 14.5px Roboto;color:#fff;margin-top:3px">07:15</div></div>
+<div style="flex:1"><div style="font:700 9.5px Roboto;color:rgba(255,255,255,.7);letter-spacing:.08em">SONRA</div><div style="font:900 14.5px Roboto;color:#fff;margin-top:3px">08:00</div></div>
+<div style="flex:1"><div style="font:700 9.5px Roboto;color:rgba(255,255,255,.7);letter-spacing:.08em">SON SEFER</div><div style="font:900 14.5px Roboto;color:#fff;margin-top:3px">22:30</div></div>
+</div>
+</div>
+
+<div style="margin-top:14px;height:50px;border-radius:20px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;gap:10px;padding:0 16px"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#9AA1B0">search</span><span style="flex:1;font:500 13.5px Roboto;color:#9AA1B0">Durak veya bina ara...</span></div>
+
+<div style="margin:20px 2px 10px;font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">HATLAR</div>
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:22px;overflow:hidden">
+<div style="padding:14px 16px;display:flex;align-items:center;gap:12px">
+<div style="height:26px;padding:0 10px;border-radius:9px;background:#135BEC;display:flex;align-items:center;font:900 11.5px Roboto;color:#fff">AÜ102</div>
+<div style="flex:1;min-width:0"><div style="font:800 13.5px Roboto;color:#171A22">Kampüs → Şehir Merkezi</div><div style="font:600 11px Roboto;color:#44474F;margin-top:3px">12 durak · her 45 dk</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+<div style="padding:14px 16px;border-top:1px solid #EDF1F7;display:flex;align-items:center;gap:12px">
+<div style="height:26px;padding:0 10px;border-radius:9px;background:#135BEC;display:flex;align-items:center;font:900 11.5px Roboto;color:#fff">AÜ103</div>
+<div style="flex:1;min-width:0"><div style="font:800 13.5px Roboto;color:#171A22">Kampüs Ring</div><div style="font:600 11px Roboto;color:#44474F;margin-top:3px">9 durak · her 30 dk</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+<div style="padding:14px 16px;border-top:1px solid #EDF1F7;display:flex;align-items:center;gap:12px">
+<div style="width:26px;height:26px;border-radius:9px;background:#E8F0FF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;color:#135BEC">calendar_month</span></div>
+<div style="flex:1;min-width:0;font:800 13.5px Roboto;color:#171A22">Tüm Tarife</div>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:20px;right:20px;bottom:22px;height:64px;border-radius:32px;background:#fff;box-shadow:0 8px 28px rgba(16,24,40,.16);display:flex;align-items:center;justify-content:space-around;padding:0 8px">
+<span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">home</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">restaurant</span><span style="width:44px;height:44px;border-radius:22px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">directions_bus</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">calendar_month</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">apartment</span>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="4d"><div class="dv-olabel"><a class="dv-oid" href="#4d">4d</a>Yaprak · hat kartları: her hat için sıradaki kalkış vurgulu, ilk kart canlı geri sayımlı</div>
+<div style="width:390px;height:844px;position:relative;background:#E9EDE4;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<image-slot id="u-map-4d" shape="rect" placeholder="Arkadaki harita" style="position:absolute;inset:0"></image-slot>
+<div style="position:absolute;inset:0;background:rgba(15,20,30,.45)"></div>
+<div style="position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#fff"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="position:absolute;left:20px;right:20px;top:52px;display:flex;align-items:center;gap:10px">
+<div style="width:44px;height:44px;flex:none;border-radius:22px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.20);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;line-height:1;color:#171A22">arrow_back</span></div>
+<div style="flex:1;font:900 16px Roboto;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.35)">Yakındaki Duraklar</div>
+</div>
+
+<div style="position:absolute;left:0;right:0;bottom:0;height:562px;background:#fff;border-radius:30px 30px 44px 44px;display:flex;flex-direction:column">
+<div style="flex:none;display:flex;justify-content:center;padding:10px 0 4px"><div style="width:42px;height:5px;border-radius:3px;background:#D6DCE8"></div></div>
+<div style="flex:none;padding:8px 20px 14px;display:flex;align-items:flex-start;gap:12px">
+<div style="width:44px;height:44px;flex:none;border-radius:15px;background:#E8F0FF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;line-height:1;font-variation-settings:'FILL' 1;color:#135BEC">location_on</span></div>
+<div style="flex:1;min-width:0">
+<div style="font:900 20px/1.15 Roboto;color:#171A22">durak_2</div>
+<div style="font:600 12px Roboto;color:#44474F;margin-top:4px">76 m · ~1 dk yürüme · 2 hat</div>
+</div>
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:#F2F5FA;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#135BEC">star</span></div>
+</div>
+<div class="ph" style="flex:1;overflow-y:auto;padding:0 20px 24px">
+<div style="font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em;padding-bottom:10px">BURADAN GEÇEN HATLAR</div>
+<div style="background:#135BEC;border-radius:20px;padding:15px 16px">
+<div style="display:flex;align-items:center;gap:9px">
+<div style="height:25px;padding:0 9px;border-radius:8px;background:#fff;display:flex;align-items:center;font:900 11px Roboto;color:#135BEC">AÜ103</div>
+<div style="flex:1;min-width:0;font:800 13.5px Roboto;color:#fff">durak_3 yönü</div>
+<div style="height:24px;padding:0 9px;border-radius:8px;background:rgba(255,255,255,.22);display:flex;align-items:center;font:900 10.5px Roboto;color:#fff">SIRADAKİ</div>
+</div>
+<div style="display:flex;align-items:baseline;gap:8px;margin-top:11px"><span style="font:900 26px/1 Roboto;color:#fff">06:31</span><span style="font:700 12px Roboto;color:rgba(255,255,255,.85)">yarın ilk kalkış</span></div>
+</div>
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:15px 16px;margin-top:10px">
+<div style="display:flex;align-items:center;gap:9px"><div style="height:25px;padding:0 9px;border-radius:8px;background:#E8F0FF;display:flex;align-items:center;font:900 11px Roboto;color:#082B76">AÜ102</div><div style="flex:1;min-width:0;font:800 13.5px Roboto;color:#171A22">durak_1 yönü</div><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span></div>
+<div style="font:600 12px Roboto;color:#44474F;margin-top:9px">Bugün bitti · yarın ilk kalkış <b style="color:#171A22">06:37</b></div>
+</div>
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:15px 16px;margin-top:10px">
+<div style="display:flex;align-items:center;gap:9px"><div style="height:25px;padding:0 9px;border-radius:8px;background:#E8F0FF;display:flex;align-items:center;font:900 11px Roboto;color:#082B76">AÜ103</div><div style="flex:1;min-width:0;font:800 13.5px Roboto;color:#171A22">durak_1 yönü</div><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span></div>
+<div style="font:600 12px Roboto;color:#44474F;margin-top:9px">Bugün bitti · yarın ilk kalkış <b style="color:#171A22">06:45</b></div>
+</div>
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:15px 16px;margin-top:10px">
+<div style="display:flex;align-items:center;gap:9px"><div style="height:25px;padding:0 9px;border-radius:8px;background:#E8F0FF;display:flex;align-items:center;font:900 11px Roboto;color:#082B76">AÜ102</div><div style="flex:1;min-width:0;font:800 13.5px Roboto;color:#171A22">durak_3 yönü</div><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span></div>
+<div style="font:600 12px Roboto;color:#44474F;margin-top:9px">Bugün bitti · yarın ilk kalkış <b style="color:#171A22">06:25</b></div>
+</div>
+<div style="display:flex;align-items:flex-start;gap:8px;margin-top:14px;padding:0 2px"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1.2;color:#9AA1B0">info</span><span style="font:500 11.5px/1.45 Roboto;color:#44474F">Saatler hattın kalkış noktasına aittir.</span></div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="4e"><div class="dv-olabel"><a class="dv-oid" href="#4e">4e</a>Yaprak · yön sekmeli: yön seçilince o yönün saat rozetleri, altta sabit "Tüm tarifeyi gör"</div>
+<div style="width:390px;height:844px;position:relative;background:#E9EDE4;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<image-slot id="u-map-4e" shape="rect" placeholder="Arkadaki harita" style="position:absolute;inset:0"></image-slot>
+<div style="position:absolute;inset:0;background:rgba(15,20,30,.45)"></div>
+<div style="position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#fff"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="position:absolute;left:20px;right:20px;top:52px;display:flex;align-items:center;gap:10px">
+<div style="width:44px;height:44px;flex:none;border-radius:22px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.20);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;line-height:1;color:#171A22">arrow_back</span></div>
+<div style="flex:1;font:900 16px Roboto;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.35)">Yakındaki Duraklar</div>
+</div>
+
+<div style="position:absolute;left:0;right:0;bottom:0;height:530px;background:#fff;border-radius:30px 30px 44px 44px;display:flex;flex-direction:column">
+<div style="flex:none;display:flex;justify-content:center;padding:10px 0 4px"><div style="width:42px;height:5px;border-radius:3px;background:#D6DCE8"></div></div>
+<div style="flex:none;padding:8px 20px 0;display:flex;align-items:center;gap:10px">
+<div style="flex:1;min-width:0"><div style="font:900 20px/1.15 Roboto;color:#171A22">durak_2</div><div style="font:600 12px Roboto;color:#44474F;margin-top:4px">76 m · ~1 dk yürüme</div></div>
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:#F2F5FA;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#135BEC">star</span></div>
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:#F2F5FA;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#44474F">directions_walk</span></div>
+</div>
+<div style="flex:none;padding:14px 20px 0;display:flex;background:#F2F5FA;margin:14px 20px 0;border-radius:21px;padding:4px;gap:4px">
+<div style="flex:1;height:34px;border-radius:17px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.10);display:flex;align-items:center;justify-content:center;font:800 12px Roboto;color:#171A22">durak_1 yönü</div>
+<div style="flex:1;height:34px;border-radius:17px;display:flex;align-items:center;justify-content:center;font:800 12px Roboto;color:#44474F">durak_3 yönü</div>
+</div>
+<div class="ph" style="flex:1;overflow-y:auto;padding:16px 20px 12px">
+<div style="background:#F7F8FB;border-radius:20px;padding:15px 16px;display:flex;align-items:center;gap:14px">
+<div style="flex:none"><div style="font:900 24px/1 Roboto;color:#171A22">06:37</div><div style="font:700 10.5px Roboto;color:#44474F;margin-top:4px">YARIN İLK</div></div>
+<div style="width:1px;align-self:stretch;background:#E1E6EF"></div>
+<div style="flex:1;min-width:0;font:600 12px/1.45 Roboto;color:#44474F">Bugünün seferleri bitti. Bu yönde günde <b style="color:#171A22">16 sefer</b> var.</div>
+</div>
+
+<div style="margin:18px 0 10px;display:flex;align-items:center;gap:9px"><div style="height:24px;padding:0 9px;border-radius:8px;background:#135BEC;display:flex;align-items:center;font:900 10.5px Roboto;color:#fff">AÜ102</div><span style="flex:1;font:800 12.5px Roboto;color:#171A22">Kampüs → Şehir Merkezi</span><span style="font:700 11px Roboto;color:#9AA1B0">her 45 dk</span></div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<div style="height:32px;padding:0 12px;border-radius:11px;background:#E8F0FF;display:flex;align-items:center;font:800 12.5px Roboto;color:#082B76">06:37</div>
+<div style="height:32px;padding:0 12px;border-radius:11px;background:#F2F5FA;display:flex;align-items:center;font:700 12.5px Roboto;color:#44474F">07:22</div>
+<div style="height:32px;padding:0 12px;border-radius:11px;background:#F2F5FA;display:flex;align-items:center;font:700 12.5px Roboto;color:#44474F">08:07</div>
+<div style="height:32px;padding:0 12px;border-radius:11px;background:#F2F5FA;display:flex;align-items:center;font:700 12.5px Roboto;color:#44474F">08:52</div>
+<div style="height:32px;padding:0 12px;border-radius:11px;background:#F2F5FA;display:flex;align-items:center;font:700 12.5px Roboto;color:#44474F">09:37</div>
+<div style="height:32px;padding:0 12px;border-radius:11px;background:#F2F5FA;display:flex;align-items:center;font:700 12.5px Roboto;color:#44474F">10:22</div>
+</div>
+
+<div style="margin:20px 0 10px;display:flex;align-items:center;gap:9px"><div style="height:24px;padding:0 9px;border-radius:8px;background:#135BEC;display:flex;align-items:center;font:900 10.5px Roboto;color:#fff">AÜ103</div><span style="flex:1;font:800 12.5px Roboto;color:#171A22">Kampüs Ring</span><span style="font:700 11px Roboto;color:#9AA1B0">her 30 dk</span></div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<div style="height:32px;padding:0 12px;border-radius:11px;background:#E8F0FF;display:flex;align-items:center;font:800 12.5px Roboto;color:#082B76">06:45</div>
+<div style="height:32px;padding:0 12px;border-radius:11px;background:#F2F5FA;display:flex;align-items:center;font:700 12.5px Roboto;color:#44474F">07:15</div>
+<div style="height:32px;padding:0 12px;border-radius:11px;background:#F2F5FA;display:flex;align-items:center;font:700 12.5px Roboto;color:#44474F">07:45</div>
+<div style="height:32px;padding:0 12px;border-radius:11px;background:#F2F5FA;display:flex;align-items:center;font:700 12.5px Roboto;color:#44474F">08:15</div>
+<div style="height:32px;padding:0 12px;border-radius:11px;background:#F2F5FA;display:flex;align-items:center;font:700 12.5px Roboto;color:#44474F">08:45</div>
+</div>
+</div>
+<div style="flex:none;padding:12px 20px 26px;border-top:1px solid #EDF1F7;background:#fff;border-radius:0 0 44px 44px">
+<div style="height:50px;border-radius:18px;background:#135BEC;display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#fff">calendar_month</span><span style="font:800 13.5px Roboto;color:#fff">Tüm tarifeyi gör</span></div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="4f"><div class="dv-olabel"><a class="dv-oid" href="#4f">4f</a>Yaprak · geri sayım öncelikli: üstte tek büyük sıradaki sefer, altında kompakt hat satırları</div>
+<div style="width:390px;height:844px;position:relative;background:#E9EDE4;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<image-slot id="u-map-4f" shape="rect" placeholder="Arkadaki harita" style="position:absolute;inset:0"></image-slot>
+<div style="position:absolute;inset:0;background:rgba(15,20,30,.45)"></div>
+<div style="position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#fff"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="position:absolute;left:20px;right:20px;top:52px;display:flex;align-items:center;gap:10px">
+<div style="width:44px;height:44px;flex:none;border-radius:22px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.20);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;line-height:1;color:#171A22">arrow_back</span></div>
+<div style="flex:1;font:900 16px Roboto;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.35)">Yakındaki Duraklar</div>
+</div>
+
+<div style="position:absolute;left:0;right:0;bottom:0;height:494px;background:#fff;border-radius:30px 30px 44px 44px;display:flex;flex-direction:column;overflow:hidden">
+<div style="flex:none;display:flex;justify-content:center;padding:10px 0 2px"><div style="width:42px;height:5px;border-radius:3px;background:#D6DCE8"></div></div>
+<div style="flex:none;margin:10px 20px 0;background:#135BEC;border-radius:24px;padding:18px;position:relative;overflow:hidden">
+<div style="position:absolute;right:-22px;bottom:-28px;font-family:'Material Symbols Rounded';font-size:130px;line-height:1;color:rgba(255,255,255,.12);font-variation-settings:'FILL' 1">directions_bus</div>
+<div style="position:relative;display:flex;align-items:center;gap:8px">
+<span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#fff;font-variation-settings:'FILL' 1">location_on</span>
+<span style="font:900 15px Roboto;color:#fff">durak_2</span>
+<span style="font:600 11.5px Roboto;color:rgba(255,255,255,.8)">· 76 m · ~1 dk</span>
+<div style="flex:1"></div>
+<div style="width:32px;height:32px;border-radius:16px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:#fff">star</span></div>
+</div>
+<div style="position:relative;font:700 10px Roboto;color:rgba(255,255,255,.72);letter-spacing:.1em;margin-top:14px">SIRADAKİ SEFER</div>
+<div style="position:relative;display:flex;align-items:baseline;gap:10px;margin-top:5px"><span style="font:900 34px/1 Roboto;color:#fff">06:31</span><span style="font:800 12.5px Roboto;color:rgba(255,255,255,.92)">AÜ103 · durak_3 yönü</span></div>
+<div style="position:relative;font:600 12px Roboto;color:rgba(255,255,255,.8);margin-top:8px">Bugün bitti · yarın sabah ilk kalkış</div>
+</div>
+<div style="flex:none;display:flex;gap:8px;padding:12px 20px 0">
+<div style="flex:1;height:44px;border-radius:16px;background:#F2F5FA;display:flex;align-items:center;justify-content:center;gap:7px"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;color:#44474F">directions_walk</span><span style="font:800 12.5px Roboto;color:#171A22">Yol tarifi</span></div>
+<div style="flex:1;height:44px;border-radius:16px;background:#F2F5FA;display:flex;align-items:center;justify-content:center;gap:7px"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;color:#44474F">notifications</span><span style="font:800 12.5px Roboto;color:#171A22">Hatırlat</span></div>
+</div>
+<div class="ph" style="flex:1;overflow-y:auto;padding:16px 20px 24px">
+<div style="font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">BURADAN GEÇEN HATLAR</div>
+<div style="border-top:1px solid #E9EDF4;margin-top:10px;padding:13px 2px;display:flex;align-items:center;gap:11px">
+<div style="height:25px;padding:0 9px;border-radius:8px;background:#135BEC;display:flex;align-items:center;font:900 11px Roboto;color:#fff">AÜ103</div>
+<div style="flex:1;min-width:0"><div style="font:800 13.5px Roboto;color:#171A22">durak_3 yönü</div><div style="font:600 11px Roboto;color:#44474F;margin-top:3px">her 30 dk</div></div>
+<div style="text-align:right"><div style="font:900 13.5px Roboto;color:#171A22">06:31</div><div style="font:600 10.5px Roboto;color:#9AA1B0;margin-top:2px">yarın ilk</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+<div style="border-top:1px solid #E9EDF4;padding:13px 2px;display:flex;align-items:center;gap:11px">
+<div style="height:25px;padding:0 9px;border-radius:8px;background:#E8F0FF;display:flex;align-items:center;font:900 11px Roboto;color:#082B76">AÜ102</div>
+<div style="flex:1;min-width:0"><div style="font:800 13.5px Roboto;color:#171A22">durak_1 yönü</div><div style="font:600 11px Roboto;color:#44474F;margin-top:3px">her 45 dk</div></div>
+<div style="text-align:right"><div style="font:900 13.5px Roboto;color:#171A22">06:37</div><div style="font:600 10.5px Roboto;color:#9AA1B0;margin-top:2px">yarın ilk</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+<div style="border-top:1px solid #E9EDF4;padding:13px 2px;display:flex;align-items:center;gap:11px">
+<div style="height:25px;padding:0 9px;border-radius:8px;background:#E8F0FF;display:flex;align-items:center;font:900 11px Roboto;color:#082B76">AÜ103</div>
+<div style="flex:1;min-width:0"><div style="font:800 13.5px Roboto;color:#171A22">durak_1 yönü</div><div style="font:600 11px Roboto;color:#44474F;margin-top:3px">her 30 dk</div></div>
+<div style="text-align:right"><div style="font:900 13.5px Roboto;color:#171A22">06:45</div><div style="font:600 10.5px Roboto;color:#9AA1B0;margin-top:2px">yarın ilk</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+<div style="border-top:1px solid #E9EDF4;padding:13px 2px;display:flex;align-items:center;gap:11px">
+<div style="height:25px;padding:0 9px;border-radius:8px;background:#E8F0FF;display:flex;align-items:center;font:900 11px Roboto;color:#082B76">AÜ102</div>
+<div style="flex:1;min-width:0"><div style="font:800 13.5px Roboto;color:#171A22">durak_3 yönü</div><div style="font:600 11px Roboto;color:#44474F;margin-top:3px">her 45 dk</div></div>
+<div style="text-align:right"><div style="font:900 13.5px Roboto;color:#171A22">06:25</div><div style="font:600 10.5px Roboto;color:#9AA1B0;margin-top:2px">yarın ilk</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-note"><b>Revizyonda yapılanlar (<a class="dv-oid" href="#1a">1a</a> temel alındı):</b> duyuru şeridi kaldırıldı; "Sık kullanılan duraklar" → <b>Yakındaki duraklar</b> (mesafe + yürüme süresi + geri sayım) ve canlı kartın hemen altına taşındı; alt kısayol "Yakındaki Duraklar" → <b>Haritada Gör</b>; arama alanı yakındaki durakların altına indi. Durak detayı artık yarım sayfa yaprak — <a class="dv-oid" href="#3a">3a</a> tam sayfa sürümü referans olarak duruyor.</p>
+</section>
+
+<section class="dv-turn" id="t3">
+<div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">Durak detayı — buradan geçen hatlar (tam sayfa)</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="3a"><div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>Yarım sayfa yaprak yerine tam ekran: yön filtresi, gün seçici, canlı sıradaki sefer ve hat başına saat listesi</div>
+<div style="width:390px;height:844px;position:relative;background:#F7F8FB;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#171A22;flex:none"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="flex:none;display:flex;align-items:center;gap:8px;padding:6px 20px 8px">
+<div style="width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#171A22">arrow_back</span></div>
+<div style="flex:1;min-width:0;font:900 19px/1.2 Roboto;color:#171A22">durak_2</div>
+<div style="width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;line-height:1;color:#135BEC">star</span></div>
+</div>
+
+<div class="ph" style="flex:1;overflow-y:auto;padding:0 20px 40px">
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:22px;padding:16px;display:flex;gap:14px;align-items:center">
+<div style="width:46px;height:46px;flex:none;border-radius:16px;background:#E8F0FF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;font-variation-settings:'FILL' 1;color:#135BEC">location_on</span></div>
+<div style="flex:1;min-width:0">
+<div style="font:800 13.5px/1.3 Roboto;color:#171A22">Akdeniz Ünv. Kampüs Girişi</div>
+<div style="font:600 12px/1.3 Roboto;color:#44474F;margin-top:4px">76 m · ~1 dk yürüme · 2 hat</div>
+</div>
+<div style="width:44px;height:44px;flex:none;border-radius:15px;background:#F2F5FA;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#44474F">directions_walk</span></div>
+</div>
+
+<div style="margin-top:12px;background:#135BEC;border-radius:22px;padding:18px;position:relative;overflow:hidden">
+<div style="position:absolute;right:-18px;top:-10px;font-family:'Material Symbols Rounded';font-size:120px;line-height:1;color:rgba(255,255,255,.10);font-variation-settings:'FILL' 1">directions_bus</div>
+<div style="position:relative;font:800 10.5px Roboto;color:rgba(255,255,255,.78);letter-spacing:.1em">SIRADAKİ SEFER</div>
+<div style="position:relative;display:flex;align-items:baseline;gap:10px;margin-top:6px"><span style="font:900 34px/1 Roboto;color:#fff">06:31</span><span style="font:800 13px Roboto;color:rgba(255,255,255,.92)">AÜ103 · durak_3 yönü</span></div>
+<div style="position:relative;font:600 12px Roboto;color:rgba(255,255,255,.8);margin-top:8px">Bugünün seferleri bitti · yarın sabah ilk kalkış</div>
+</div>
+
+<div style="display:flex;gap:8px;margin-top:14px">
+<div style="flex:1;display:flex;background:#F2F5FA;border-radius:20px;padding:4px;gap:4px">
+<div style="flex:1;height:34px;border-radius:16px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.10);display:flex;align-items:center;justify-content:center;font:800 12px Roboto;color:#171A22">Tüm yönler</div>
+<div style="flex:1;height:34px;display:flex;align-items:center;justify-content:center;font:800 12px Roboto;color:#44474F">durak_1</div>
+<div style="flex:1;height:34px;display:flex;align-items:center;justify-content:center;font:800 12px Roboto;color:#44474F">durak_3</div>
+</div>
+</div>
+<div style="display:flex;gap:8px;margin-top:8px;overflow-x:auto" class="ph">
+<div style="flex:none;height:34px;padding:0 14px;border-radius:17px;background:#171A22;display:flex;align-items:center;font:800 11.5px Roboto;color:#fff">Bugün</div>
+<div style="flex:none;height:34px;padding:0 14px;border-radius:17px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;font:800 11.5px Roboto;color:#44474F">Yarın</div>
+<div style="flex:none;height:34px;padding:0 14px;border-radius:17px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;font:800 11.5px Roboto;color:#44474F">Cumartesi</div>
+<div style="flex:none;height:34px;padding:0 14px;border-radius:17px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;font:800 11.5px Roboto;color:#44474F">Pazar</div>
+</div>
+
+<div style="margin:18px 2px 10px;font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">BURADAN GEÇEN HATLAR</div>
+
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:22px;padding:16px">
+<div style="display:flex;align-items:center;gap:10px">
+<div style="height:26px;padding:0 10px;border-radius:9px;background:#135BEC;display:flex;align-items:center;font:900 11.5px Roboto;color:#fff">AÜ103</div>
+<div style="flex:1;min-width:0;font:800 14px Roboto;color:#171A22">durak_3 yönü</div>
+<span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+<div style="display:flex;align-items:center;gap:7px;margin-top:10px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;color:#44474F">schedule</span><span style="font:600 12px Roboto;color:#44474F">Bugün bitti · yarın ilk kalkış <b style="color:#171A22">06:31</b></span></div>
+<div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap">
+<div style="height:30px;padding:0 11px;border-radius:10px;background:#E8F0FF;display:flex;align-items:center;font:800 12px Roboto;color:#082B76">06:31</div>
+<div style="height:30px;padding:0 11px;border-radius:10px;background:#F2F5FA;display:flex;align-items:center;font:700 12px Roboto;color:#44474F">07:15</div>
+<div style="height:30px;padding:0 11px;border-radius:10px;background:#F2F5FA;display:flex;align-items:center;font:700 12px Roboto;color:#44474F">08:00</div>
+<div style="height:30px;padding:0 11px;border-radius:10px;background:#F2F5FA;display:flex;align-items:center;font:700 12px Roboto;color:#44474F">08:45</div>
+<div style="height:30px;padding:0 11px;border-radius:10px;background:#F2F5FA;display:flex;align-items:center;font:700 12px Roboto;color:#44474F">+12</div>
+</div>
+</div>
+
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:22px;padding:16px;margin-top:10px">
+<div style="display:flex;align-items:center;gap:10px">
+<div style="height:26px;padding:0 10px;border-radius:9px;background:#135BEC;display:flex;align-items:center;font:900 11.5px Roboto;color:#fff">AÜ102</div>
+<div style="flex:1;min-width:0;font:800 14px Roboto;color:#171A22">durak_1 yönü</div>
+<span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+<div style="display:flex;align-items:center;gap:7px;margin-top:10px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;color:#44474F">schedule</span><span style="font:600 12px Roboto;color:#44474F">Bugün bitti · yarın ilk kalkış <b style="color:#171A22">06:37</b></span></div>
+<div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap">
+<div style="height:30px;padding:0 11px;border-radius:10px;background:#E8F0FF;display:flex;align-items:center;font:800 12px Roboto;color:#082B76">06:37</div>
+<div style="height:30px;padding:0 11px;border-radius:10px;background:#F2F5FA;display:flex;align-items:center;font:700 12px Roboto;color:#44474F">07:22</div>
+<div style="height:30px;padding:0 11px;border-radius:10px;background:#F2F5FA;display:flex;align-items:center;font:700 12px Roboto;color:#44474F">08:07</div>
+<div style="height:30px;padding:0 11px;border-radius:10px;background:#F2F5FA;display:flex;align-items:center;font:700 12px Roboto;color:#44474F">+14</div>
+</div>
+</div>
+
+<div style="display:flex;align-items:flex-start;gap:8px;margin-top:14px;padding:0 2px"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1.2;color:#9AA1B0">info</span><span style="font:500 11.5px/1.45 Roboto;color:#44474F">Saatler hattın kalkış noktasına aittir; bu durağa varış birkaç dakika sonrasıdır.</span></div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</section>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Yakındaki duraklar — 3 alternatif</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="2a"><div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Harita + zengin liste: yürüme süresi, hat rozetleri ve her durağın sıradaki kalkışı satırda</div>
+<div style="width:390px;height:844px;position:relative;background:#F7F8FB;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#171A22;flex:none"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="flex:none;display:flex;align-items:center;gap:8px;padding:6px 20px 8px">
+<div style="width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#171A22">arrow_back</span></div>
+<div style="flex:1;min-width:0;font:900 19px/1.2 Roboto;color:#171A22">Yakındaki Duraklar</div>
+<div style="width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #D6DCE8"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#171A22">tune</span></div>
+</div>
+<div style="flex:none;margin:0 20px;height:206px;border-radius:22px;overflow:hidden;position:relative;background:#E9EDE4">
+<image-slot id="u-map-2a" shape="rect" placeholder="Kampüs haritası — durak pinleri" style="position:absolute;inset:0"></image-slot>
+<div style="position:absolute;right:10px;top:10px;width:38px;height:38px;border-radius:13px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#135BEC">my_location</span></div>
+<div style="position:absolute;left:12px;bottom:12px;height:32px;padding:0 12px;border-radius:16px;background:rgba(23,26,34,.88);display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;color:#fff">layers</span><span style="font:800 11.5px Roboto;color:#fff">Hatları göster</span></div>
+</div>
+<div class="ph" style="flex:1;overflow-y:auto;padding:16px 20px 130px">
+<div style="display:flex;align-items:center;gap:8px">
+<div style="flex:none;height:32px;padding:0 12px;border-radius:16px;background:#171A22;display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1;color:#fff">near_me</span><span style="font:800 11.5px Roboto;color:#fff">Mesafeye göre</span></div>
+<div style="flex:none;height:32px;padding:0 12px;border-radius:16px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;font:800 11.5px Roboto;color:#44474F">İlk kalkışa göre</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
+<div style="background:#fff;border:1px solid #135BEC;border-radius:22px;padding:15px 16px">
+<div style="display:flex;align-items:center;gap:11px">
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:#135BEC;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;font-variation-settings:'FILL' 1;color:#fff">location_on</span></div>
+<div style="flex:1;min-width:0"><div style="font:900 15px/1.2 Roboto;color:#171A22">durak_2</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">76 m · ~1 dk yürüme</div></div>
+<div style="height:24px;padding:0 9px;border-radius:8px;background:#E8F0FF;display:flex;align-items:center;font:900 10.5px Roboto;color:#082B76">EN YAKIN</div>
+</div>
+<div style="display:flex;align-items:center;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid #EDF1F7">
+<div style="height:24px;padding:0 8px;border-radius:8px;background:#F2F5FA;display:flex;align-items:center;font:900 10.5px Roboto;color:#44474F">AÜ102</div>
+<div style="height:24px;padding:0 8px;border-radius:8px;background:#F2F5FA;display:flex;align-items:center;font:900 10.5px Roboto;color:#44474F">AÜ103</div>
+<div style="flex:1"></div>
+<span style="font:700 12px Roboto;color:#171A22">İlk kalkış 06:31</span>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+</div>
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:22px;padding:15px 16px">
+<div style="display:flex;align-items:center;gap:11px">
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:#E8F0FF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;font-variation-settings:'FILL' 1;color:#135BEC">location_on</span></div>
+<div style="flex:1;min-width:0"><div style="font:900 15px/1.2 Roboto;color:#171A22">durak_1</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">553 m · ~7 dk yürüme</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#135BEC">star</span>
+</div>
+<div style="display:flex;align-items:center;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid #EDF1F7">
+<div style="height:24px;padding:0 8px;border-radius:8px;background:#F2F5FA;display:flex;align-items:center;font:900 10.5px Roboto;color:#44474F">AÜ102</div>
+<div style="height:24px;padding:0 8px;border-radius:8px;background:#F2F5FA;display:flex;align-items:center;font:900 10.5px Roboto;color:#44474F">AÜ103</div>
+<div style="flex:1"></div>
+<span style="font:700 12px Roboto;color:#171A22">İlk kalkış 06:37</span>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+</div>
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:22px;padding:15px 16px">
+<div style="display:flex;align-items:center;gap:11px">
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:#E8F0FF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;font-variation-settings:'FILL' 1;color:#135BEC">location_on</span></div>
+<div style="flex:1;min-width:0"><div style="font:900 15px/1.2 Roboto;color:#171A22">durak_3</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">1.3 km · ~16 dk yürüme</div></div>
+</div>
+<div style="display:flex;align-items:center;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid #EDF1F7">
+<div style="height:24px;padding:0 8px;border-radius:8px;background:#F2F5FA;display:flex;align-items:center;font:900 10.5px Roboto;color:#44474F">AÜ102</div>
+<div style="height:24px;padding:0 8px;border-radius:8px;background:#F2F5FA;display:flex;align-items:center;font:900 10.5px Roboto;color:#44474F">AÜ103</div>
+<div style="flex:1"></div>
+<span style="font:700 12px Roboto;color:#171A22">İlk kalkış 06:25</span>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:20px;right:20px;bottom:22px;height:64px;border-radius:32px;background:#fff;box-shadow:0 8px 28px rgba(16,24,40,.16);display:flex;align-items:center;justify-content:space-around;padding:0 8px">
+<span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">home</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">restaurant</span><span style="width:44px;height:44px;border-radius:22px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">directions_bus</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">calendar_month</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">apartment</span>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="2b"><div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>Harita ana aktör: tam ekran harita + altta kaydırmalı durak kartları (pin ile eşleşir)</div>
+<div style="width:390px;height:844px;position:relative;background:#E9EDE4;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<image-slot id="u-map-2b" shape="rect" placeholder="Tam ekran kampüs haritası" style="position:absolute;inset:0"></image-slot>
+<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.92) 0,rgba(255,255,255,0) 22%,rgba(0,0,0,0) 60%,rgba(0,0,0,.16) 100%)"></div>
+<div style="position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#171A22"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="position:absolute;left:20px;right:20px;top:52px;display:flex;align-items:center;gap:10px">
+<div style="width:44px;height:44px;flex:none;border-radius:22px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.14);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;line-height:1;color:#171A22">arrow_back</span></div>
+<div style="flex:1;height:44px;border-radius:22px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.14);display:flex;align-items:center;gap:9px;padding:0 15px"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">search</span><span style="font:600 13px Roboto;color:#9AA1B0">Durak ara</span></div>
+</div>
+<div style="position:absolute;right:20px;top:112px;display:flex;flex-direction:column;gap:8px">
+<div style="width:42px;height:42px;border-radius:15px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.14);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#135BEC">my_location</span></div>
+<div style="width:42px;height:42px;border-radius:15px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.14);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#44474F">layers</span></div>
+</div>
+<div style="position:absolute;left:20px;top:112px;height:32px;padding:0 12px;border-radius:16px;background:rgba(23,26,34,.88);display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1;color:#fff">place</span><span style="font:800 11.5px Roboto;color:#fff">3 durak yakında</span></div>
+
+<div class="ph" style="position:absolute;left:0;right:0;bottom:104px;display:flex;gap:12px;padding:0 20px;overflow-x:auto">
+<div style="flex:none;width:274px;background:#fff;border-radius:24px;box-shadow:0 8px 28px rgba(16,24,40,.20);padding:16px">
+<div style="display:flex;align-items:flex-start;gap:11px">
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:#135BEC;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;font-variation-settings:'FILL' 1;color:#fff">location_on</span></div>
+<div style="flex:1;min-width:0"><div style="font:900 16px/1.2 Roboto;color:#171A22">durak_2</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">76 m · ~1 dk yürüme</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#D6DCE8">star</span>
+</div>
+<div style="display:flex;align-items:center;gap:6px;margin-top:12px">
+<div style="height:25px;padding:0 9px;border-radius:8px;background:#E8F0FF;display:flex;align-items:center;font:900 11px Roboto;color:#082B76">AÜ102</div>
+<div style="height:25px;padding:0 9px;border-radius:8px;background:#E8F0FF;display:flex;align-items:center;font:900 11px Roboto;color:#082B76">AÜ103</div>
+</div>
+<div style="margin-top:12px;padding-top:12px;border-top:1px solid #EDF1F7;font:600 12px Roboto;color:#44474F">Bugün bitti · yarın ilk kalkış <b style="color:#171A22">06:31</b></div>
+<div style="display:flex;gap:8px;margin-top:12px">
+<div style="flex:1;height:42px;border-radius:15px;background:#135BEC;display:flex;align-items:center;justify-content:center;font:800 12.5px Roboto;color:#fff">Hatları gör</div>
+<div style="width:42px;height:42px;border-radius:15px;background:#F2F5FA;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#44474F">directions_walk</span></div>
+</div>
+</div>
+<div style="flex:none;width:274px;background:#fff;border-radius:24px;box-shadow:0 8px 28px rgba(16,24,40,.14);padding:16px;opacity:.96">
+<div style="display:flex;align-items:flex-start;gap:11px">
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:#E8F0FF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;font-variation-settings:'FILL' 1;color:#135BEC">location_on</span></div>
+<div style="flex:1;min-width:0"><div style="font:900 16px/1.2 Roboto;color:#171A22">durak_1</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">553 m · ~7 dk yürüme</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#135BEC">star</span>
+</div>
+<div style="display:flex;align-items:center;gap:6px;margin-top:12px">
+<div style="height:25px;padding:0 9px;border-radius:8px;background:#E8F0FF;display:flex;align-items:center;font:900 11px Roboto;color:#082B76">AÜ102</div>
+<div style="height:25px;padding:0 9px;border-radius:8px;background:#E8F0FF;display:flex;align-items:center;font:900 11px Roboto;color:#082B76">AÜ103</div>
+</div>
+<div style="margin-top:12px;padding-top:12px;border-top:1px solid #EDF1F7;font:600 12px Roboto;color:#44474F">Bugün bitti · yarın ilk kalkış <b style="color:#171A22">06:37</b></div>
+<div style="display:flex;gap:8px;margin-top:12px">
+<div style="flex:1;height:42px;border-radius:15px;background:#135BEC;display:flex;align-items:center;justify-content:center;font:800 12.5px Roboto;color:#fff">Hatları gör</div>
+<div style="width:42px;height:42px;border-radius:15px;background:#F2F5FA;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#44474F">directions_walk</span></div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:20px;right:20px;bottom:22px;height:64px;border-radius:32px;background:#fff;box-shadow:0 8px 28px rgba(16,24,40,.16);display:flex;align-items:center;justify-content:space-around;padding:0 8px">
+<span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">home</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">restaurant</span><span style="width:44px;height:44px;border-radius:22px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">directions_bus</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">calendar_month</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">apartment</span>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="2c"><div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a>Liste öncelikli: küçük harita şeridi, favoriler ayrı, duraklar yürüme mesafesine göre gruplanmış</div>
+<div style="width:390px;height:844px;position:relative;background:#fff;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#171A22;flex:none"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="flex:none;display:flex;align-items:center;gap:8px;padding:6px 20px 2px">
+<div style="width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:#171A22">arrow_back</span></div>
+<div style="flex:1"></div>
+<div style="width:44px;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;line-height:1;color:#171A22">map</span></div>
+</div>
+<div class="ph" style="flex:1;overflow-y:auto;padding:0 20px 130px">
+<div style="font:900 25px/1.15 Roboto;color:#171A22">Yakındaki<br>duraklar</div>
+<div style="display:flex;align-items:center;gap:7px;margin-top:9px"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">my_location</span><span style="font:600 12.5px Roboto;color:#44474F">Konumunuz · Akdeniz Ünv. Kampüs</span></div>
+
+<div style="margin-top:16px;height:120px;border-radius:20px;overflow:hidden;position:relative;background:#E9EDE4">
+<image-slot id="u-map-2c" shape="rect" placeholder="Harita önizleme şeridi" style="position:absolute;inset:0"></image-slot>
+<div style="position:absolute;right:10px;bottom:10px;height:30px;padding:0 12px;border-radius:15px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.16);display:flex;align-items:center;font:800 11.5px Roboto;color:#171A22">Haritada aç</div>
+</div>
+
+<div style="margin:22px 0 10px;font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">FAVORİ DURAKLARIN</div>
+<div style="border:1px solid #D6DCE8;border-radius:20px;padding:14px 16px;display:flex;align-items:center;gap:12px">
+<span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">star</span>
+<div style="flex:1;min-width:0"><div style="font:800 14.5px Roboto;color:#171A22">durak_1</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">553 m · AÜ102 · AÜ103</div></div>
+<span style="font:800 12px Roboto;color:#171A22">06:37</span>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin:22px 0 4px"><span style="font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">YÜRÜME MESAFESİNDE</span><span style="font:700 11px Roboto;color:#9AA1B0">5 dk altı</span></div>
+<div style="border-top:1px solid #E9EDF4;padding:15px 0;display:flex;align-items:center;gap:12px">
+<div style="width:42px;height:42px;flex:none;border-radius:14px;background:#135BEC;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font:900 13px/1 Roboto;color:#fff">76</span><span style="font:800 8px/1.4 Roboto;color:rgba(255,255,255,.85)">M</span></div>
+<div style="flex:1;min-width:0"><div style="font:800 14.5px Roboto;color:#171A22">durak_2</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">~1 dk yürüme · AÜ102 · AÜ103</div></div>
+<div style="text-align:right"><div style="font:800 12.5px Roboto;color:#171A22">06:31</div><div style="font:600 10.5px Roboto;color:#9AA1B0;margin-top:2px">ilk kalkış</div></div>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin:20px 0 4px"><span style="font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">DAHA UZAK</span><span style="font:700 11px Roboto;color:#9AA1B0">2 durak</span></div>
+<div style="border-top:1px solid #E9EDF4;padding:15px 0;display:flex;align-items:center;gap:12px">
+<div style="width:42px;height:42px;flex:none;border-radius:14px;background:#F2F5FA;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font:900 13px/1 Roboto;color:#171A22">553</span><span style="font:800 8px/1.4 Roboto;color:#44474F">M</span></div>
+<div style="flex:1;min-width:0"><div style="font:800 14.5px Roboto;color:#171A22">durak_1</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">~7 dk yürüme · AÜ102 · AÜ103</div></div>
+<div style="text-align:right"><div style="font:800 12.5px Roboto;color:#171A22">06:37</div><div style="font:600 10.5px Roboto;color:#9AA1B0;margin-top:2px">ilk kalkış</div></div>
+</div>
+<div style="border-top:1px solid #E9EDF4;padding:15px 0;display:flex;align-items:center;gap:12px">
+<div style="width:42px;height:42px;flex:none;border-radius:14px;background:#F2F5FA;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font:900 12px/1 Roboto;color:#171A22">1.3</span><span style="font:800 8px/1.4 Roboto;color:#44474F">KM</span></div>
+<div style="flex:1;min-width:0"><div style="font:800 14.5px Roboto;color:#171A22">durak_3</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">~16 dk yürüme · AÜ102 · AÜ103</div></div>
+<div style="text-align:right"><div style="font:800 12.5px Roboto;color:#171A22">06:25</div><div style="font:600 10.5px Roboto;color:#9AA1B0;margin-top:2px">ilk kalkış</div></div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:20px;right:20px;bottom:22px;height:64px;border-radius:32px;background:#fff;box-shadow:0 8px 28px rgba(16,24,40,.16);display:flex;align-items:center;justify-content:space-around;padding:0 8px">
+<span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">home</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">restaurant</span><span style="width:44px;height:44px;border-radius:22px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">directions_bus</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">calendar_month</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">apartment</span>
+</div>
+</div>
+</div>
+
+</div>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Ulaşım ana ekranı — 3 alternatif (boşluğu içerikle dolduruyor)</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1a"><div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Mevcut düzenin doldurulmuş hâli: canlı kart + sıradaki 3 sefer, favori duraklarda geri sayım, hatlar bölümü, servis durumu</div>
+<div style="width:390px;height:844px;position:relative;background:#F7F8FB;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#171A22;flex:none"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="flex:none;display:flex;align-items:center;gap:10px;padding:4px 20px 10px">
+<div style="flex:1;min-width:0"><div style="font:900 14px/1 Roboto;color:#171A22">Akdeniz<span style="color:#135BEC">Cep</span></div><div style="font:900 23px/1.15 Roboto;color:#171A22;margin-top:5px">Ulaşım</div></div>
+<div style="width:40px;height:40px;border-radius:20px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;font:900 15px Roboto;color:#135BEC">E</div>
+</div>
+<div class="ph" style="flex:1;overflow-y:auto;padding:0 20px 130px">
+<div style="background:#135BEC;border-radius:26px;padding:18px;position:relative;overflow:hidden">
+<div style="position:absolute;right:-24px;bottom:-24px;font-family:'Material Symbols Rounded';font-size:150px;line-height:1;color:rgba(255,255,255,.12);font-variation-settings:'FILL' 1">directions_bus</div>
+<div style="position:relative;display:flex;align-items:center;gap:8px">
+<div style="height:32px;padding:0 14px;border-radius:16px;background:#fff;display:flex;align-items:center;font:900 12.5px Roboto;color:#135BEC">AÜ102</div>
+<div style="height:32px;padding:0 14px;border-radius:16px;background:rgba(255,255,255,.22);display:flex;align-items:center;font:900 12.5px Roboto;color:#fff">AÜ103</div>
+<div style="flex:1"></div>
+<div style="width:36px;height:36px;border-radius:18px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1;color:#fff">swap_vert</span></div>
+</div>
+<div style="position:relative;display:flex;align-items:baseline;gap:10px;margin-top:16px"><span style="font:900 40px/1 Roboto;color:#fff">06:43</span><span style="font:800 14px Roboto;color:rgba(255,255,255,.92)">durak_3 yönü</span></div>
+<div style="position:relative;display:flex;align-items:center;gap:7px;margin-top:9px"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:rgba(255,255,255,.85)">schedule</span><span style="font:600 12.5px Roboto;color:rgba(255,255,255,.88)">Peron 1'den kalkışa 2 dakika kaldı</span></div>
+<div style="position:relative;display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.22)">
+<div style="flex:1"><div style="font:700 9.5px Roboto;color:rgba(255,255,255,.7);letter-spacing:.08em">SONRAKİ</div><div style="font:900 15px Roboto;color:#fff;margin-top:3px">07:15</div></div>
+<div style="flex:1"><div style="font:700 9.5px Roboto;color:rgba(255,255,255,.7);letter-spacing:.08em">SONRA</div><div style="font:900 15px Roboto;color:#fff;margin-top:3px">08:00</div></div>
+<div style="flex:1"><div style="font:700 9.5px Roboto;color:rgba(255,255,255,.7);letter-spacing:.08em">SON SEFER</div><div style="font:900 15px Roboto;color:#fff;margin-top:3px">22:30</div></div>
+</div>
+</div>
+
+<div style="margin-top:12px;height:50px;border-radius:20px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;gap:10px;padding:0 16px"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#9AA1B0">search</span><span style="flex:1;font:500 13.5px Roboto;color:#9AA1B0">Durak veya bina ara...</span></div>
+
+<div style="display:flex;align-items:center;gap:9px;margin-top:12px;background:#FFF8E6;border:1px solid #F3E0B0;border-radius:18px;padding:13px 15px">
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#B45309;font-variation-settings:'FILL' 1">campaign</span>
+<div style="flex:1;min-width:0;font:700 12px/1.4 Roboto;color:#7C4A03">Bugün AÜ103 seferleri 15 dk gecikmeli çalışıyor</div>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin:22px 2px 10px"><span style="font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">SIK KULLANILAN DURAKLAR</span><span style="font:800 11.5px Roboto;color:#135BEC">Düzenle</span></div>
+<div class="ph" style="display:flex;gap:10px;overflow-x:auto">
+<div style="flex:none;width:170px;background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:14px">
+<div style="display:flex;align-items:center;gap:7px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">star</span><span style="font:800 14px Roboto;color:#171A22">durak_1</span></div>
+<div style="display:flex;align-items:baseline;gap:6px;margin-top:12px"><span style="font:900 22px/1 Roboto;color:#135BEC">7</span><span style="font:700 11.5px Roboto;color:#44474F">dk sonra</span></div>
+<div style="display:flex;gap:5px;margin-top:10px"><span style="height:22px;padding:0 7px;border-radius:7px;background:#F2F5FA;display:flex;align-items:center;font:900 10px Roboto;color:#44474F">AÜ102</span><span style="height:22px;padding:0 7px;border-radius:7px;background:#F2F5FA;display:flex;align-items:center;font:900 10px Roboto;color:#44474F">AÜ103</span></div>
+</div>
+<div style="flex:none;width:170px;background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:14px">
+<div style="display:flex;align-items:center;gap:7px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">star</span><span style="font:800 14px Roboto;color:#171A22">durak_2</span></div>
+<div style="display:flex;align-items:baseline;gap:6px;margin-top:12px"><span style="font:900 22px/1 Roboto;color:#135BEC">12</span><span style="font:700 11.5px Roboto;color:#44474F">dk sonra</span></div>
+<div style="display:flex;gap:5px;margin-top:10px"><span style="height:22px;padding:0 7px;border-radius:7px;background:#F2F5FA;display:flex;align-items:center;font:900 10px Roboto;color:#44474F">AÜ102</span><span style="height:22px;padding:0 7px;border-radius:7px;background:#F2F5FA;display:flex;align-items:center;font:900 10px Roboto;color:#44474F">AÜ103</span></div>
+</div>
+</div>
+
+<div style="margin:22px 2px 10px;font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">HATLAR</div>
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:22px;overflow:hidden">
+<div style="padding:14px 16px;display:flex;align-items:center;gap:12px">
+<div style="height:26px;padding:0 10px;border-radius:9px;background:#135BEC;display:flex;align-items:center;font:900 11.5px Roboto;color:#fff">AÜ102</div>
+<div style="flex:1;min-width:0"><div style="font:800 13.5px Roboto;color:#171A22">Kampüs → Şehir Merkezi</div><div style="font:600 11px Roboto;color:#44474F;margin-top:3px">12 durak · her 45 dk</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+<div style="padding:14px 16px;border-top:1px solid #EDF1F7;display:flex;align-items:center;gap:12px">
+<div style="height:26px;padding:0 10px;border-radius:9px;background:#135BEC;display:flex;align-items:center;font:900 11.5px Roboto;color:#fff">AÜ103</div>
+<div style="flex:1;min-width:0"><div style="font:800 13.5px Roboto;color:#171A22">Kampüs Ring</div><div style="font:600 11px Roboto;color:#44474F;margin-top:3px">9 durak · her 30 dk</div></div>
+<span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#9AA1B0">chevron_right</span>
+</div>
+</div>
+
+<div style="display:flex;gap:10px;margin-top:12px">
+<div style="flex:1;background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px"><div style="width:40px;height:40px;border-radius:14px;background:#E8F0FF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#135BEC">calendar_month</span></div><div style="font:800 13.5px/1.25 Roboto;color:#171A22">Tüm Tarife</div></div>
+<div style="flex:1;background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px"><div style="width:40px;height:40px;border-radius:14px;background:#E8F0FF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#135BEC">location_on</span></div><div style="font:800 13.5px/1.25 Roboto;color:#171A22">Yakındaki Duraklar</div></div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:20px;right:20px;bottom:22px;height:64px;border-radius:32px;background:#fff;box-shadow:0 8px 28px rgba(16,24,40,.16);display:flex;align-items:center;justify-content:space-around;padding:0 8px">
+<span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">home</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">restaurant</span><span style="width:44px;height:44px;border-radius:22px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">directions_bus</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">calendar_month</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">apartment</span>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1b"><div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Güzergâh odaklı: nereye gidiyorsun? Kampüs↔Merkez kısayolları, yaklaşan seferler zaman çizelgesi olarak</div>
+<div style="width:390px;height:844px;position:relative;background:#fff;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#171A22;flex:none"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="flex:none;display:flex;align-items:center;gap:10px;padding:4px 20px 12px">
+<div style="flex:1;min-width:0;font:900 23px/1.15 Roboto;color:#171A22">Ulaşım</div>
+<div style="width:40px;height:40px;border-radius:20px;background:#F2F5FA;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#171A22">search</span></div>
+<div style="width:40px;height:40px;border-radius:20px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;font:900 15px Roboto;color:#135BEC">E</div>
+</div>
+<div class="ph" style="flex:1;overflow-y:auto;padding:0 20px 130px">
+<div style="background:#F7F8FB;border-radius:24px;padding:16px">
+<div style="font:900 11px Roboto;color:#44474F;letter-spacing:.09em">NEREYE GİDİYORSUN?</div>
+<div style="display:flex;align-items:center;gap:12px;margin-top:14px">
+<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:none"><span style="width:10px;height:10px;border-radius:5px;background:#135BEC"></span><span style="width:2px;height:22px;background:#D6DCE8"></span><span style="width:10px;height:10px;border-radius:5px;border:2.5px solid #171A22;box-sizing:border-box"></span></div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:10px">
+<div style="font:800 14px Roboto;color:#171A22">durak_2 <span style="font:600 12px Roboto;color:#44474F">· 76 m</span></div>
+<div style="font:800 14px Roboto;color:#171A22">durak_3</div>
+</div>
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#44474F">swap_vert</span></div>
+</div>
+<div style="display:flex;gap:8px;margin-top:14px">
+<div style="flex:none;height:32px;padding:0 12px;border-radius:16px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1;color:#135BEC">school</span><span style="font:800 11.5px Roboto;color:#171A22">Kampüse</span></div>
+<div style="flex:none;height:32px;padding:0 12px;border-radius:16px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1;color:#135BEC">home</span><span style="font:800 11.5px Roboto;color:#171A22">Eve</span></div>
+<div style="flex:none;height:32px;padding:0 12px;border-radius:16px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1;color:#135BEC">apartment</span><span style="font:800 11.5px Roboto;color:#171A22">Merkez</span></div>
+</div>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin:22px 2px 12px"><span style="font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">YAKLAŞAN SEFERLER</span><span style="font:800 11.5px Roboto;color:#135BEC">Tüm tarife</span></div>
+
+<div style="background:#135BEC;border-radius:22px;padding:16px;display:flex;align-items:center;gap:14px">
+<div style="flex:none"><div style="font:900 30px/1 Roboto;color:#fff">2</div><div style="font:800 10px Roboto;color:rgba(255,255,255,.8);margin-top:2px">DAKİKA</div></div>
+<div style="width:1px;align-self:stretch;background:rgba(255,255,255,.22)"></div>
+<div style="flex:1;min-width:0">
+<div style="display:flex;align-items:center;gap:8px"><span style="height:24px;padding:0 9px;border-radius:8px;background:#fff;display:flex;align-items:center;font:900 11px Roboto;color:#135BEC">AÜ102</span><span style="font:800 13.5px Roboto;color:#fff">06:43</span></div>
+<div style="font:600 12px Roboto;color:rgba(255,255,255,.85);margin-top:6px">durak_3 yönü · Peron 1</div>
+</div>
+<div style="width:40px;height:40px;flex:none;border-radius:14px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#fff">notifications_active</span></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:0;margin-top:6px">
+<div style="border-bottom:1px solid #E9EDF4;padding:15px 2px;display:flex;align-items:center;gap:12px">
+<span style="font:900 15px Roboto;color:#171A22;width:52px">07:15</span>
+<span style="height:24px;padding:0 9px;border-radius:8px;background:#F2F5FA;display:flex;align-items:center;font:900 10.5px Roboto;color:#44474F">AÜ103</span>
+<span style="flex:1;font:600 12.5px Roboto;color:#44474F">durak_1 yönü</span>
+<span style="font:700 11.5px Roboto;color:#9AA1B0">34 dk</span>
+</div>
+<div style="border-bottom:1px solid #E9EDF4;padding:15px 2px;display:flex;align-items:center;gap:12px">
+<span style="font:900 15px Roboto;color:#171A22;width:52px">08:00</span>
+<span style="height:24px;padding:0 9px;border-radius:8px;background:#F2F5FA;display:flex;align-items:center;font:900 10.5px Roboto;color:#44474F">AÜ102</span>
+<span style="flex:1;font:600 12.5px Roboto;color:#44474F">durak_3 yönü</span>
+<span style="font:700 11.5px Roboto;color:#9AA1B0">1 sa 19 dk</span>
+</div>
+<div style="border-bottom:1px solid #E9EDF4;padding:15px 2px;display:flex;align-items:center;gap:12px">
+<span style="font:900 15px Roboto;color:#171A22;width:52px">08:45</span>
+<span style="height:24px;padding:0 9px;border-radius:8px;background:#F2F5FA;display:flex;align-items:center;font:900 10.5px Roboto;color:#44474F">AÜ103</span>
+<span style="flex:1;font:600 12.5px Roboto;color:#44474F">durak_1 yönü</span>
+<span style="font:700 11.5px Roboto;color:#9AA1B0">2 sa 4 dk</span>
+</div>
+</div>
+
+<div style="margin:22px 2px 10px;font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">KISAYOLLAR</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<div style="background:#F7F8FB;border-radius:20px;padding:15px;display:flex;align-items:center;gap:10px"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#135BEC">location_on</span><span style="font:800 12.5px/1.25 Roboto;color:#171A22">Yakındaki duraklar</span></div>
+<div style="background:#F7F8FB;border-radius:20px;padding:15px;display:flex;align-items:center;gap:10px"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#135BEC">route</span><span style="font:800 12.5px/1.25 Roboto;color:#171A22">Hat haritası</span></div>
+<div style="background:#F7F8FB;border-radius:20px;padding:15px;display:flex;align-items:center;gap:10px"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#135BEC">calendar_month</span><span style="font:800 12.5px/1.25 Roboto;color:#171A22">Hafta sonu tarifesi</span></div>
+<div style="background:#F7F8FB;border-radius:20px;padding:15px;display:flex;align-items:center;gap:10px"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#135BEC">confirmation_number</span><span style="font:800 12.5px/1.25 Roboto;color:#171A22">Ücret ve kart</span></div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:20px;right:20px;bottom:22px;height:64px;border-radius:32px;background:#fff;box-shadow:0 8px 28px rgba(16,24,40,.16);display:flex;align-items:center;justify-content:space-around;padding:0 8px">
+<span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">home</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">restaurant</span><span style="width:44px;height:44px;border-radius:22px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">directions_bus</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">calendar_month</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">apartment</span>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1c"><div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Hat sekmeli görünüm: seçilen hattın durak zinciri (kaç durak kaldı), harita önizleme, canlı geri sayım</div>
+<div style="width:390px;height:844px;position:relative;background:#F7F8FB;border-radius:44px;border:1px solid rgba(0,0,0,.14);box-shadow:0 12px 40px rgba(0,0,0,.14);overflow:hidden">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 30px 2px;font:700 13px Roboto;color:#171A22;flex:none"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">signal_cellular_alt</span><span style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">wifi</span><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">battery_full</span></span></div>
+<div style="flex:none;display:flex;align-items:center;gap:10px;padding:4px 20px 10px">
+<div style="flex:1;min-width:0;font:900 23px/1.15 Roboto;color:#171A22">Ulaşım</div>
+<div style="width:40px;height:40px;border-radius:20px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#171A22">search</span></div>
+<div style="width:40px;height:40px;border-radius:20px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#171A22">notifications</span></div>
+</div>
+<div class="ph" style="flex:none;display:flex;gap:8px;padding:0 20px 12px;overflow-x:auto">
+<div style="flex:none;height:38px;padding:0 16px;border-radius:19px;background:#171A22;display:flex;align-items:center;gap:7px"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:#fff;font-variation-settings:'FILL' 1">directions_bus</span><span style="font:800 12.5px Roboto;color:#fff">AÜ102</span></div>
+<div style="flex:none;height:38px;padding:0 16px;border-radius:19px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;font:800 12.5px Roboto;color:#44474F">AÜ103</div>
+<div style="flex:none;height:38px;padding:0 16px;border-radius:19px;background:#fff;border:1px solid #D6DCE8;display:flex;align-items:center;gap:7px"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;color:#135BEC">star</span><span style="font:800 12.5px Roboto;color:#44474F">Favoriler</span></div>
+</div>
+<div class="ph" style="flex:1;overflow-y:auto;padding:0 20px 130px">
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:24px;overflow:hidden">
+<div style="height:132px;position:relative;background:#E9EDE4">
+<image-slot id="u-map-1c" shape="rect" placeholder="AÜ102 güzergâh haritası" style="position:absolute;inset:0"></image-slot>
+<div style="position:absolute;left:12px;top:12px;height:28px;padding:0 11px;border-radius:14px;background:rgba(23,26,34,.88);display:flex;align-items:center;font:800 11px Roboto;color:#fff">Kampüs → Şehir Merkezi</div>
+</div>
+<div style="padding:16px">
+<div style="display:flex;align-items:center;gap:12px">
+<div style="flex:1;min-width:0"><div style="font:900 11px Roboto;color:#44474F;letter-spacing:.09em">SIRADAKİ KALKIŞ</div><div style="display:flex;align-items:baseline;gap:8px;margin-top:5px"><span style="font:900 30px/1 Roboto;color:#171A22">06:43</span><span style="font:800 12.5px Roboto;color:#135BEC">2 dk</span></div><div style="font:600 12px Roboto;color:#44474F;margin-top:6px">durak_3 yönü · Peron 1</div></div>
+<div style="width:46px;height:46px;flex:none;border-radius:16px;background:#E8F0FF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:#135BEC">notifications_active</span></div>
+</div>
+<div style="display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid #EDF1F7">
+<div style="flex:1;background:#F7F8FB;border-radius:14px;padding:11px"><div style="font:700 9.5px Roboto;color:#44474F;letter-spacing:.07em">SIKLIK</div><div style="font:900 13.5px Roboto;color:#171A22;margin-top:3px">45 dk</div></div>
+<div style="flex:1;background:#F7F8FB;border-radius:14px;padding:11px"><div style="font:700 9.5px Roboto;color:#44474F;letter-spacing:.07em">İLK/SON</div><div style="font:900 13.5px Roboto;color:#171A22;margin-top:3px">06:25 · 22:30</div></div>
+<div style="flex:1;background:#F7F8FB;border-radius:14px;padding:11px"><div style="font:700 9.5px Roboto;color:#44474F;letter-spacing:.07em">DURAK</div><div style="font:900 13.5px Roboto;color:#171A22;margin-top:3px">12</div></div>
+</div>
+</div>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin:22px 2px 12px"><span style="font:900 11.5px Roboto;color:#171A22;letter-spacing:.09em">GÜZERGÂH</span><span style="font:800 11.5px Roboto;color:#135BEC">Yönü çevir</span></div>
+<div style="background:#fff;border:1px solid #D6DCE8;border-radius:22px;padding:16px 16px 6px">
+<div style="display:flex;gap:14px">
+<div style="flex:none;width:16px;display:flex;flex-direction:column;align-items:center;padding-top:5px">
+<span style="width:14px;height:14px;border-radius:7px;background:#135BEC;border:3px solid #E8F0FF;box-sizing:content-box"></span>
+<span style="width:2px;flex:1;background:#135BEC"></span>
+<span style="width:11px;height:11px;border-radius:6px;background:#135BEC"></span>
+<span style="width:2px;flex:1;background:#D6DCE8"></span>
+<span style="width:11px;height:11px;border-radius:6px;background:#D6DCE8"></span>
+<span style="width:2px;flex:1;background:#D6DCE8"></span>
+<span style="width:11px;height:11px;border-radius:6px;background:#D6DCE8"></span>
+</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="padding-bottom:20px"><div style="display:flex;align-items:baseline;gap:8px"><span style="font:900 14.5px Roboto;color:#171A22">durak_2</span><span style="height:20px;padding:0 7px;border-radius:7px;background:#E8F0FF;display:flex;align-items:center;font:900 9.5px Roboto;color:#082B76">BURADASIN</span></div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">76 m · kalkış 06:43</div></div>
+<div style="padding-bottom:20px"><div style="font:800 14.5px Roboto;color:#171A22">durak_1</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">06:51 · 2 durak sonra</div></div>
+<div style="padding-bottom:20px"><div style="font:800 14.5px Roboto;color:#171A22">Eğitim Fakültesi</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">06:58</div></div>
+<div style="padding-bottom:16px"><div style="font:800 14.5px Roboto;color:#171A22">durak_3</div><div style="font:600 11.5px Roboto;color:#44474F;margin-top:3px">07:12 · son durak</div></div>
+</div>
+</div>
+<div style="border-top:1px solid #EDF1F7;padding:13px 0;display:flex;align-items:center;justify-content:center;gap:7px"><span style="font:800 12.5px Roboto;color:#135BEC">8 durak daha</span><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:#135BEC">expand_more</span></div>
+</div>
+
+<div style="display:flex;gap:10px;margin-top:12px">
+<div style="flex:1;background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:15px;display:flex;align-items:center;gap:10px"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#135BEC">location_on</span><span style="font:800 12.5px/1.25 Roboto;color:#171A22">Yakındaki duraklar</span></div>
+<div style="flex:1;background:#fff;border:1px solid #D6DCE8;border-radius:20px;padding:15px;display:flex;align-items:center;gap:10px"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#135BEC">calendar_month</span><span style="font:800 12.5px/1.25 Roboto;color:#171A22">Tüm tarife</span></div>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:20px;right:20px;bottom:22px;height:64px;border-radius:32px;background:#fff;box-shadow:0 8px 28px rgba(16,24,40,.16);display:flex;align-items:center;justify-content:space-around;padding:0 8px">
+<span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">home</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">restaurant</span><span style="width:44px;height:44px;border-radius:22px;background:#E8F0FF;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#135BEC;font-variation-settings:'FILL' 1">directions_bus</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">calendar_month</span><span style="font-family:'Material Symbols Rounded';font-size:25px;line-height:1;color:#44474F">apartment</span>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-note"><b>Ulaşım sayfası neden boş duruyordu:</b> tek canlı kart dışında ekranda karar verdiren bilgi yoktu. Eklenenler: sıradaki 3 sefer + son sefer saati, servis durumu/gecikme duyurusu, favori duraklarda canlı geri sayım, hatlar listesi (sıklık + durak sayısı), güzergâh zinciri, güzergâh kısayolları (kampüse/eve/merkez), hatırlatıcı kurma. Haritalar için gerçek ekran görüntüsü/harita bileşeni yerleştirilebilir — şimdilik yer tutucu.</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1360,&quot;height&quot;:1000}}"></script>
+</body>
+</html>

@@ -1,0 +1,668 @@
+{
+ "schemaVersion": 1,
+ "coordinateOrder": "[latitude, longitude]",
+ "crs": "EPSG:4326 (WGS84)",
+ "source": "Antalya Büyükşehir Belediyesi ANTOBÜS GTFS — mdb3406, yayın 2026-08-01",
+ "note": "Duraklar fiziksel konuma göre tekilleştirilmiştir; bir durak birden fazla hat/yöne hizmet verebilir (servedBy).",
+ "generatedAt": "2026-08-24",
+ "stopCount": 33,
+ "serviceRecordCount": 40,
+ "bounds": {
+  "south": 36.890499,
+  "west": 30.642201,
+  "north": 36.900485,
+  "east": 30.662309
+ },
+ "stops": [
+  {
+   "stopId": "14373",
+   "name": "AKDENİZ ÜNİVERSİTESİ DOĞU KAPISI GİRİŞİ",
+   "lat": 36.89269,
+   "lon": 30.662309,
+   "isTransfer": true,
+   "routeCount": 2,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_1",
+     "shortName": "AÜ102",
+     "directionId": 1,
+     "stopSequence": 1,
+     "color": "#64B5F6",
+     "label": "AÜ102 · Adli Tıp yönü"
+    },
+    {
+     "routeShapeId": "AU103_0",
+     "shortName": "AÜ103",
+     "directionId": 0,
+     "stopSequence": 14,
+     "color": "#C62828",
+     "label": "AÜ103 · Meltem Kapısı yönü"
+    },
+    {
+     "routeShapeId": "AU103_1",
+     "shortName": "AÜ103",
+     "directionId": 1,
+     "stopSequence": 1,
+     "color": "#EF9A9A",
+     "label": "AÜ103 · Adli Tıp yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14145",
+   "name": "AKDENİZ ÜNİVERSİTESİ HALI SAHA",
+   "lat": 36.894852,
+   "lon": 30.648572,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU103_0",
+     "shortName": "AÜ103",
+     "directionId": 0,
+     "stopSequence": 10,
+     "color": "#C62828",
+     "label": "AÜ103 · Meltem Kapısı yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "10955",
+   "name": "AKDENİZ ÜNİVERSİTESİ MERKEZİ YEMEKHANE",
+   "lat": 36.895412,
+   "lon": 30.654175,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_1",
+     "shortName": "AÜ102",
+     "directionId": 1,
+     "stopSequence": 8,
+     "color": "#64B5F6",
+     "label": "AÜ102 · Adli Tıp yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14111",
+   "name": "AKDENİZ ÜNİVERSİTESİ REKTÖRLÜĞÜ",
+   "lat": 36.892709,
+   "lon": 30.657138,
+   "isTransfer": true,
+   "routeCount": 2,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_1",
+     "shortName": "AÜ102",
+     "directionId": 1,
+     "stopSequence": 2,
+     "color": "#64B5F6",
+     "label": "AÜ102 · Adli Tıp yönü"
+    },
+    {
+     "routeShapeId": "AU103_1",
+     "shortName": "AÜ103",
+     "directionId": 1,
+     "stopSequence": 2,
+     "color": "#EF9A9A",
+     "label": "AÜ103 · Adli Tıp yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "10948",
+   "name": "AKDENİZ ÜNİVERSİTESİ SAĞLIK KÜLTÜR VE SPOR DAİRESİ BAŞKANLIĞI",
+   "lat": 36.89529,
+   "lon": 30.654523,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_1",
+     "shortName": "AÜ102",
+     "directionId": 1,
+     "stopSequence": 9,
+     "color": "#64B5F6",
+     "label": "AÜ102 · Adli Tıp yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14118",
+   "name": "AKDENİZ ÜNİVERSİTESİ STADYUM",
+   "lat": 36.894418,
+   "lon": 30.645623,
+   "isTransfer": true,
+   "routeCount": 2,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_1",
+     "shortName": "AÜ102",
+     "directionId": 1,
+     "stopSequence": 4,
+     "color": "#64B5F6",
+     "label": "AÜ102 · Adli Tıp yönü"
+    },
+    {
+     "routeShapeId": "AU103_0",
+     "shortName": "AÜ103",
+     "directionId": 0,
+     "stopSequence": 9,
+     "color": "#C62828",
+     "label": "AÜ103 · Meltem Kapısı yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14146",
+   "name": "AKDENİZ ÜNİVERSİTESİ TENİS KORTLARI",
+   "lat": 36.894852,
+   "lon": 30.652131,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU103_0",
+     "shortName": "AÜ103",
+     "directionId": 0,
+     "stopSequence": 11,
+     "color": "#C62828",
+     "label": "AÜ103 · Meltem Kapısı yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "10953",
+   "name": "AKDENİZ ÜNİVERSİTESİ YAKUT ÇARŞISI",
+   "lat": 36.898525,
+   "lon": 30.653426,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_0",
+     "shortName": "AÜ102",
+     "directionId": 0,
+     "stopSequence": 2,
+     "color": "#1565C0",
+     "label": "AÜ102 · Meltem Kapısı yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "11506",
+   "name": "EDEBİYAT FAKÜLTESİ-1",
+   "lat": 36.890884,
+   "lon": 30.644552,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU103_0",
+     "shortName": "AÜ103",
+     "directionId": 0,
+     "stopSequence": 7,
+     "color": "#C62828",
+     "label": "AÜ103 · Meltem Kapısı yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "11505",
+   "name": "EDEBİYAT FAKÜLTESİ-2",
+   "lat": 36.891081,
+   "lon": 30.64431,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU103_1",
+     "shortName": "AÜ103",
+     "directionId": 1,
+     "stopSequence": 7,
+     "color": "#EF9A9A",
+     "label": "AÜ103 · Adli Tıp yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14211",
+   "name": "ENFORMATİK BÖLÜM BAŞKANLIĞI-1",
+   "lat": 36.896087,
+   "lon": 30.644467,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU103_0",
+     "shortName": "AÜ103",
+     "directionId": 0,
+     "stopSequence": 4,
+     "color": "#C62828",
+     "label": "AÜ103 · Meltem Kapısı yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14212",
+   "name": "ENFORMATİK BÖLÜM BAŞKANLIĞI-2",
+   "lat": 36.895968,
+   "lon": 30.644546,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU103_1",
+     "shortName": "AÜ103",
+     "directionId": 1,
+     "stopSequence": 9,
+     "color": "#EF9A9A",
+     "label": "AÜ103 · Adli Tıp yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "10949",
+   "name": "ENSTİTÜLER",
+   "lat": 36.897784,
+   "lon": 30.653913,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_1",
+     "shortName": "AÜ102",
+     "directionId": 1,
+     "stopSequence": 10,
+     "color": "#64B5F6",
+     "label": "AÜ102 · Adli Tıp yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "10960",
+   "name": "ERKEK ÖĞRENCİ YURDU",
+   "lat": 36.892463,
+   "lon": 30.658377,
+   "isTransfer": true,
+   "routeCount": 2,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_0",
+     "shortName": "AÜ102",
+     "directionId": 0,
+     "stopSequence": 9,
+     "color": "#1565C0",
+     "label": "AÜ102 · Meltem Kapısı yönü"
+    },
+    {
+     "routeShapeId": "AU103_0",
+     "shortName": "AÜ103",
+     "directionId": 0,
+     "stopSequence": 13,
+     "color": "#C62828",
+     "label": "AÜ103 · Meltem Kapısı yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14112",
+   "name": "EĞİTİM FAKÜLTESİ-1",
+   "lat": 36.891963,
+   "lon": 30.64565,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU103_0",
+     "shortName": "AÜ103",
+     "directionId": 0,
+     "stopSequence": 8,
+     "color": "#C62828",
+     "label": "AÜ103 · Meltem Kapısı yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "10958",
+   "name": "EĞİTİM FAKÜLTESİ-2",
+   "lat": 36.892209,
+   "lon": 30.645437,
+   "isTransfer": true,
+   "routeCount": 2,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_0",
+     "shortName": "AÜ102",
+     "directionId": 0,
+     "stopSequence": 6,
+     "color": "#1565C0",
+     "label": "AÜ102 · Meltem Kapısı yönü"
+    },
+    {
+     "routeShapeId": "AU103_1",
+     "shortName": "AÜ103",
+     "directionId": 1,
+     "stopSequence": 6,
+     "color": "#EF9A9A",
+     "label": "AÜ103 · Adli Tıp yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14124",
+   "name": "GAZİ MUSTAFA KEMAL SPOR SALONU",
+   "lat": 36.89138,
+   "lon": 30.647748,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_0",
+     "shortName": "AÜ102",
+     "directionId": 0,
+     "stopSequence": 7,
+     "color": "#1565C0",
+     "label": "AÜ102 · Meltem Kapısı yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14374",
+   "name": "HUKUK FAKÜLTESİ-1",
+   "lat": 36.893392,
+   "lon": 30.654995,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU103_1",
+     "shortName": "AÜ103",
+     "directionId": 1,
+     "stopSequence": 3,
+     "color": "#EF9A9A",
+     "label": "AÜ103 · Adli Tıp yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "10946",
+   "name": "HUKUK FAKÜLTESİ-2",
+   "lat": 36.892708,
+   "lon": 30.654541,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_1",
+     "shortName": "AÜ102",
+     "directionId": 1,
+     "stopSequence": 3,
+     "color": "#64B5F6",
+     "label": "AÜ102 · Adli Tıp yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "10959",
+   "name": "HUKUK FAKÜLTESİ-3",
+   "lat": 36.892408,
+   "lon": 30.654732,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_0",
+     "shortName": "AÜ102",
+     "directionId": 0,
+     "stopSequence": 8,
+     "color": "#1565C0",
+     "label": "AÜ102 · Meltem Kapısı yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "10956",
+   "name": "Iktisadi ve Idari Bilimler Fakültesi",
+   "lat": 36.89506,
+   "lon": 30.652194,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU103_1",
+     "shortName": "AÜ103",
+     "directionId": 1,
+     "stopSequence": 4,
+     "color": "#EF9A9A",
+     "label": "AÜ103 · Adli Tıp yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14121",
+   "name": "KIZ ÖĞRENCİ YURDU",
+   "lat": 36.892535,
+   "lon": 30.642223,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU103_0",
+     "shortName": "AÜ103",
+     "directionId": 0,
+     "stopSequence": 5,
+     "color": "#C62828",
+     "label": "AÜ103 · Meltem Kapısı yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14144",
+   "name": "MÜHENDİSLİK FAKÜLTESİ-1",
+   "lat": 36.897754,
+   "lon": 30.648634,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_1",
+     "shortName": "AÜ102",
+     "directionId": 1,
+     "stopSequence": 6,
+     "color": "#64B5F6",
+     "label": "AÜ102 · Adli Tıp yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14143",
+   "name": "MÜHENDİSLİK FAKÜLTESİ-2",
+   "lat": 36.89793,
+   "lon": 30.648636,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_0",
+     "shortName": "AÜ102",
+     "directionId": 0,
+     "stopSequence": 3,
+     "color": "#1565C0",
+     "label": "AÜ102 · Meltem Kapısı yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "11514",
+   "name": "SPOR BİLİMLERİ FAKÜLTESİ-2",
+   "lat": 36.89467,
+   "lon": 30.654352,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU103_0",
+     "shortName": "AÜ103",
+     "directionId": 0,
+     "stopSequence": 12,
+     "color": "#C62828",
+     "label": "AÜ103 · Meltem Kapısı yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14117",
+   "name": "SU ÜRÜNLERİ-1",
+   "lat": 36.897548,
+   "lon": 30.646601,
+   "isTransfer": true,
+   "routeCount": 2,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_0",
+     "shortName": "AÜ102",
+     "directionId": 0,
+     "stopSequence": 4,
+     "color": "#1565C0",
+     "label": "AÜ102 · Meltem Kapısı yönü"
+    },
+    {
+     "routeShapeId": "AU103_0",
+     "shortName": "AÜ103",
+     "directionId": 0,
+     "stopSequence": 3,
+     "color": "#C62828",
+     "label": "AÜ103 · Meltem Kapısı yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14115",
+   "name": "TEKNOKENT-2",
+   "lat": 36.899795,
+   "lon": 30.646561,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU103_0",
+     "shortName": "AÜ103",
+     "directionId": 0,
+     "stopSequence": 2,
+     "color": "#C62828",
+     "label": "AÜ103 · Meltem Kapısı yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14113",
+   "name": "TEKNOKENT-3",
+   "lat": 36.900485,
+   "lon": 30.647105,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU103_1",
+     "shortName": "AÜ103",
+     "directionId": 1,
+     "stopSequence": 11,
+     "color": "#EF9A9A",
+     "label": "AÜ103 · Adli Tıp yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "10954",
+   "name": "TEKNİK BİLİMLER MESLEK YÜKSEK OKULU",
+   "lat": 36.897503,
+   "lon": 30.653651,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_1",
+     "shortName": "AÜ102",
+     "directionId": 1,
+     "stopSequence": 7,
+     "color": "#64B5F6",
+     "label": "AÜ102 · Adli Tıp yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "10957",
+   "name": "Uygulamalı Bilimler Fakültesi",
+   "lat": 36.895022,
+   "lon": 30.649069,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU103_1",
+     "shortName": "AÜ103",
+     "directionId": 1,
+     "stopSequence": 5,
+     "color": "#EF9A9A",
+     "label": "AÜ103 · Adli Tıp yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14120",
+   "name": "YABANCI DİLLER YÜKSEK OKULU",
+   "lat": 36.892522,
+   "lon": 30.642444,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU103_1",
+     "shortName": "AÜ103",
+     "directionId": 1,
+     "stopSequence": 8,
+     "color": "#EF9A9A",
+     "label": "AÜ103 · Adli Tıp yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14122",
+   "name": "İLAHİYAT FAKÜLTESİ",
+   "lat": 36.890499,
+   "lon": 30.642201,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU103_0",
+     "shortName": "AÜ103",
+     "directionId": 0,
+     "stopSequence": 6,
+     "color": "#C62828",
+     "label": "AÜ103 · Meltem Kapısı yönü"
+    }
+   ]
+  },
+  {
+   "stopId": "14119",
+   "name": "İLETİŞİM FAKÜLTESİ",
+   "lat": 36.895452,
+   "lon": 30.645408,
+   "isTransfer": false,
+   "routeCount": 1,
+   "servedBy": [
+    {
+     "routeShapeId": "AU102_0",
+     "shortName": "AÜ102",
+     "directionId": 0,
+     "stopSequence": 5,
+     "color": "#1565C0",
+     "label": "AÜ102 · Meltem Kapısı yönü"
+    }
+   ]
+  }
+ ]
+}
