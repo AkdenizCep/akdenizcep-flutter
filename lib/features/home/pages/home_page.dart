@@ -340,7 +340,7 @@ class HomeContentPage extends ConsumerWidget {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () => context.push('/announcements'),
                       child: const Text('Tümünü Gör'),
                     ),
                   ],

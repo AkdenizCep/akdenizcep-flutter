@@ -17,6 +17,9 @@ import '../features/community/pages/community_page.dart';
 import '../features/community/pages/event_attendance_list_page.dart';
 import '../features/community/pages/event_attendance_scan_page.dart';
 import '../features/community/pages/event_detail_page.dart';
+import '../features/home/pages/announcement_detail_page.dart';
+import '../features/home/pages/announcement_image_viewer_page.dart';
+import '../features/home/pages/announcements_page.dart';
 import '../features/home/pages/home_page.dart';
 import '../features/map/pages/map_page.dart';
 import '../features/profile/pages/my_qr_page.dart';
@@ -143,6 +146,29 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/qr',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const MyQrPage(),
+      ),
+      GoRoute(
+        path: '/announcements',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AnnouncementsPage(),
+        routes: [
+          GoRoute(
+            path: ':announcementId',
+            parentNavigatorKey: _rootNavigatorKey,
+            builder: (context, state) => AnnouncementDetailPage(
+              announcementId: state.pathParameters['announcementId']!,
+            ),
+            routes: [
+              GoRoute(
+                path: 'image',
+                parentNavigatorKey: _rootNavigatorKey,
+                builder: (context, state) => AnnouncementImageViewerPage(
+                  announcementId: state.pathParameters['announcementId']!,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
