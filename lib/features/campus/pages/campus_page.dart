@@ -41,6 +41,12 @@ class CampusPage extends StatelessWidget {
         icon: Icons.photo_library_outlined,
         onTap: () => _showPreparingMessage(context, 'Kampüs Fotoğrafları'),
       ),
+      CampusServiceDestination(
+        title: 'Akademik Takvim',
+        description: 'Kayıt, sınav ve tatil tarihleri',
+        icon: Icons.event_note_outlined,
+        onTap: () => context.go('/campus/academic-calendar'),
+      ),
     ];
     final safetyServices = [
       CampusServiceDestination(

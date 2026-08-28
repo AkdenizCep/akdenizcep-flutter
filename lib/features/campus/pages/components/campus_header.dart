@@ -11,8 +11,8 @@ class CampusHeader extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return SizedBox(
-      height: 124,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 124),
       child: Stack(
         children: [
           Positioned.fill(

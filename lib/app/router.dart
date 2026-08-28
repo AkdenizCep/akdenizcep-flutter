@@ -8,6 +8,7 @@ import '../features/auth/pages/verify_email_page.dart';
 import '../features/auth/providers/auth_provider.dart';
 import '../features/board/pages/board_page.dart';
 import '../features/cafeteria/pages/cafeteria_page.dart';
+import '../features/campus/pages/academic_calendar_page.dart';
 import '../features/campus/pages/campus_page.dart';
 import '../features/campus/pages/emergency_contacts_page.dart';
 import '../features/community/pages/club_detail_page.dart';
@@ -214,6 +215,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'emergency-contacts',
                     builder: (context, state) => const EmergencyContactsPage(),
+                  ),
+                  GoRoute(
+                    path: 'academic-calendar',
+                    builder: (context, state) => const AcademicCalendarPage(),
                   ),
                 ],
               ),

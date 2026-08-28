@@ -428,7 +428,7 @@ class HomeContentPage extends ConsumerWidget {
                       iconBgColor: Theme.of(
                         context,
                       ).colorScheme.primaryContainer,
-                      onTap: () {},
+                      onTap: () => context.go('/campus/academic-calendar'),
                     ),
                     _QuickAccessCard(
                       title: 'Kampüs\nGüvenlik',
