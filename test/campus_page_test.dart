@@ -26,6 +26,11 @@ void main() {
           path: '/campus/emergency-contacts',
           builder: (_, _) => const EmergencyContactsPage(),
         ),
+        GoRoute(
+          path: '/campus/lost-found',
+          builder: (_, _) =>
+              const Scaffold(body: Center(child: Text('Kayıp buluntu hedefi'))),
+        ),
       ],
     );
     addTearDown(router.dispose);
@@ -55,10 +60,12 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Kayıp & Buluntu'));
-    await tester.pump();
-    expect(find.text('Kayıp & Buluntu sayfası hazırlanıyor.'), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.text('Kayıp buluntu hedefi'), findsOneWidget);
 
-    await tester.pump(const Duration(seconds: 3));
+    router.go('/campus');
+    await tester.pumpAndSettle();
+
     await tester.tap(find.text('Kampüs Haritası'));
     await tester.pumpAndSettle();
     expect(find.text('Harita hedefi'), findsOneWidget);

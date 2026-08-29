@@ -33,7 +33,7 @@ class CampusPage extends StatelessWidget {
         title: 'Kayıp & Buluntu',
         description: 'İlanları incele veya yeni ilan oluştur',
         icon: Icons.inventory_2_outlined,
-        onTap: () => _showPreparingMessage(context, 'Kayıp & Buluntu'),
+        onTap: () => context.go('/campus/lost-found'),
       ),
       CampusServiceDestination(
         title: 'Kampüs Fotoğrafları',

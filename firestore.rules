@@ -165,6 +165,27 @@ service cloud.firestore {
       }
     }
 
+    match /lost_found_items/{itemId} {
+      allow read: if isAkdenizStudent();
+      allow create: if isAkdenizStudent() &&
+        request.auth.uid == request.resource.data.authorUid;
+      // Sahibi ilani duzenler/siler (ör. cozuldu isaretleme); baskasi dokunamaz.
+      allow update, delete: if isAkdenizStudent() &&
+        request.auth.uid == resource.data.authorUid;
+    }
+
+    // `board` daha once hic kural tanimlanmamisti — eslesmeyen yol reddedilir,
+    // yani deploy edilince ilan panosu tumuyle calismaz kalirdi. Diger
+    // ogrenci-uretimi koleksiyonlarla (student-events) ayni desen.
+    match /board/{itemId} {
+      allow read: if isAkdenizStudent();
+      allow create: if isAkdenizStudent() &&
+        request.auth.uid == request.resource.data.authorUid;
+      allow delete: if isAkdenizStudent() &&
+        request.auth.uid == resource.data.authorUid;
+      allow update: if false;
+    }
+
     // Geri bildirimler sadece Firebase Console'dan okunur; uygulama
     // icinde kimse (yazan dahil) kendi veya baskasinin feedback'ini
     // okuyamaz/degistiremez, sadece gonderebilir.

@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 
+import '../models/category_option.dart';
+
 /// Etkinlik kategorileri — hem kulüp hem öğrenci etkinlikleri için ortak katalog.
 ///
 /// Renkler marka renkleri gibi davranır: tema değişse de sabit kalırlar, çünkü
 /// kategori kimliğini taşırlar. Zeminler her zaman `colorScheme` üzerinden gelir.
-class EventCategory {
+class EventCategory implements CategoryOption {
   /// Firestore'daki `category` alanına yazılan değer.
+  @override
   final String id;
+  @override
   final String label;
+  @override
   final Color color;
+  @override
   final IconData icon;
 
   const EventCategory({

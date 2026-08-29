@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
-import '../utils/event_category.dart';
+import '../models/category_option.dart';
 
-/// Kategori seçimi için ortak dropdown alanı — etkinlik oluşturma ve
-/// topluluk ayarları ekranlarında paylaşılır.
-class CategoryDropdownField extends StatelessWidget {
-  final List<EventCategory> items;
-  final EventCategory value;
-  final ValueChanged<EventCategory> onChanged;
+/// Kategori seçimi için ortak dropdown alanı — etkinlik oluşturma, topluluk
+/// ayarları ve kayıp/buluntu ilanı ekranlarında paylaşılır. [T], `label`/
+/// `color`/`icon` sağlayan herhangi bir [CategoryOption] katalog tipi olabilir.
+class CategoryDropdownField<T extends CategoryOption> extends StatelessWidget {
+  final List<T> items;
+  final T value;
+  final ValueChanged<T> onChanged;
 
   const CategoryDropdownField({
     super.key,
@@ -17,11 +18,11 @@ class CategoryDropdownField extends StatelessWidget {
   });
 
   Future<void> _open(BuildContext context) async {
-    final selected = await showModalBottomSheet<EventCategory>(
+    final selected = await showModalBottomSheet<T>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _CategorySheet(items: items, selected: value),
+      builder: (context) => _CategorySheet<T>(items: items, selected: value),
     );
     if (selected != null) onChanged(selected);
   }
@@ -46,16 +47,8 @@ class CategoryDropdownField extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: value.color.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(9),
-                ),
-                child: Icon(value.icon, size: 16, color: value.color),
-              ),
-              const SizedBox(width: 10),
+              Icon(value.icon, size: 20, color: value.color),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   value.label,
@@ -80,9 +73,9 @@ class CategoryDropdownField extends StatelessWidget {
   }
 }
 
-class _CategorySheet extends StatelessWidget {
-  final List<EventCategory> items;
-  final EventCategory selected;
+class _CategorySheet<T extends CategoryOption> extends StatelessWidget {
+  final List<T> items;
+  final T selected;
 
   const _CategorySheet({required this.items, required this.selected});
 
@@ -124,46 +117,72 @@ class _CategorySheet extends StatelessWidget {
             ),
           ),
           Divider(height: 1, color: colorScheme.outlineVariant),
+          // ListView.shrinkWrap yerine duz Column: katalog hep sabit ve kisa
+          // (en fazla 7-8 oge), kaydirilabilir bir liste hic gerekmiyor.
+          // ListView + Flexible/shrinkWrap kombinasyonu icerigin altinda
+          // beklenmedik bosluk birakiyordu; duz Column'da bosluk ihtimali yok
+          // — sayfa tam olarak cocuklarinin toplam yuksekligi kadar yer kaplar.
           Flexible(
-            child: ListView.separated(
-              shrinkWrap: true,
+            child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: items.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 2),
-              itemBuilder: (context, index) {
-                final category = items[index];
-                final isSelected = category.id == selected.id;
-                return ListTile(
-                  onTap: () => Navigator.of(context).pop(category),
-                  leading: Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: category.color.withValues(alpha: 0.14),
-                      borderRadius: BorderRadius.circular(11),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (final category in items)
+                    _CategoryRow(
+                      category: category,
+                      isSelected: category.id == selected.id,
+                      onTap: () => Navigator.of(context).pop(category),
                     ),
-                    child: Icon(
-                      category.icon,
-                      size: 19,
-                      color: category.color,
-                    ),
-                  ),
-                  title: Text(
-                    category.label,
-                    style: TextStyle(
-                      fontWeight: isSelected
-                          ? FontWeight.w800
-                          : FontWeight.w600,
-                    ),
-                  ),
-                  trailing: isSelected
-                      ? Icon(Icons.check_rounded, color: colorScheme.primary)
-                      : null,
-                );
-              },
+                ],
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _CategoryRow extends StatelessWidget {
+  final CategoryOption category;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _CategoryRow({
+    required this.category,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    // Renk yalnizca secili satirda tasiyici — geri kalani notr. Her satirin
+    // kendi renkli kutucugu olunca liste bir "renk paleti"ne donusuyordu;
+    // artik renk anlam tasiyor (secili olan), dekor olarak tekrar etmiyor.
+    return Material(
+      color: isSelected
+          ? category.color.withValues(alpha: 0.08)
+          : Colors.transparent,
+      child: ListTile(
+        onTap: onTap,
+        leading: Icon(
+          category.icon,
+          size: 22,
+          color: isSelected ? category.color : colorScheme.onSurfaceVariant,
+        ),
+        title: Text(
+          category.label,
+          style: TextStyle(
+            color: isSelected ? category.color : null,
+            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+          ),
+        ),
+        trailing: isSelected
+            ? Icon(Icons.check_rounded, color: category.color)
+            : null,
       ),
     );
   }

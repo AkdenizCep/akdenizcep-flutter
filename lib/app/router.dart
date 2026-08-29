@@ -21,6 +21,8 @@ import '../features/home/pages/announcement_detail_page.dart';
 import '../features/home/pages/announcement_image_viewer_page.dart';
 import '../features/home/pages/announcements_page.dart';
 import '../features/home/pages/home_page.dart';
+import '../features/lost_found/pages/create_lost_found_item_page.dart';
+import '../features/lost_found/pages/lost_found_page.dart';
 import '../features/map/pages/map_page.dart';
 import '../features/profile/pages/my_qr_page.dart';
 import '../features/profile/pages/profile_page.dart';
@@ -245,6 +247,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'academic-calendar',
                     builder: (context, state) => const AcademicCalendarPage(),
+                  ),
+                  GoRoute(
+                    path: 'lost-found',
+                    builder: (context, state) => const LostFoundPage(),
+                    routes: [
+                      GoRoute(
+                        path: 'create',
+                        builder: (context, state) =>
+                            const CreateLostFoundItemPage(),
+                      ),
+                    ],
                   ),
                 ],
               ),
