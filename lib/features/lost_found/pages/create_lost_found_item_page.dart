@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../shared/components/category_dropdown_field.dart';
+import '../../../shared/components/photo_source_sheet.dart';
 import '../../../shared/components/progress_snackbar.dart';
 import '../../../shared/providers/nav_visibility_provider.dart';
 import '../../../shared/providers/user_provider.dart';
@@ -50,7 +51,7 @@ class _CreateLostFoundItemPageState
       _locationController.text.trim().isNotEmpty;
 
   Future<void> _pickPhoto() async {
-    final source = await _choosePhotoSource();
+    final source = await choosePhotoSource(context);
     if (source == null) return;
 
     try {
@@ -70,46 +71,6 @@ class _CreateLostFoundItemPageState
         accentColor: Theme.of(context).colorScheme.error,
       );
     }
-  }
-
-  /// Bulunan bir eşyanın fotoğrafı genelde o an, orada çekilir; kayıp bir
-  /// eşyanınki ise çoğunlukla galeride hazır bir kare olur. Bu yüzden ikisi
-  /// de sunuluyor, tek bir kaynağa zorlanmıyor.
-  Future<ImageSource?> _choosePhotoSource() {
-    return showModalBottomSheet<ImageSource>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        final colorScheme = Theme.of(context).colorScheme;
-        return SafeArea(
-          child: Container(
-            margin: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.photo_camera_outlined),
-                  title: const Text('Fotoğraf çek'),
-                  onTap: () =>
-                      Navigator.of(context).pop(ImageSource.camera),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.photo_library_outlined),
-                  title: const Text('Galeriden seç'),
-                  onTap: () =>
-                      Navigator.of(context).pop(ImageSource.gallery),
-                ),
-                const SizedBox(height: 4),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   Future<void> _submit() async {

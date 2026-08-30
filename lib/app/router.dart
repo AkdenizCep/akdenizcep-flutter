@@ -11,6 +11,9 @@ import '../features/cafeteria/pages/cafeteria_page.dart';
 import '../features/campus/pages/academic_calendar_page.dart';
 import '../features/campus/pages/campus_page.dart';
 import '../features/campus/pages/emergency_contacts_page.dart';
+import '../features/campus_photos/pages/campus_photo_viewer_page.dart';
+import '../features/campus_photos/pages/campus_photos_page.dart';
+import '../features/campus_photos/pages/create_campus_photo_page.dart';
 import '../features/community/pages/club_detail_page.dart';
 import '../features/community/pages/club_settings_page.dart';
 import '../features/community/pages/community_page.dart';
@@ -256,6 +259,23 @@ final routerProvider = Provider<GoRouter>((ref) {
                         path: 'create',
                         builder: (context, state) =>
                             const CreateLostFoundItemPage(),
+                      ),
+                    ],
+                  ),
+                  GoRoute(
+                    path: 'photos',
+                    builder: (context, state) => const CampusPhotosPage(),
+                    routes: [
+                      GoRoute(
+                        path: 'create',
+                        builder: (context, state) =>
+                            const CreateCampusPhotoPage(),
+                      ),
+                      GoRoute(
+                        path: ':photoId',
+                        builder: (context, state) => CampusPhotoViewerPage(
+                          photoId: state.pathParameters['photoId']!,
+                        ),
                       ),
                     ],
                   ),

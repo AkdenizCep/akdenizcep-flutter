@@ -50,6 +50,7 @@ void main() {
   ];
 
   Widget wrap(Widget child, {DateTime? now}) {
+    final effectiveNow = now ?? DateTime(2026, 7, 27, 23, 43);
     return ProviderScope(
       overrides: [
         // Konum ve Firebase'e hic dokunmadan gercek veri sekli saglanir.
@@ -58,7 +59,14 @@ void main() {
         ringStopsProvider.overrideWith((ref) => stops),
         ringSchedulesProvider.overrideWith((ref) => Stream.value(schedules)),
         // Geri sayim testte sabit kalsin — saat ilerledikce test degismesin.
-        nowProvider.overrideWith((ref) => now ?? DateTime(2026, 7, 27, 23, 43)),
+        nowProvider.overrideWith((ref) => effectiveNow),
+        // showWeekendProvider'in varsayilani GERCEK DateTime.now()'a bakar;
+        // testin sahte `now`'i ile tutarli olmazsa (ör. test hafta sonu bir
+        // gunde calistirilirsa) "bugun" hesabi celisip kalkislar kaybolur.
+        // Bkz. stop_detail_sheet_test.dart'taki ayni duzeltme.
+        showWeekendProvider.overrideWith(
+          (ref) => RingDepartures.isWeekendDay(effectiveNow),
+        ),
       ],
       child: MaterialApp(
         home: Scaffold(
@@ -110,6 +118,9 @@ void main() {
           ringStopsProvider.overrideWith((ref) => stops),
           ringSchedulesProvider.overrideWith((ref) => Stream.value(schedules)),
           nowProvider.overrideWith((ref) => DateTime(2026, 7, 27, 23, 43)),
+          showWeekendProvider.overrideWith(
+            (ref) => RingDepartures.isWeekendDay(DateTime(2026, 7, 27, 23, 43)),
+          ),
           currentUserProvider.overrideWith((ref) => Stream.value(null)),
         ],
         child: const MaterialApp(home: RingPage()),

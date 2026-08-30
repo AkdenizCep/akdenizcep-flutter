@@ -1,3 +1,4 @@
+import 'package:akdenizcep/features/ring/models/ring_departures.dart';
 import 'package:akdenizcep/features/ring/models/ring_schedule.dart';
 import 'package:akdenizcep/features/ring/pages/components/stop_detail_sheet.dart';
 import 'package:akdenizcep/features/ring/providers/ring_provider.dart';
@@ -56,6 +57,15 @@ void main() {
         // Yon etiketleri guzergah verisinden okunuyor.
         routeShapesProvider.overrideWith((ref) => routeBundle()),
         nowProvider.overrideWith((ref) => now),
+        // showWeekendProvider'in varsayilani GERCEK DateTime.now()'a bakar
+        // (uygulama gercek zamanda calisirken dogru olan budur). Test sahte
+        // bir `now` enjekte ettigi icin bu da ayni sahte `now`'a gore
+        // override edilmezse, test HAFTA SONU bir gunde calistirildiginda
+        // (showWeekend=true baslar) sahte `now` hafta ici bir gunu simule
+        // ediyorsa "bugun" hesabi celisip tum kalkislar listeden duser.
+        showWeekendProvider.overrideWith(
+          (ref) => RingDepartures.isWeekendDay(now),
+        ),
       ],
       child: const MaterialApp(
         home: Scaffold(body: StopDetailSheet(stopId: 'durak_1')),

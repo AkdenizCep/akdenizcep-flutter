@@ -8,18 +8,6 @@ import 'components/campus_service_group.dart';
 class CampusPage extends StatelessWidget {
   const CampusPage({super.key});
 
-  void _showPreparingMessage(BuildContext context, String title) {
-    final messenger = ScaffoldMessenger.of(context);
-    messenger
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text('$title sayfası hazırlanıyor.'),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-  }
-
   @override
   Widget build(BuildContext context) {
     final campusServices = [
@@ -39,7 +27,7 @@ class CampusPage extends StatelessWidget {
         title: 'Kampüs Fotoğrafları',
         description: 'Kampüsten paylaşılan kareleri keşfet',
         icon: Icons.photo_library_outlined,
-        onTap: () => _showPreparingMessage(context, 'Kampüs Fotoğrafları'),
+        onTap: () => context.go('/campus/photos'),
       ),
       CampusServiceDestination(
         title: 'Akademik Takvim',

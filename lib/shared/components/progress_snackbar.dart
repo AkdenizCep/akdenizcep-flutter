@@ -2,22 +2,29 @@ import 'package:flutter/material.dart';
 
 /// Alt kısmında, gösterim süresi boyunca dolu başlayıp boşalan ince bir
 /// ilerleme çizgisi olan, süresi bitince otomatik kapanan bildirim.
+///
+/// [messenger] verilirse `context`'ten türetilen yerine o kullanılır — bir
+/// `await` sırasında context'in ağaçtan kaldırılma ihtimali olan akışlarda
+/// (`await`'ten önce yakalanmış bir messenger ile) güvenli kullanım sağlar.
 void showProgressSnackBar(
   BuildContext context, {
   required String message,
   Duration duration = const Duration(seconds: 3),
   IconData icon = Icons.check_circle_rounded,
   Color? accentColor,
+  ScaffoldMessengerState? messenger,
+  EdgeInsets? margin,
 }) {
-  final messenger = ScaffoldMessenger.of(context);
-  messenger.clearSnackBars();
-  messenger.showSnackBar(
+  final resolvedMessenger = messenger ?? ScaffoldMessenger.of(context);
+  resolvedMessenger.clearSnackBars();
+  resolvedMessenger.showSnackBar(
     SnackBar(
       duration: duration,
       behavior: SnackBarBehavior.floating,
       backgroundColor: Colors.transparent,
       elevation: 0,
       padding: EdgeInsets.zero,
+      margin: margin,
       content: _ProgressSnackBarContent(
         message: message,
         duration: duration,

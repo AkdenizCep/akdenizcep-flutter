@@ -1,3 +1,4 @@
+import 'package:akdenizcep/features/ring/models/ring_departures.dart';
 import 'package:akdenizcep/features/ring/models/ring_schedule.dart';
 import 'package:akdenizcep/features/ring/pages/components/stop_map_card.dart';
 import 'package:akdenizcep/features/ring/providers/ring_provider.dart';
@@ -48,6 +49,12 @@ void main() {
         ringStopsProvider.overrideWith((ref) => [testStop]),
         ringSchedulesProvider.overrideWith((ref) => Stream.value(schedules)),
         nowProvider.overrideWith((ref) => now),
+        // showWeekendProvider'in varsayilani GERCEK DateTime.now()'a bakar;
+        // sahte `now` ile tutarli olmazsa "bugun" hesabi celisir. Bkz.
+        // stop_detail_sheet_test.dart'taki ayni duzeltme.
+        showWeekendProvider.overrideWith(
+          (ref) => RingDepartures.isWeekendDay(now),
+        ),
       ],
       child: MaterialApp(
         home: Scaffold(
