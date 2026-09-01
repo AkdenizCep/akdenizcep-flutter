@@ -34,6 +34,8 @@ import '../features/ring/pages/ring_stops_page.dart';
 import '../features/student_events/pages/create_event_page.dart';
 import '../features/student_events/pages/student_event_detail_page.dart';
 import '../features/student_events/pages/student_events_page.dart';
+import '../features/web_portal/pages/web_portal_page.dart';
+import '../shared/constants/web_portals.dart';
 
 // Shell branch navigator keys — birden fazla branch aynı yolu paylaşmasın
 final _shellHomeKey = GlobalKey<NavigatorState>(debugLabel: 'shellHome');
@@ -146,6 +148,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/profile',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ProfilePage(),
+      ),
+      GoRoute(
+        path: '/obs',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const WebPortalPage(
+          title: 'Öğrenci Bilgi Sistemi',
+          initialUrl: obsPortalUri,
+        ),
       ),
       GoRoute(
         path: '/qr',

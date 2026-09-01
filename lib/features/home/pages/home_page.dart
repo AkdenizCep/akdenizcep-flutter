@@ -6,10 +6,12 @@ import '../../../shared/components/akdeniz_cep_logo.dart';
 import '../../../shared/components/app_top_bar.dart';
 import '../../../shared/components/error_view.dart';
 import '../../../shared/components/loading_overlay.dart';
+import '../../../shared/constants/web_portals.dart';
 import '../../../shared/providers/nav_visibility_provider.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../shared/utils/error_message.dart';
 import '../../../shared/utils/phone_launcher.dart';
+import '../../../shared/utils/web_launcher.dart';
 import '../providers/home_provider.dart';
 import 'components/announcement_slider.dart';
 import 'components/event_card.dart';
@@ -258,6 +260,15 @@ class HomeContentPage extends ConsumerWidget {
     }
   }
 
+  Future<void> _openCampusCard(BuildContext context) async {
+    final launched = await launchInAppBrowser(campusCardPortalUri);
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('TL yükleme sayfası açılamadı.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userAsync = ref.watch(currentUserProvider);
@@ -408,7 +419,7 @@ class HomeContentPage extends ConsumerWidget {
                       iconBgColor: Theme.of(
                         context,
                       ).colorScheme.primaryContainer,
-                      onTap: () {},
+                      onTap: () => context.push('/obs'),
                     ),
                     _QuickAccessCard(
                       title: 'TL Yükleme',
@@ -418,7 +429,7 @@ class HomeContentPage extends ConsumerWidget {
                       iconBgColor: Theme.of(
                         context,
                       ).colorScheme.secondaryContainer,
-                      onTap: () {},
+                      onTap: () => _openCampusCard(context),
                     ),
                     _QuickAccessCard(
                       title: 'Akademik\nTakvim',
