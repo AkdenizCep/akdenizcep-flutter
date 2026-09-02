@@ -5,6 +5,8 @@ class StudentEvent {
   final String authorName;
   final DateTime date;
   final String location;
+  final double? locationLatitude;
+  final double? locationLongitude;
   final String description;
   final String imageUrl;
   final String category;
@@ -21,6 +23,8 @@ class StudentEvent {
     required this.location,
     required this.description,
     required this.createdAt,
+    this.locationLatitude,
+    this.locationLongitude,
     this.authorName = '',
     this.imageUrl = '',
     this.category = '',
@@ -41,6 +45,8 @@ class StudentEvent {
           ? (json['date'] as dynamic).toDate()
           : DateTime.now(),
       location: json['location'] as String? ?? '',
+      locationLatitude: (json['locationLatitude'] as num?)?.toDouble(),
+      locationLongitude: (json['locationLongitude'] as num?)?.toDouble(),
       description: json['description'] as String? ?? '',
       imageUrl: json['imageUrl'] as String? ?? '',
       category: json['category'] as String? ?? '',
@@ -60,6 +66,8 @@ class StudentEvent {
     'authorName': authorName,
     'date': date,
     'location': location,
+    'locationLatitude': locationLatitude,
+    'locationLongitude': locationLongitude,
     'description': description,
     'imageUrl': imageUrl,
     'category': category,
@@ -76,6 +84,8 @@ class StudentEvent {
     String? authorName,
     DateTime? date,
     String? location,
+    double? locationLatitude,
+    double? locationLongitude,
     String? description,
     String? imageUrl,
     String? category,
@@ -90,6 +100,8 @@ class StudentEvent {
     authorName: authorName ?? this.authorName,
     date: date ?? this.date,
     location: location ?? this.location,
+    locationLatitude: locationLatitude ?? this.locationLatitude,
+    locationLongitude: locationLongitude ?? this.locationLongitude,
     description: description ?? this.description,
     imageUrl: imageUrl ?? this.imageUrl,
     category: category ?? this.category,

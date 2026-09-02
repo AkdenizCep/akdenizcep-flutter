@@ -17,6 +17,7 @@ import '../../../shared/services/cloudinary_service.dart';
 import '../../../shared/utils/error_message.dart';
 import '../../../shared/utils/event_category.dart';
 import '../providers/student_events_provider.dart';
+import 'event_location_picker_page.dart';
 
 /// Ekran 1f — etkinlik oluşturma.
 class CreateEventPage extends ConsumerStatefulWidget {
@@ -31,7 +32,6 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
   static const _maxTitleLength = 80;
 
   final _titleController = TextEditingController();
-  final _locationController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _quotaController = TextEditingController(text: '30');
 
@@ -39,6 +39,7 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
   File? _coverImage;
   DateTime? _date;
   TimeOfDay? _time;
+  EventLocationSelection? _selectedLocation;
   String _categoryId = EventCategory.technology.id;
   bool _hasQuota = false;
   bool _qrAttendance = false;
@@ -47,7 +48,6 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
   @override
   void dispose() {
     _titleController.dispose();
-    _locationController.dispose();
     _descriptionController.dispose();
     _quotaController.dispose();
     super.dispose();
@@ -56,7 +56,7 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
   bool get _canSubmit =>
       !_submitting &&
       _titleController.text.trim().isNotEmpty &&
-      _locationController.text.trim().isNotEmpty &&
+      _selectedLocation != null &&
       _date != null &&
       _time != null;
 
@@ -108,6 +108,15 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
     if (time != null) setState(() => _time = time);
   }
 
+  Future<void> _pickLocation() async {
+    final selection = await context.push<EventLocationSelection>(
+      '/student-events/create/location',
+    );
+    if (selection != null && mounted) {
+      setState(() => _selectedLocation = selection);
+    }
+  }
+
   Future<void> _submit() async {
     final user = ref.read(currentUserProvider).valueOrNull;
     if (user == null || !_canSubmit) return;
@@ -126,6 +135,7 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
           ? int.tryParse(_quotaController.text.trim())
           : null;
       final club = _selectedClub;
+      final location = _selectedLocation!;
 
       if (club != null) {
         await ref
@@ -135,7 +145,9 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
               adminUid: user.id,
               title: _titleController.text.trim(),
               date: _eventDateTime,
-              location: _locationController.text.trim(),
+              location: location.title,
+              locationLatitude: location.latitude,
+              locationLongitude: location.longitude,
               description: _descriptionController.text.trim(),
               category: _categoryId,
               imageUrl: imageUrl,
@@ -150,7 +162,9 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
               authorName: user.name,
               title: _titleController.text.trim(),
               date: _eventDateTime,
-              location: _locationController.text.trim(),
+              location: location.title,
+              locationLatitude: location.latitude,
+              locationLongitude: location.longitude,
               description: _descriptionController.text.trim(),
               category: _categoryId,
               imageUrl: imageUrl,
@@ -271,13 +285,9 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
                         const SizedBox(height: 18),
                         const _FieldLabel('Konum'),
                         const SizedBox(height: 8),
-                        TextField(
-                          controller: _locationController,
-                          onChanged: (_) => setState(() {}),
-                          decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.location_on_rounded),
-                            hintText: 'Örn. Mühendislik Fakültesi B Blok',
-                          ),
+                        _LocationPickerField(
+                          selection: _selectedLocation,
+                          onTap: _pickLocation,
                         ),
                         const SizedBox(height: 22),
                         const _SectionLabel('KATEGORİ'),
@@ -362,9 +372,9 @@ class _TopBar extends StatelessWidget {
             child: Text(
               'Etkinlik Oluştur',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
             ),
           ),
           const SizedBox(width: 48),
@@ -404,6 +414,86 @@ class _FieldLabel extends StatelessWidget {
       style: Theme.of(context).textTheme.labelLarge?.copyWith(
         fontSize: 13,
         fontWeight: FontWeight.w800,
+      ),
+    );
+  }
+}
+
+class _LocationPickerField extends StatelessWidget {
+  final EventLocationSelection? selection;
+  final VoidCallback onTap;
+
+  const _LocationPickerField({required this.selection, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final selected = selection != null;
+
+    return Material(
+      color: colorScheme.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 64),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: selected
+                  ? colorScheme.primary
+                  : colorScheme.outlineVariant,
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                selected
+                    ? Icons.location_on_rounded
+                    : Icons.add_location_alt_rounded,
+                color: selected
+                    ? colorScheme.secondary
+                    : colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      selected ? selection!.title : 'Haritadan konum seç',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.bodyLarge?.copyWith(
+                        color: selected
+                            ? colorScheme.onSurface
+                            : colorScheme.onSurfaceVariant,
+                        fontWeight: selected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                      ),
+                    ),
+                    if (selected) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        'Değiştirmek için dokun',
+                        style: textTheme.bodySmall,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -481,7 +571,9 @@ class _AuthorModeOption extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: selected ? colorScheme.primary : colorScheme.outlineVariant,
+              color: selected
+                  ? colorScheme.primary
+                  : colorScheme.outlineVariant,
               width: selected ? 1.5 : 1,
             ),
           ),
@@ -621,10 +713,7 @@ class _DashedBorderPainter extends CustomPainter {
 
     final path = Path()
       ..addRRect(
-        RRect.fromRectAndRadius(
-          Offset.zero & size,
-          const Radius.circular(18),
-        ),
+        RRect.fromRectAndRadius(Offset.zero & size, const Radius.circular(18)),
       );
 
     for (final metric in path.computeMetrics()) {

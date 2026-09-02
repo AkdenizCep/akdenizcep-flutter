@@ -292,6 +292,8 @@ clubs/{clubId}
     date: timestamp
     imageUrl: string
     location: string
+    locationLatitude: number
+    locationLongitude: number
     description: string
     qrAttendance: boolean         # true ise QR ile katılımcı kaydı açık
     createdAt: timestamp
@@ -314,6 +316,8 @@ student-events/{seventId}
   authorUid: string
   date: timestamp
   location: string
+  locationLatitude: number
+  locationLongitude: number
   description: string
   createdAt: timestamp
 

@@ -32,6 +32,7 @@ import '../features/profile/pages/profile_page.dart';
 import '../features/ring/pages/ring_page.dart';
 import '../features/ring/pages/ring_stops_page.dart';
 import '../features/student_events/pages/create_event_page.dart';
+import '../features/student_events/pages/event_location_picker_page.dart';
 import '../features/student_events/pages/student_event_detail_page.dart';
 import '../features/student_events/pages/student_events_page.dart';
 import '../features/web_portal/pages/web_portal_page.dart';
@@ -236,6 +237,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'create',
                     builder: (context, state) => const CreateEventPage(),
+                    routes: [
+                      GoRoute(
+                        path: 'location',
+                        builder: (context, state) =>
+                            const EventLocationPickerPage(),
+                      ),
+                    ],
                   ),
                 ],
               ),

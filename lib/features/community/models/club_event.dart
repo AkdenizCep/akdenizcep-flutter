@@ -4,6 +4,8 @@ class ClubEvent {
   final DateTime date;
   final String imageUrl;
   final String location;
+  final double? locationLatitude;
+  final double? locationLongitude;
   final String description;
   final String category;
   final List<String> attendeeIds;
@@ -20,6 +22,8 @@ class ClubEvent {
     required this.location,
     required this.description,
     required this.createdAt,
+    this.locationLatitude,
+    this.locationLongitude,
     this.category = '',
     this.attendeeIds = const [],
     this.attendeeCount = 0,
@@ -38,6 +42,8 @@ class ClubEvent {
           : DateTime.now(),
       imageUrl: json['imageUrl'] as String? ?? '',
       location: json['location'] as String? ?? '',
+      locationLatitude: (json['locationLatitude'] as num?)?.toDouble(),
+      locationLongitude: (json['locationLongitude'] as num?)?.toDouble(),
       description: json['description'] as String? ?? '',
       category: json['category'] as String? ?? '',
       attendeeIds: attendeeIds,
@@ -56,6 +62,8 @@ class ClubEvent {
     'date': date,
     'imageUrl': imageUrl,
     'location': location,
+    'locationLatitude': locationLatitude,
+    'locationLongitude': locationLongitude,
     'description': description,
     'category': category,
     'attendeeIds': attendeeIds,
@@ -71,6 +79,8 @@ class ClubEvent {
     DateTime? date,
     String? imageUrl,
     String? location,
+    double? locationLatitude,
+    double? locationLongitude,
     String? description,
     String? category,
     List<String>? attendeeIds,
@@ -84,6 +94,8 @@ class ClubEvent {
     date: date ?? this.date,
     imageUrl: imageUrl ?? this.imageUrl,
     location: location ?? this.location,
+    locationLatitude: locationLatitude ?? this.locationLatitude,
+    locationLongitude: locationLongitude ?? this.locationLongitude,
     description: description ?? this.description,
     category: category ?? this.category,
     attendeeIds: attendeeIds ?? this.attendeeIds,

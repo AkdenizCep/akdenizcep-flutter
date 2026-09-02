@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models/event_comment.dart';
 import '../models/feed_event.dart';
@@ -10,6 +12,7 @@ import '../providers/nav_visibility_provider.dart';
 import '../providers/user_provider.dart';
 import '../utils/error_message.dart';
 import '../utils/event_category.dart';
+import '../utils/event_map_links.dart';
 import '../utils/relative_time.dart';
 import 'attendee_avatars.dart';
 import 'error_view.dart';
@@ -182,7 +185,7 @@ class _EventDetailViewState extends ConsumerState<EventDetailView>
                       const SizedBox(height: 22),
                       _AttendeesSection(event: event),
                       const SizedBox(height: 22),
-                      _LocationSection(location: event.location),
+                      _LocationSection(event: event),
                       const SizedBox(height: 22),
                       _CommentsSection(
                         commentsAsync: commentsAsync,
@@ -325,8 +328,10 @@ class _Hero extends StatelessWidget {
             bottom: 44,
             child: Row(
               children: [
-                _HeroTag(label: category.label.toUpperCase(),
-                    color: category.color),
+                _HeroTag(
+                  label: category.label.toUpperCase(),
+                  color: category.color,
+                ),
                 const SizedBox(width: 8),
                 const _HeroTag(label: 'ÜCRETSİZ', color: Color(0xFF168A5B)),
               ],
@@ -563,11 +568,88 @@ class _AttendeesSection extends ConsumerWidget {
   }
 }
 
-/// Konum bölümü — harita bu turda kapsam dışı; kart yalnızca konumu tarif eder.
 class _LocationSection extends StatelessWidget {
-  final String location;
+  final FeedEvent event;
 
-  const _LocationSection({required this.location});
+  const _LocationSection({required this.event});
+
+  Future<void> _openMap(BuildContext context) async {
+    if (!event.hasCoordinates) {
+      await _launch(context, EventMapLinks.googleMapsSearch(event.location));
+      return;
+    }
+
+    final latitude = event.locationLatitude!;
+    final longitude = event.locationLongitude!;
+    Uri uri;
+
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      final choice = await showModalBottomSheet<_MapApp>(
+        context: context,
+        showDragHandle: true,
+        builder: (sheetContext) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+                  child: Text(
+                    'Harita uygulamasını seç',
+                    style: Theme.of(sheetContext).textTheme.titleMedium,
+                  ),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.map_rounded),
+                  title: const Text('Apple Haritalar'),
+                  onTap: () => sheetContext.pop(_MapApp.apple),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.location_on_rounded),
+                  title: const Text('Google Maps'),
+                  onTap: () => sheetContext.pop(_MapApp.google),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      if (choice == null || !context.mounted) return;
+
+      uri = choice == _MapApp.apple
+          ? EventMapLinks.appleMaps(
+              latitude: latitude,
+              longitude: longitude,
+              title: event.location,
+            )
+          : EventMapLinks.googleMaps(latitude: latitude, longitude: longitude);
+    } else {
+      uri = EventMapLinks.googleMaps(latitude: latitude, longitude: longitude);
+    }
+
+    if (context.mounted) await _launch(context, uri);
+  }
+
+  Future<void> _launch(BuildContext context, Uri uri) async {
+    try {
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (launched || !context.mounted) return;
+    } catch (_) {
+      if (!context.mounted) return;
+    }
+
+    showProgressSnackBar(
+      context,
+      message: 'Harita uygulaması açılamadı.',
+      icon: Icons.info_outline_rounded,
+      accentColor: Theme.of(context).colorScheme.secondary,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -611,7 +693,9 @@ class _LocationSection extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        location.isEmpty ? 'Belirtilmemiş' : location,
+                        event.location.isEmpty
+                            ? 'Belirtilmemiş'
+                            : event.location,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: textTheme.titleSmall?.copyWith(
@@ -621,7 +705,9 @@ class _LocationSection extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     OutlinedButton(
-                      onPressed: () => context.go('/map'),
+                      onPressed: !event.hasMappableLocation
+                          ? null
+                          : () => _openMap(context),
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size(0, 40),
                         padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -647,6 +733,8 @@ class _LocationSection extends StatelessWidget {
     );
   }
 }
+
+enum _MapApp { apple, google }
 
 class _CommentsSection extends StatelessWidget {
   final AsyncValue<List<EventComment>> commentsAsync;
@@ -697,11 +785,12 @@ class _CommentsSection extends StatelessWidget {
           _CommentCard(comment: comment),
           const SizedBox(height: 10),
         ],
-        if (canComment) _CommentInput(
-          controller: controller,
-          sending: sending,
-          onSend: onSend,
-        ),
+        if (canComment)
+          _CommentInput(
+            controller: controller,
+            sending: sending,
+            onSend: onSend,
+          ),
       ],
     );
   }
@@ -910,7 +999,9 @@ class _BottomCtaBar extends ConsumerWidget {
           const SizedBox(width: 16),
           Expanded(
             child: Material(
-              color: joined ? colorScheme.primaryContainer : colorScheme.primary,
+              color: joined
+                  ? colorScheme.primaryContainer
+                  : colorScheme.primary,
               borderRadius: BorderRadius.circular(16),
               child: InkWell(
                 borderRadius: BorderRadius.circular(16),

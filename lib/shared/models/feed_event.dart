@@ -43,6 +43,8 @@ class FeedEvent {
   final String title;
   final DateTime date;
   final String location;
+  final double? locationLatitude;
+  final double? locationLongitude;
   final String description;
   final String imageUrl;
   final String category;
@@ -63,6 +65,8 @@ class FeedEvent {
     required this.location,
     required this.description,
     required this.createdAt,
+    this.locationLatitude,
+    this.locationLongitude,
     this.clubId,
     this.imageUrl = '',
     this.category = '',
@@ -75,8 +79,7 @@ class FeedEvent {
     this.qrAttendance = false,
   });
 
-  EventRef get ref =>
-      EventRef(source: source, clubId: clubId, eventId: id);
+  EventRef get ref => EventRef(source: source, clubId: clubId, eventId: id);
 
   bool get isClubEvent =>
       source == EventSource.club || (clubId != null && clubId!.isNotEmpty);
@@ -85,6 +88,11 @@ class FeedEvent {
       uid != null && uid.isNotEmpty && attendeeIds.contains(uid);
 
   bool get isFull => capacity != null && attendeeCount >= capacity!;
+
+  bool get hasCoordinates =>
+      locationLatitude != null && locationLongitude != null;
+
+  bool get hasMappableLocation => hasCoordinates || location.trim().isNotEmpty;
 
   int? get remainingSeats =>
       capacity == null ? null : (capacity! - attendeeCount).clamp(0, capacity!);
@@ -103,6 +111,8 @@ class FeedEvent {
       title: json['title'] as String? ?? '',
       date: _toDate(json['date']),
       location: json['location'] as String? ?? '',
+      locationLatitude: (json['locationLatitude'] as num?)?.toDouble(),
+      locationLongitude: (json['locationLongitude'] as num?)?.toDouble(),
       description: json['description'] as String? ?? '',
       imageUrl: json['imageUrl'] as String? ?? '',
       category: json['category'] as String? ?? '',
@@ -124,6 +134,8 @@ class FeedEvent {
     'title': title,
     'date': date,
     'location': location,
+    'locationLatitude': locationLatitude,
+    'locationLongitude': locationLongitude,
     'description': description,
     'imageUrl': imageUrl,
     'category': category,
@@ -144,6 +156,8 @@ class FeedEvent {
     String? title,
     DateTime? date,
     String? location,
+    double? locationLatitude,
+    double? locationLongitude,
     String? description,
     String? imageUrl,
     String? category,
@@ -162,6 +176,8 @@ class FeedEvent {
     title: title ?? this.title,
     date: date ?? this.date,
     location: location ?? this.location,
+    locationLatitude: locationLatitude ?? this.locationLatitude,
+    locationLongitude: locationLongitude ?? this.locationLongitude,
     description: description ?? this.description,
     imageUrl: imageUrl ?? this.imageUrl,
     category: category ?? this.category,
