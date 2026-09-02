@@ -95,34 +95,60 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,
           colors: [
-            Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-            Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
-            Theme.of(context).colorScheme.primary.withValues(alpha: 0.03),
+            theme.colorScheme.primary.withValues(alpha: 0.10),
+            theme.colorScheme.primary.withValues(alpha: 0.03),
             Colors.transparent,
           ],
-          stops: const [0.0, 0.4, 0.6, 1.0],
+          stops: const [0.0, 0.45, 0.85],
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
         child: Container(
           height: 68,
           decoration: BoxDecoration(
-            color: Theme.of(
-              context,
-            ).colorScheme.surface.withValues(alpha: 0.98),
+            color: isDark
+                ? theme.colorScheme.surfaceContainerHigh
+                : theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(36),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.12)
+                  : theme.colorScheme.outlineVariant.withValues(alpha: 0.70),
+              width: 1.2,
+            ),
             boxShadow: [
+              // Soft wide ambient elevation shadow
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 24,
+                color: Colors.black.withValues(alpha: isDark ? 0.38 : 0.08),
+                blurRadius: 20,
                 offset: const Offset(0, 8),
+                spreadRadius: 0,
+              ),
+              // Directional key shadow giving clear depth/elevation
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.22 : 0.04),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+                spreadRadius: 0,
+              ),
+              // Subtle ambient brand glow around the perimeter
+              BoxShadow(
+                color: theme.colorScheme.primary.withValues(
+                  alpha: isDark ? 0.14 : 0.06,
+                ),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
+                spreadRadius: -2,
               ),
             ],
           ),
