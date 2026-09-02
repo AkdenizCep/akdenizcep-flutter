@@ -55,11 +55,19 @@ final showWeekendProvider = StateProvider<bool>(
 // --- Turetilmis veriler ----------------------------------------------------
 
 /// Veride bulunan hat kodlari ("au102", "au103" ...), sirali.
-/// Hat listesi RTDB'den turetilir — kodda sabit hat listesi tutulmaz.
+/// Uygulama yalnızca AÜ102 ve AÜ103 hatlarını destekler; RTDB'deki hatalı ya
+/// da eski başka kayıtlar kullanıcıya seçenek olarak sunulmaz.
 final availableLinesProvider = Provider<List<String>>((ref) {
   final schedules =
       ref.watch(ringSchedulesProvider).valueOrNull ?? const <RingSchedule>[];
-  final codes = schedules.map((s) => s.lineCode).toSet().toList()..sort();
+  const supportedCodes = {'au102', 'au103'};
+  final codes =
+      schedules
+          .map((schedule) => schedule.lineCode)
+          .where(supportedCodes.contains)
+          .toSet()
+          .toList()
+        ..sort();
   return codes;
 });
 
@@ -95,6 +103,20 @@ final selectedScheduleProvider = Provider<RingSchedule?>((ref) {
   }
   // Hat tek yonluyse eldeki tek tarifeye dus.
   return schedules.first;
+});
+
+/// İstenen yön veride yoksa gerçekten gösterilen tarifenin yönüne düşer.
+final effectiveReturnDirectionProvider = Provider<bool>((ref) {
+  final schedule = ref.watch(selectedScheduleProvider);
+  return schedule?.isReturn ?? ref.watch(isReturnDirectionProvider);
+});
+
+final canSwitchDirectionProvider = Provider<bool>((ref) {
+  final directions = ref
+      .watch(activeLineSchedulesProvider)
+      .map((schedule) => schedule.isReturn)
+      .toSet();
+  return directions.length > 1;
 });
 
 /// Canli geri sayimi besleyen saniyelik nabiz.
@@ -282,6 +304,23 @@ final routeShapesServiceProvider = Provider((_) => RouteShapesService());
 /// okunur; servis sonucu kendi icinde cache'ler.
 final routeShapesProvider = FutureProvider<RouteShapeBundle>((ref) {
   return ref.watch(routeShapesServiceProvider).load();
+});
+
+/// Ana ulaşım ve tam tarife ekranlarında seçili hat + yönün güzergâhı.
+final activeScheduleRouteShapeProvider = Provider.family<RouteShape?, bool>((
+  ref,
+  isReturn,
+) {
+  final bundle = ref.watch(routeShapesProvider).valueOrNull;
+  final line = ref.watch(activeLineProvider);
+  if (bundle == null || line == null) return null;
+
+  final wanted = directionIdFor(isReturn);
+  final matches = bundle.routes.where(
+    (shape) =>
+        lineCodeOf(shape.shortName) == line && shape.directionId == wanted,
+  );
+  return matches.isEmpty ? null : matches.first;
 });
 
 /// Haritada cizilen hat. `null` = veri henuz gelmedi; ilk hat secilir.

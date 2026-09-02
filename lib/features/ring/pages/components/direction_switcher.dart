@@ -28,9 +28,11 @@ class DirectionSwitcher extends StatelessWidget {
     return Semantics(
       button: canSwitch,
       label: route == null
-          ? 'Yön: $fallbackLabel. Değiştirmek için dokun.'
+          ? canSwitch
+                ? 'Yön: $fallbackLabel. Değiştirmek için dokun.'
+                : 'Yön: $fallbackLabel. Yön değiştirilemez.'
           : '${route!.from} durağından ${route!.to} durağına. '
-                'Yönü çevirmek için dokun.',
+                '${canSwitch ? 'Yönü çevirmek için dokun.' : 'Yön değiştirilemez.'}',
       child: Material(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(18),

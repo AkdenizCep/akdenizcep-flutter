@@ -70,12 +70,10 @@ class _RingContentState extends ConsumerState<_RingContent> {
     final activeLine = ref.watch(activeLineProvider);
     final availableLines = ref.watch(availableLinesProvider);
     final departures = ref.watch(departuresProvider);
-    final isReturn = ref.watch(isReturnDirectionProvider);
-    final activeShape = ref.watch(activeRouteShapeProvider(isReturn));
+    final isReturn = ref.watch(effectiveReturnDirectionProvider);
+    final activeShape = ref.watch(activeScheduleRouteShapeProvider(isReturn));
 
-    final canSwitchDirection = ref
-        .watch(activeLineSchedulesProvider)
-        .any((s) => s.isReturn != isReturn);
+    final canSwitchDirection = ref.watch(canSwitchDirectionProvider);
 
     final userAsync = ref.watch(currentUserProvider);
     final userInitial = userAsync.valueOrNull?.name.isNotEmpty == true
@@ -121,8 +119,11 @@ class _RingContentState extends ConsumerState<_RingContent> {
                     ),
                     originName: routeOrigin(activeShape),
                     canSwitchDirection: canSwitchDirection,
-                    onLineChanged: (line) =>
-                        ref.read(selectedLineProvider.notifier).state = line,
+                    onLineChanged: (line) {
+                      ref.read(isReturnDirectionProvider.notifier).state =
+                          isReturn;
+                      ref.read(selectedLineProvider.notifier).state = line;
+                    },
                     onSwitchDirection: () =>
                         ref.read(isReturnDirectionProvider.notifier).state =
                             !isReturn,

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/ring_departures.dart';
 import '../../providers/ring_provider.dart';
+import 'direction_switcher.dart';
 import 'ring_format.dart';
 import 'soft_segment.dart';
 
@@ -45,11 +46,20 @@ class _FullScheduleSheetState extends ConsumerState<FullScheduleSheet> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    final schedule = ref.watch(selectedScheduleProvider);
-    final isReturn = ref.watch(isReturnDirectionProvider);
-    final activeShape = ref.watch(activeRouteShapeProvider(isReturn));
+    final activeLine = ref.watch(activeLineProvider);
+    final availableLines = ref.watch(availableLinesProvider);
+    final isReturn = ref.watch(effectiveReturnDirectionProvider);
+    final activeShape = ref.watch(activeScheduleRouteShapeProvider(isReturn));
     final showWeekend = ref.watch(showWeekendProvider);
     final departures = ref.watch(departuresProvider);
+    final canSwitchDirection = ref.watch(canSwitchDirectionProvider);
+    final origin = routeOrigin(activeShape);
+    final destination = labelTail(
+      activeShape?.label,
+    )?.replaceFirst(RegExp(r'\s+yönü$'), '');
+    final route = origin != null && destination != null
+        ? (from: origin, to: destination)
+        : null;
 
     return DraggableScrollableSheet(
       initialChildSize: 0.72,
@@ -70,52 +80,68 @@ class _FullScheduleSheetState extends ConsumerState<FullScheduleSheet> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 18, 24, 0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          schedule == null
-                              ? 'Tüm Saatler'
-                              : '${lineLabel(schedule.lineCode)} · '
-                                    '${directionSummary(activeShape, isReturn: isReturn)}',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Tüm Tarife',
                           style: textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w900,
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          dayTypeLabel(showWeekend),
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+                      ),
+                      const SizedBox(width: 12),
+                      SizedBox(
+                        width: 168,
+                        child: SoftSegment<bool>(
+                          compact: true,
+                          selectedValue: showWeekend,
+                          onChanged: (value) {
+                            ref.read(showWeekendProvider.notifier).state =
+                                value;
+                            _scrollAfterSelection();
+                          },
+                          items: const [
+                            SegmentItem(value: false, label: 'H.İçi'),
+                            SegmentItem(value: true, label: 'H.Sonu'),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  SizedBox(
-                    width: 168,
-                    child: SoftSegment<bool>(
-                      compact: true,
-                      selectedValue: showWeekend,
-                      onChanged: (value) {
-                        ref.read(showWeekendProvider.notifier).state = value;
-                        WidgetsBinding.instance.addPostFrameCallback(
-                          (_) => _scrollToNow(),
-                        );
+                  if (activeLine != null && availableLines.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    SoftSegment<String>(
+                      selectedValue: activeLine,
+                      onChanged: (line) {
+                        ref.read(isReturnDirectionProvider.notifier).state =
+                            isReturn;
+                        ref.read(selectedLineProvider.notifier).state = line;
+                        _scrollAfterSelection();
                       },
-                      items: const [
-                        SegmentItem(value: false, label: 'H.İçi'),
-                        SegmentItem(value: true, label: 'H.Sonu'),
+                      items: [
+                        for (final line in availableLines)
+                          SegmentItem(value: line, label: lineLabel(line)),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 10),
+                    DirectionSwitcher(
+                      route: route,
+                      fallbackLabel: directionSummary(
+                        activeShape,
+                        isReturn: isReturn,
+                      ),
+                      canSwitch: canSwitchDirection,
+                      onSwitch: () {
+                        ref.read(isReturnDirectionProvider.notifier).state =
+                            !isReturn;
+                        _scrollAfterSelection();
+                      },
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -160,6 +186,10 @@ class _FullScheduleSheetState extends ConsumerState<FullScheduleSheet> {
         );
       },
     );
+  }
+
+  void _scrollAfterSelection() {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToNow());
   }
 
   _TimeState _stateFor(String time, RingDepartures departures) {
