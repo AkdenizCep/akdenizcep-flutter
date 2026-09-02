@@ -36,6 +36,7 @@ import '../features/student_events/pages/event_location_picker_page.dart';
 import '../features/student_events/pages/student_event_detail_page.dart';
 import '../features/student_events/pages/student_events_page.dart';
 import '../features/web_portal/pages/web_portal_page.dart';
+import '../shared/components/loading_overlay.dart';
 import '../shared/constants/web_portals.dart';
 
 // Shell branch navigator keys — birden fazla branch aynı yolu paylaşmasın
@@ -50,12 +51,20 @@ final _shellCampusKey = GlobalKey<NavigatorState>(debugLabel: 'shellCampus');
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final routerProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authStateProvider);
-
-  return GoRouter(
+  final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/home',
     redirect: (context, state) {
+      final authState = ref.read(authStateProvider);
+
+      // Firebase kayıtlı oturumu henüz geri yüklerken AsyncLoading yayınlar.
+      // Bu durum "oturum yok" değildir; karar verilene kadar nötr ekranda kal.
+      if (authState.isLoading) {
+        return state.matchedLocation == '/auth-loading'
+            ? null
+            : '/auth-loading';
+      }
+
       final user = authState.valueOrNull;
       final isLoggedIn = user != null;
       final isEmailVerified = user?.emailVerified ?? false;
@@ -63,6 +72,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           state.matchedLocation == '/login' ||
           state.matchedLocation == '/register';
       final isVerifyRoute = state.matchedLocation == '/verify-email';
+      final isLoadingRoute = state.matchedLocation == '/auth-loading';
 
       if (!isLoggedIn) {
         return isAuthRoute ? null : '/login';
@@ -70,7 +80,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (!isEmailVerified) {
         return isVerifyRoute ? null : '/verify-email';
       }
-      if (isAuthRoute || isVerifyRoute) return '/home';
+      if (isAuthRoute || isVerifyRoute || isLoadingRoute) return '/home';
       return null;
     },
     routes: [
@@ -82,6 +92,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/verify-email',
         builder: (context, state) => const VerifyEmailPage(),
+      ),
+      GoRoute(
+        path: '/auth-loading',
+        builder: (context, state) =>
+            const Scaffold(body: SafeArea(child: LoadingOverlay())),
       ),
       GoRoute(path: '/map', redirect: (context, state) => '/campus/map'),
       GoRoute(path: '/more', redirect: (context, state) => '/campus'),
@@ -305,4 +320,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+
+  // Router'ı yeniden yaratmak mevcut navigator yığınlarını sıfırlar. Auth
+  // değişikliklerinde aynı örneğe yalnızca redirect'i tekrar değerlendirt.
+  final authSubscription = ref.listen(authStateProvider, (_, _) {
+    router.refresh();
+  });
+  ref.onDispose(() {
+    authSubscription.close();
+    router.dispose();
+  });
+
+  return router;
 });
