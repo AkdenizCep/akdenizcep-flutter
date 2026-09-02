@@ -287,25 +287,34 @@ class HomeContentPage extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header — Home'da bilinçli istisna: logo ve avatar tek satırda,
-              // sayfa adı yok.
+              // sayfa adı yok. AppTopBar ile aynı margin ve hizada (52px satır yüksekliği).
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const AkdenizCepLogo(fontSize: 24),
-                    AppTopBarAction.avatar(
-                      initial: userInitial,
-                      imageUrl: userAsync.valueOrNull?.photoUrl,
-                      onTap: () => context.push('/profile'),
-                    ),
-                  ],
+                padding: const EdgeInsets.fromLTRB(
+                  kTopBarHPad,
+                  4,
+                  kTopBarHPad,
+                  6,
+                ),
+                child: SizedBox(
+                  height: kTopBarRowHeight,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const AkdenizCepLogo(fontSize: 24),
+                      AppTopBarAction.avatar(
+                        initial: userInitial,
+                        imageUrl: userAsync.valueOrNull?.photoUrl,
+                        onTap: () => context.push('/profile'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
 
               // Greeting
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

@@ -1,60 +1,44 @@
 import 'package:flutter/material.dart';
 
-import '../../../../shared/components/akdeniz_cep_logo.dart';
 import '../../../../shared/components/app_top_bar.dart';
 
 class CampusHeader extends StatelessWidget {
-  const CampusHeader({super.key});
+  final List<Widget> actions;
+
+  const CampusHeader({
+    super.key,
+    this.actions = const [],
+  });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 124),
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: ExcludeSemantics(
-              child: CustomPaint(
-                painter: _CampusRoutePainter(color: colorScheme.primary),
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: ExcludeSemantics(
+            child: CustomPaint(
+              painter: _CampusRoutePainter(color: colorScheme.primary),
+            ),
+          ),
+        ),
+        AppTopBar(
+          title: 'Kampüs',
+          actions: actions,
+          bottom: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 285),
+            child: Text(
+              'Kampüs yaşamında ihtiyaç duyabileceğin hizmetler.',
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                height: 1.4,
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.topLeft,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 285),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const AkdenizCepLogo(fontSize: kTopBarLogoFontSize),
-                  const SizedBox(height: kTopBarTitleGap),
-                  Text(
-                    'Kampüs',
-                    style: textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.45,
-                      fontSize: kTopBarTitleFontSize,
-                      
-                    ),
-                  ),
-                  const SizedBox(height: 7),
-                  Text(
-                    'Kampüs yaşamında ihtiyaç duyabileceğin hizmetler.',
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      height: 1.4,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

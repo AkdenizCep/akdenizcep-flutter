@@ -1,7 +1,9 @@
 import 'package:akdenizcep/app/theme.dart';
 import 'package:akdenizcep/features/campus/pages/campus_page.dart';
 import 'package:akdenizcep/features/campus/pages/emergency_contacts_page.dart';
+import 'package:akdenizcep/shared/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -31,12 +33,22 @@ void main() {
           builder: (_, _) =>
               const Scaffold(body: Center(child: Text('Kayıp buluntu hedefi'))),
         ),
+        GoRoute(
+          path: '/profile',
+          builder: (_, _) =>
+              const Scaffold(body: Center(child: Text('Profil hedefi'))),
+        ),
       ],
     );
     addTearDown(router.dispose);
 
     await tester.pumpWidget(
-      MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+      ProviderScope(
+        overrides: [
+          currentUserProvider.overrideWith((ref) => Stream.value(null)),
+        ],
+        child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -51,6 +63,13 @@ void main() {
     expect(find.text('Daha Fazla'), findsNothing);
     expect(find.text('Ayarlar'), findsNothing);
     expect(find.text('Geri Bildirim'), findsNothing);
+
+    await tester.tap(find.text('?'));
+    await tester.pumpAndSettle();
+    expect(find.text('Profil hedefi'), findsOneWidget);
+
+    router.go('/campus');
+    await tester.pumpAndSettle();
 
     await tester.tap(find.text('Acil Numaralar'));
     await tester.pumpAndSettle();

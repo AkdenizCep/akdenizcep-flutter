@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../shared/components/app_top_bar.dart';
+import '../../../shared/providers/user_provider.dart';
 import 'components/campus_header.dart';
 import 'components/campus_service_group.dart';
 
-class CampusPage extends StatelessWidget {
+class CampusPage extends ConsumerWidget {
   const CampusPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsync = ref.watch(currentUserProvider);
+    final userInitial = userAsync.valueOrNull?.name.isNotEmpty == true
+        ? userAsync.valueOrNull!.name[0].toUpperCase()
+        : '?';
     final campusServices = [
       CampusServiceDestination(
         title: 'Kampüs Haritası',
@@ -50,29 +56,45 @@ class CampusPage extends StatelessWidget {
         bottom: false,
         child: SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
-            kTopBarHPad,
-            4,
-            kTopBarHPad,
+            0,
+            0,
+            0,
             132 + MediaQuery.of(context).padding.bottom,
           ),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 620),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const CampusHeader(),
-                  const SizedBox(height: 20),
-                  const CampusSectionTitle(title: 'Kampüs Yaşamı'),
-                  const SizedBox(height: 10),
-                  CampusServiceGroup(destinations: campusServices),
-                  const SizedBox(height: 28),
-                  const CampusSectionTitle(title: 'Yardım ve Güvenlik'),
-                  const SizedBox(height: 10),
-                  CampusServiceGroup(destinations: safetyServices),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CampusHeader(
+                actions: [
+                  AppTopBarAction.avatar(
+                    initial: userInitial,
+                    imageUrl: userAsync.valueOrNull?.photoUrl,
+                    onTap: () => context.push('/profile'),
+                  ),
                 ],
               ),
-            ),
+              const SizedBox(height: 14),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: kTopBarHPad),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 620),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const CampusSectionTitle(title: 'Kampüs Yaşamı'),
+                        const SizedBox(height: 10),
+                        CampusServiceGroup(destinations: campusServices),
+                        const SizedBox(height: 28),
+                        const CampusSectionTitle(title: 'Yardım ve Güvenlik'),
+                        const SizedBox(height: 10),
+                        CampusServiceGroup(destinations: safetyServices),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

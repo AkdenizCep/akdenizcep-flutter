@@ -15,6 +15,7 @@ const kTopBarLogoFontSize = 18.0;
 const kTopBarTitleFontSize = 26.0;
 const kTopBarTitleGap = 0.0;
 const kTopBarActionSize = 40.0;
+const kTopBarRowHeight = 55.0;
 
 class AppTopBar extends StatelessWidget {
   final String title;
