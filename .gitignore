@@ -1,6 +1,7 @@
 # Miscellaneous
 *.class
 *.lock
+!functions/package-lock.json
 *.log
 *.pyc
 *.swp
@@ -110,6 +111,8 @@ unlinked_spec.ds
 
 # Coverage
 coverage/
+functions/lib/
+functions/node_modules/
 
 # Symbols
 app.*.symbols

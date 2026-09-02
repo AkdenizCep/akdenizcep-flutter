@@ -27,11 +27,11 @@
 	<key>MapsApiKey</key>
 	<string>$(MAPS_API_KEY)</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Etkinlik katılımcı kaydı için QR okutmak ve etkinlik görseli çekmek üzere kamera kullanılır.</string>
+	<string>Profil fotoğrafı çekmek, etkinlik görseli eklemek ve etkinlik katılımcı QR kodlarını okutmak için kamera kullanılır.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Akdeniz Cep, kampüs haritasında konumunuzu ve size en yakın ring durağını göstermek için konum izninizi kullanır.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Etkinlik kapak görseli seçebilmen için fotoğraflarına erişilir.</string>
+	<string>Profil fotoğrafı ve etkinlik kapak görseli seçebilmen için fotoğraflarına erişilir.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

@@ -2,16 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../auth/models/app_user.dart';
+import '../../../../shared/components/user_avatar.dart';
 
 class ProfileInfoCard extends StatelessWidget {
   final AppUser user;
+  final bool photoBusy;
+  final VoidCallback onPhotoTap;
 
-  const ProfileInfoCard({super.key, required this.user});
+  const ProfileInfoCard({
+    super.key,
+    required this.user,
+    required this.photoBusy,
+    required this.onPhotoTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final initial = user.name.isNotEmpty ? user.name[0].toUpperCase() : '?';
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(22, 26, 22, 22),
@@ -32,22 +38,55 @@ class ProfileInfoCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Container(
-            width: 76,
-            height: 76,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withValues(alpha: 0.18),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.32)),
-            ),
-            child: Center(
-              child: Text(
-                initial,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 30,
-                ),
+          GestureDetector(
+            onTap: photoBusy ? null : onPhotoTap,
+            child: Tooltip(
+              message: 'Profil fotoğrafını değiştir',
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.42),
+                      ),
+                    ),
+                    child: UserAvatar(
+                      name: user.name,
+                      imageUrl: user.photoUrl,
+                      diameter: 76,
+                      backgroundColor: Colors.white.withValues(alpha: 0.18),
+                      foregroundColor: Colors.white,
+                      textStyle: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 30,
+                      ),
+                    ),
+                  ),
+                  if (photoBusy)
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black.withValues(alpha: 0.45),
+                      ),
+                      child: const Center(
+                        child: SizedBox.square(
+                          dimension: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),

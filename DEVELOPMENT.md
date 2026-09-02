@@ -276,6 +276,7 @@ users/{uid}
   name: string
   email: string
   studentId: string
+  photoUrl: string                    # opsiyonel Cloudinary profil fotoğrafı
   followedClubs: string[]
   createdAt: timestamp
 
@@ -443,6 +444,19 @@ cafeteria_ratings/{date}                # döküman kimliği tarihin kendisi: "2
 - Google Sign-In kullanma — auth yöntemi yalnızca e-posta + şifredir.
 - Kullanıcının aynı güne ait ikinci rating girişine izin verme — `ratings/{uid}` dökümanı zaten varsa işlemi reddet.
 - `avgRating` ve `ratingCount` alanlarını client'tan direkt yazma — bunlar yalnızca Cloud Function veya transaction ile güncellenmeli.
+
+---
+
+## Profil fotoğrafları ve Cloudinary
+
+- Profil fotoğrafları `CloudinaryService` üzerinden `akdenizcep_unsigned` preset'i ile
+  doğrudan istemciden yüklenir (`folder: 'profile-photos/{uid}'`).
+- Mobil istemci `API_SECRET` içermez; silme/kaldırma işlemi `users/{uid}.photoUrl`
+  alanını Firestore'dan temizleyerek gerçekleştirilir.
+- Kırpılan fotoğraf `profile_photo_codec.dart` ile istemcide 512x512 JPEG formatına
+  dönüştürülür ve en fazla 1 MB boyuta izin verilir.
+- `users/{uid}.photoUrl` alanı yalnızca oturum sahibi öğrenci (`isOwner(uid)`)
+  tarafından güncellenebilir (Firestore güvenlik kuralları ile korunur).
 
 ---
 

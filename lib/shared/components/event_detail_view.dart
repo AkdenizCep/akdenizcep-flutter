@@ -16,6 +16,7 @@ import '../utils/event_map_links.dart';
 import '../utils/relative_time.dart';
 import 'attendee_avatars.dart';
 import 'error_view.dart';
+import 'event_location_preview.dart';
 import 'event_visual.dart';
 import 'loading_overlay.dart';
 import 'progress_snackbar.dart';
@@ -326,15 +327,9 @@ class _Hero extends StatelessWidget {
           Positioned(
             left: 20,
             bottom: 44,
-            child: Row(
-              children: [
-                _HeroTag(
-                  label: category.label.toUpperCase(),
-                  color: category.color,
-                ),
-                const SizedBox(width: 8),
-                const _HeroTag(label: 'ÜCRETSİZ', color: Color(0xFF168A5B)),
-              ],
+            child: _HeroTag(
+              label: category.label.toUpperCase(),
+              color: category.color,
             ),
           ),
         ],
@@ -676,16 +671,11 @@ class _LocationSection extends StatelessWidget {
           ),
           child: Column(
             children: [
-              Container(
-                height: 140,
-                width: double.infinity,
-                color: colorScheme.surfaceContainer,
-                alignment: Alignment.center,
-                child: Icon(
-                  Icons.location_on_rounded,
-                  size: 40,
-                  color: colorScheme.secondary,
-                ),
+              EventLocationPreview(
+                event: event,
+                onTap: event.hasMappableLocation
+                    ? () => _openMap(context)
+                    : null,
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
@@ -976,27 +966,6 @@ class _BottomCtaBar extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Ücretsiz',
-                style: textTheme.titleLarge?.copyWith(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              Text(
-                'Kayıt gerekli',
-                style: textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(width: 16),
           Expanded(
             child: Material(
               color: joined

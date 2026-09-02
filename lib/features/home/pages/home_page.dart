@@ -296,6 +296,7 @@ class HomeContentPage extends ConsumerWidget {
                     const AkdenizCepLogo(fontSize: 24),
                     AppTopBarAction.avatar(
                       initial: userInitial,
+                      imageUrl: userAsync.valueOrNull?.photoUrl,
                       onTap: () => context.push('/profile'),
                     ),
                   ],

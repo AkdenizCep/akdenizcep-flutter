@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
+import 'components/event_location_title_field.dart';
+
 typedef EventLocationSelection = ({
   String title,
   double latitude,
@@ -112,90 +114,80 @@ class _EventLocationPickerPageState extends State<EventLocationPickerPage> {
           Positioned(
             left: 12,
             right: 12,
-            bottom: 12,
-            child: SafeArea(
-              top: false,
-              child: PointerInterceptor(
-                child: Material(
-                  color: colorScheme.surface,
-                  elevation: 3,
-                  shadowColor: Colors.black.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(22),
-                  child: Padding(
-                    padding: const EdgeInsets.all(18),
-                    child: AnimatedSize(
-                      duration: const Duration(milliseconds: 180),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(
-                                position == null
-                                    ? Icons.touch_app_rounded
-                                    : Icons.location_on_rounded,
-                                color: position == null
-                                    ? colorScheme.primary
-                                    : colorScheme.secondary,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      position == null
-                                          ? 'Haritada bir noktaya dokun'
-                                          : 'Konum seçildi',
-                                      style: textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      position == null
-                                          ? 'Etkinliğin yapılacağı yeri işaretle.'
-                                          : 'Şimdi katılımcıların göreceği başlığı gir.',
-                                      style: textTheme.bodySmall,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (position != null) ...[
-                            const SizedBox(height: 16),
-                            TextField(
-                              controller: _titleController,
-                              autofocus: true,
-                              textCapitalization: TextCapitalization.words,
-                              textInputAction: TextInputAction.done,
-                              onChanged: (_) => setState(() {}),
-                              onSubmitted: (_) => _complete(),
-                              decoration: const InputDecoration(
-                                labelText: 'Konum başlığı',
-                                hintText: 'Örn. Mühendislik Fakültesi B Blok',
-                                prefixIcon: Icon(
-                                  Icons.edit_location_alt_rounded,
-                                ),
-                              ),
+            bottom: 12 +
+                (MediaQuery.viewInsetsOf(context).bottom > 0
+                    ? 0.0
+                    : MediaQuery.viewPaddingOf(context).bottom),
+            child: PointerInterceptor(
+              child: Material(
+                color: colorScheme.surface,
+                elevation: 3,
+                shadowColor: Colors.black.withValues(alpha: 0.18),
+                borderRadius: BorderRadius.circular(22),
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: AnimatedSize(
+                    duration: const Duration(milliseconds: 180),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              position == null
+                                  ? Icons.touch_app_rounded
+                                  : Icons.location_on_rounded,
+                              color: position == null
+                                  ? colorScheme.primary
+                                  : colorScheme.secondary,
                             ),
-                            const SizedBox(height: 12),
-                            SizedBox(
-                              width: double.infinity,
-                              child: FilledButton.icon(
-                                onPressed: _titleController.text.trim().isEmpty
-                                    ? null
-                                    : _complete,
-                                icon: const Icon(Icons.check_rounded),
-                                label: const Text('Konumu kullan'),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    position == null
+                                        ? 'Haritada bir noktaya dokun'
+                                        : 'Konum seçildi',
+                                    style: textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    position == null
+                                        ? 'Etkinliğin yapılacağı yeri işaretle.'
+                                        : 'Şimdi katılımcıların göreceği başlığı gir.',
+                                    style: textTheme.bodySmall,
+                                  ),
+                                ],
                               ),
                             ),
                           ],
+                        ),
+                        if (position != null) ...[
+                          const SizedBox(height: 16),
+                          EventLocationTitleField(
+                            controller: _titleController,
+                            onChanged: (_) => setState(() {}),
+                            onSubmitted: (_) => _complete(),
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: FilledButton.icon(
+                              onPressed: _titleController.text.trim().isEmpty
+                                  ? null
+                                  : _complete,
+                              icon: const Icon(Icons.check_rounded),
+                              label: const Text('Konumu kullan'),
+                            ),
+                          ),
                         ],
-                      ),
+                      ],
                     ),
                   ),
                 ),

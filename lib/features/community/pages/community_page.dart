@@ -231,7 +231,7 @@ class _ClubCard extends StatelessWidget {
                       ? CachedNetworkImage(
                           imageUrl: club.logoUrl,
                           fit: BoxFit.cover,
-                          errorWidget: (_, __, ___) => _ClubInitial(club: club),
+                          errorWidget: (_, _, _) => _ClubInitial(club: club),
                         )
                       : _ClubInitial(club: club),
                 ),

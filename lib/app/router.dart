@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -29,6 +31,7 @@ import '../features/lost_found/pages/lost_found_page.dart';
 import '../features/map/pages/map_page.dart';
 import '../features/profile/pages/my_qr_page.dart';
 import '../features/profile/pages/profile_page.dart';
+import '../features/profile/pages/profile_photo_editor_page.dart';
 import '../features/ring/pages/ring_page.dart';
 import '../features/ring/pages/ring_stops_page.dart';
 import '../features/student_events/pages/create_event_page.dart';
@@ -37,6 +40,7 @@ import '../features/student_events/pages/student_event_detail_page.dart';
 import '../features/student_events/pages/student_events_page.dart';
 import '../features/web_portal/pages/web_portal_page.dart';
 import '../shared/components/loading_overlay.dart';
+import '../shared/components/error_view.dart';
 import '../shared/constants/web_portals.dart';
 
 // Shell branch navigator keys — birden fazla branch aynı yolu paylaşmasın
@@ -164,6 +168,25 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/profile',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ProfilePage(),
+        routes: [
+          GoRoute(
+            path: 'photo-editor',
+            parentNavigatorKey: _rootNavigatorKey,
+            builder: (context, state) {
+              final imageBytes = state.extra;
+              if (imageBytes is! Uint8List) {
+                return const Scaffold(
+                  body: SafeArea(
+                    child: ErrorView(
+                      message: 'Düzenlenecek fotoğraf bulunamadı.',
+                    ),
+                  ),
+                );
+              }
+              return ProfilePhotoEditorPage(imageBytes: imageBytes);
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: '/obs',
@@ -251,10 +274,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: 'create',
+                    parentNavigatorKey: _rootNavigatorKey,
                     builder: (context, state) => const CreateEventPage(),
                     routes: [
                       GoRoute(
                         path: 'location',
+                        parentNavigatorKey: _rootNavigatorKey,
                         builder: (context, state) =>
                             const EventLocationPickerPage(),
                       ),

@@ -88,7 +88,16 @@ service cloud.firestore {
 
     match /users/{uid} {
       allow read: if isAkdenizStudent();
-      allow create, update: if isOwner(uid);
+      allow create: if isOwner(uid);
+      // Profil fotoğrafı Cloudinary yüklemesinden sonra kullanıcının kendi
+      // belgesinde photoUrl alanını güncellemesi için izin verilir.
+      allow update: if isOwner(uid) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'followedClubs',
+          'ratedMealIds',
+          'savedEventIds',
+          'photoUrl'
+        ]);
       allow delete: if false;
     }
 

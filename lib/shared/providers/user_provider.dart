@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/auth/models/app_user.dart';
+import '../models/user_profile_summary.dart';
+import '../services/user_service.dart';
 
 final firebaseAuthProvider = Provider((_) => FirebaseAuth.instance);
 
@@ -33,3 +35,23 @@ final currentUserProvider = StreamProvider<AppUser?>((ref) {
     error: (e, st) => Stream.value(null),
   );
 });
+
+final userServiceProvider = Provider((_) => UserService());
+
+final userProfileProvider =
+    FutureProvider.family<UserProfileSummary?, String>((ref, uid) async {
+  if (uid.isEmpty) return null;
+
+  final currentUser = ref.watch(currentUserProvider).valueOrNull ??
+      await ref.watch(currentUserProvider.future);
+  if (currentUser != null && currentUser.id == uid) {
+    return UserProfileSummary(
+      uid: currentUser.id,
+      name: currentUser.name,
+      photoUrl: currentUser.photoUrl,
+    );
+  }
+
+  return ref.watch(userServiceProvider).getUserProfile(uid);
+});
+

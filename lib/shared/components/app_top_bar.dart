@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'akdeniz_cep_logo.dart';
+import 'user_avatar.dart';
 
 /// Sekme sayfalarında paylaşılan üst bar iskeleti: solda logo + sayfa adı
 /// tek bir kolonda üst üste, sağda o kolonun yüksekliğiyle hizalanmış
@@ -35,12 +36,7 @@ class AppTopBar extends StatelessWidget {
     this.actions = const [],
     this.bottom,
     this.onGradient = false,
-    this.padding = const EdgeInsets.fromLTRB(
-      kTopBarHPad,
-      4,
-      kTopBarHPad,
-      6,
-    ),
+    this.padding = const EdgeInsets.fromLTRB(kTopBarHPad, 4, kTopBarHPad, 6),
   });
 
   @override
@@ -124,7 +120,11 @@ class AppTopBarAction extends StatelessWidget {
                 child: SizedBox(
                   width: kTopBarActionSize,
                   height: kTopBarActionSize,
-                  child: Icon(icon, size: 18, color: colorScheme.onSurfaceVariant),
+                  child: Icon(
+                    icon,
+                    size: 18,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
             ),
@@ -194,27 +194,25 @@ class AppTopBarAction extends StatelessWidget {
     );
   }
 
-  /// Kullanıcı baş harfi rozeti — profile gider (Home, Ring).
+  /// Kullanıcı avatarı — fotoğraf yüklenemezse baş harfe döner.
   factory AppTopBarAction.avatar({
     required String initial,
+    String? imageUrl,
     required VoidCallback onTap,
   }) {
     return AppTopBarAction._(
       Builder(
         builder: (context) {
-          final colorScheme = Theme.of(context).colorScheme;
           return GestureDetector(
             onTap: onTap,
-            child: CircleAvatar(
-              radius: kTopBarActionSize / 2,
-              backgroundColor: colorScheme.primaryContainer,
-              child: Text(
-                initial,
-                style: TextStyle(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 14,
-                ),
+            child: UserAvatar(
+              name: initial,
+              imageUrl: imageUrl ?? '',
+              diameter: kTopBarActionSize,
+              textStyle: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.w800,
+                fontSize: 14,
               ),
             ),
           );

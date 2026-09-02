@@ -3,6 +3,7 @@ class AppUser {
   final String name;
   final String email;
   final String studentId;
+  final String photoUrl;
   final List<String> followedClubs;
   final List<String> ratedMealIds;
   final List<String> savedEventIds;
@@ -13,6 +14,7 @@ class AppUser {
     required this.name,
     required this.email,
     required this.studentId,
+    this.photoUrl = '',
     required this.followedClubs,
     this.ratedMealIds = const [],
     this.savedEventIds = const [],
@@ -24,6 +26,7 @@ class AppUser {
     name: json['name'] as String? ?? '',
     email: json['email'] as String? ?? '',
     studentId: json['studentId'] as String? ?? '',
+    photoUrl: json['photoUrl'] as String? ?? '',
     followedClubs: List<String>.from(json['followedClubs'] ?? []),
     ratedMealIds: List<String>.from(json['ratedMealIds'] ?? []),
     savedEventIds: List<String>.from(json['savedEventIds'] ?? []),
@@ -37,6 +40,7 @@ class AppUser {
     'name': name,
     'email': email,
     'studentId': studentId,
+    'photoUrl': photoUrl,
     'followedClubs': followedClubs,
     'ratedMealIds': ratedMealIds,
     'savedEventIds': savedEventIds,
@@ -48,6 +52,7 @@ class AppUser {
     String? name,
     String? email,
     String? studentId,
+    String? photoUrl,
     List<String>? followedClubs,
     List<String>? ratedMealIds,
     List<String>? savedEventIds,
@@ -57,6 +62,7 @@ class AppUser {
     name: name ?? this.name,
     email: email ?? this.email,
     studentId: studentId ?? this.studentId,
+    photoUrl: photoUrl ?? this.photoUrl,
     followedClubs: followedClubs ?? this.followedClubs,
     ratedMealIds: ratedMealIds ?? this.ratedMealIds,
     savedEventIds: savedEventIds ?? this.savedEventIds,

@@ -96,6 +96,7 @@ class _RingContentState extends ConsumerState<_RingContent> {
             actions: [
               AppTopBarAction.avatar(
                 initial: userInitial,
+                imageUrl: userAsync.valueOrNull?.photoUrl,
                 onTap: () => context.push('/profile'),
               ),
             ],

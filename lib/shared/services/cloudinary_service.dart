@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
@@ -31,6 +32,28 @@ class CloudinaryService {
       ..fields['folder'] = folder
       ..files.add(await http.MultipartFile.fromPath('file', file.path));
 
+    return _sendRequest(request);
+  }
+
+  /// [bytes] gorselin byte dizisi (or. JPEG).
+  /// [folder] Cloudinary'de gorselin konacagi klasor (or. `profile-photos/uid`).
+  /// Basarili olursa `secure_url` doner.
+  Future<String> uploadBytes({
+    required Uint8List bytes,
+    required String folder,
+    String filename = 'upload.jpg',
+  }) async {
+    final request = http.MultipartRequest('POST', _uploadUri)
+      ..fields['upload_preset'] = CloudinaryConfig.uploadPreset
+      ..fields['folder'] = folder
+      ..files.add(
+        http.MultipartFile.fromBytes('file', bytes, filename: filename),
+      );
+
+    return _sendRequest(request);
+  }
+
+  Future<String> _sendRequest(http.MultipartRequest request) async {
     http.Response response;
     try {
       response = await http.Response.fromStream(await _client.send(request));
@@ -46,7 +69,9 @@ class CloudinaryService {
       // Cloudinary hatayi {"error": {"message": "..."}} seklinde dondurur.
       final error = body['error'];
       final message = error is Map ? error['message'] as String? : null;
-      throw Exception('Gorsel yuklenemedi: ${message ?? 'HTTP ${response.statusCode}'}');
+      throw Exception(
+        'Gorsel yuklenemedi: ${message ?? 'HTTP ${response.statusCode}'}',
+      );
     }
 
     final url = body['secure_url'] as String?;

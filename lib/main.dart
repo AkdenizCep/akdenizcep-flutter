@@ -11,6 +11,7 @@ import 'app/router.dart';
 import 'app/theme.dart';
 import 'firebase_options.dart';
 import 'shared/config/cloudinary_config.dart';
+import 'shared/providers/theme_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,6 +51,7 @@ class AkdenizCepApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       title: 'Akdeniz Cep',
@@ -64,6 +66,7 @@ class AkdenizCepApp extends ConsumerWidget {
       ],
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
+      themeMode: themeMode,
       routerConfig: router,
     );
   }
