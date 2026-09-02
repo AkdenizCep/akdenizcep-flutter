@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../models/home_event.dart';
+import '../../../../shared/models/feed_event.dart';
 
 class EventCard extends StatelessWidget {
-  final HomeEvent event;
+  final FeedEvent event;
   final VoidCallback? onTap;
 
   const EventCard({super.key, required this.event, this.onTap});
@@ -71,10 +71,17 @@ class EventCard extends StatelessWidget {
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        '$dateStr • $timeStr',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      Expanded(
+                        child: Text(
+                          '$dateStr • $timeStr',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
                         ),
                       ),
                     ],

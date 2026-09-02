@@ -16,6 +16,10 @@ final eventFeedProvider = StreamProvider<List<FeedEvent>>((ref) {
   return ref.watch(eventFeedServiceProvider).getFeed();
 });
 
+final eventFeedClubsProvider = StreamProvider<List<ClubOption>>((ref) {
+  return ref.watch(eventFeedServiceProvider).getClubs();
+});
+
 final eventDetailProvider = StreamProvider.family<FeedEvent, EventRef>((
   ref,
   eventRef,

@@ -55,6 +55,17 @@ class EventFeedService {
     });
   }
 
+  Stream<List<ClubOption>> getClubs() {
+    return _db
+        .collection('clubs')
+        .snapshots()
+        .map(
+          (snap) => snap.docs
+              .map((doc) => ClubOption.fromJson(doc.data()..['id'] = doc.id))
+              .toList(),
+        );
+  }
+
   Stream<FeedEvent> getEvent(EventRef ref) {
     if (ref.source == EventSource.student) {
       return _docRef(ref).snapshots().map(_studentEventFrom);

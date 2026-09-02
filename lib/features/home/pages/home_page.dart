@@ -273,7 +273,7 @@ class HomeContentPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userAsync = ref.watch(currentUserProvider);
     final announcementsAsync = ref.watch(announcementsProvider);
-    final eventsAsync = ref.watch(upcomingEventsProvider);
+    final eventsAsync = ref.watch(recommendedHomeEventsProvider);
     final userInitial = userAsync.valueOrNull?.name.isNotEmpty == true
         ? userAsync.valueOrNull!.name[0].toUpperCase()
         : '?';
@@ -486,7 +486,7 @@ class HomeContentPage extends ConsumerWidget {
                         vertical: 12,
                       ),
                       child: Text(
-                        'Yaklaşan etkinlik yok.',
+                        'Takiplerine uygun yaklaşan etkinlik yok.',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -494,7 +494,7 @@ class HomeContentPage extends ConsumerWidget {
                     );
                   }
                   return SizedBox(
-                    height: 220,
+                    height: 240,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -503,14 +503,18 @@ class HomeContentPage extends ConsumerWidget {
                         final event = events[index];
                         return EventCard(
                           event: event,
-                          onTap: () => context.push('/event/${event.id}'),
+                          onTap: event.clubId == null
+                              ? null
+                              : () => context.push(
+                                  '/club/${event.clubId}/event/${event.id}',
+                                ),
                         );
                       },
                     ),
                   );
                 },
                 loading: () => const SizedBox(
-                  height: 220,
+                  height: 240,
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: LoadingOverlay(),
