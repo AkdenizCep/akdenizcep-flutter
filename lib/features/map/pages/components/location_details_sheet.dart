@@ -24,7 +24,7 @@ class LocationDetailsSheet extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final categoryColor = location.category.color(colorScheme);
 
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final safeBottom = MediaQuery.viewPaddingOf(context).bottom;
 
     return PointerInterceptor(
       child: Align(
@@ -40,7 +40,7 @@ class LocationDetailsSheet extends StatelessWidget {
             );
           },
           child: Container(
-            margin: EdgeInsets.only(bottom: bottomPadding),
+            key: const ValueKey('location-details-sheet-surface'),
             width: double.infinity,
             constraints: BoxConstraints(
               maxHeight: MediaQuery.of(context).size.height * 0.50,
@@ -62,7 +62,7 @@ class LocationDetailsSheet extends StatelessWidget {
               ],
             ),
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(22, 12, 22, 22),
+              padding: EdgeInsets.fromLTRB(22, 12, 22, 22 + safeBottom),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
