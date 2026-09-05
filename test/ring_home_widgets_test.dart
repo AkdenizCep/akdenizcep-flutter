@@ -136,6 +136,33 @@ void main() {
     expect(find.text('SON SEFER'), findsOneWidget);
   });
 
+  testWidgets('tarife okunamazsa sonsuz loading yerine yeniden deneme sunar', (
+    tester,
+  ) async {
+    var attempts = 0;
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          ringSchedulesProvider.overrideWith((ref) {
+            attempts++;
+            return Stream<List<RingSchedule>>.error(
+              Exception('Ring tarifesine ulaşılamadı.'),
+            );
+          }),
+        ],
+        child: const MaterialApp(home: RingPage()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Ring tarifesine ulaşılamadı.'), findsOneWidget);
+    expect(find.text('Tekrar Dene'), findsOneWidget);
+
+    await tester.tap(find.text('Tekrar Dene'));
+    await tester.pumpAndSettle();
+    expect(attempts, 2);
+  });
+
   testWidgets('hero karttaki hat ve yon butonlari dokunusa cevap verir', (
     tester,
   ) async {

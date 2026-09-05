@@ -39,7 +39,10 @@ class RingPage extends ConsumerWidget {
             return const _RingContent();
           },
           loading: () => const LoadingOverlay(),
-          error: (e, _) => ErrorView(message: errorMessage(e)),
+          error: (e, _) => ErrorView(
+            message: errorMessage(e),
+            onRetry: () => ref.invalidate(ringSchedulesProvider),
+          ),
         ),
       ),
     );
