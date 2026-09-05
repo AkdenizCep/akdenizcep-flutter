@@ -10,6 +10,7 @@ import '../models/ring_stop.dart';
 import '../models/route_shape.dart';
 import '../providers/ring_provider.dart';
 import 'components/open_stop_detail.dart';
+import 'components/route_map_filters.dart';
 import 'components/stop_map_card.dart';
 import 'components/stops_map.dart';
 
@@ -20,7 +21,9 @@ import 'components/stops_map.dart';
 ///
 /// Yüzen alt nav bar görünür kalır; kart şeridi onun üstünde durur.
 class RingStopsPage extends ConsumerStatefulWidget {
-  const RingStopsPage({super.key});
+  final String? initialStopId;
+
+  const RingStopsPage({super.key, this.initialStopId});
 
   @override
   ConsumerState<RingStopsPage> createState() => _RingStopsPageState();
@@ -37,6 +40,29 @@ class _RingStopsPageState extends ConsumerState<RingStopsPage> {
 
   /// [StopsMap]'e "kamerayı kullanıcıya döndür" demenin yolu.
   int _recenterTick = 0;
+
+  /// Kamera hareketi secili durak state'inden ayridir. Yalnizca kullanicinin
+  /// kart seridindeki acik secimi bu komutu uretir.
+  String? _focusStopId;
+  int _focusStopTick = 0;
+
+  bool _autoSelectWhenEmpty = true;
+  bool _suppressStripCameraFocus = false;
+
+  bool _initialStopScheduled = false;
+  bool _initialStopApplied = false;
+  String? _syncedVisibleStopsKey;
+
+  @override
+  void didUpdateWidget(covariant RingStopsPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialStopId == widget.initialStopId) return;
+
+    _initialStopScheduled = false;
+    _initialStopApplied = false;
+    _syncedVisibleStopsKey = null;
+    _autoSelectWhenEmpty = true;
+  }
 
   @override
   void didChangeDependencies() {
@@ -72,12 +98,38 @@ class _RingStopsPageState extends ConsumerState<RingStopsPage> {
 
     final selectedId = ref.watch(selectedStopProvider);
 
+    if (!_initialStopScheduled && widget.initialStopId != null) {
+      final matches = allStops.where(
+        (nearby) => nearby.stop.id == widget.initialStopId,
+      );
+      if (matches.isNotEmpty) {
+        _initialStopScheduled = true;
+        _selectInitialStopAfterFrame(matches.first);
+      } else if (stopsAsync.hasValue) {
+        // Elle yazilmis/gecersiz bir deep link sayfayi secimsiz birakmasin.
+        _initialStopScheduled = true;
+        _discardMissingInitialStopAfterFrame();
+      }
+    }
+
     // Şerit ilk dolduğunda — ve arama seçili durağı listeden düşürdüğünde —
     // ilk kart öne çıkar. Kart ile pin hiçbir zaman ayrı duraklarda kalmaz.
     if (stops.isNotEmpty &&
-        (selectedId == null ||
-            !stops.any((n) => n.stop.id == selectedId))) {
+        (widget.initialStopId == null || _initialStopApplied) &&
+        ((selectedId == null && _autoSelectWhenEmpty) ||
+            (selectedId != null &&
+                !stops.any((n) => n.stop.id == selectedId)))) {
+      _autoSelectWhenEmpty = false;
       _selectFirstAfterFrame(stops.first.stop.id);
+    }
+
+    if (selectedId != null &&
+        stops.any((nearby) => nearby.stop.id == selectedId)) {
+      final visibleStopsKey = stops.map((nearby) => nearby.stop.id).join('|');
+      if (_syncedVisibleStopsKey != visibleStopsKey) {
+        _syncedVisibleStopsKey = visibleStopsKey;
+        _syncStripAfterFrame(selectedId);
+      }
     }
 
     return Scaffold(
@@ -90,6 +142,9 @@ class _RingStopsPageState extends ConsumerState<RingStopsPage> {
               onRouteTap: _showRouteInfo,
               mapType: _mapType,
               recenterTick: _recenterTick,
+              focusStopId: _focusStopId,
+              focusTick: _focusStopTick,
+              initialFocusStopId: widget.initialStopId,
               onStopTap: _selectFromMap,
             ),
           ),
@@ -122,8 +177,10 @@ class _RingStopsPageState extends ConsumerState<RingStopsPage> {
             child: Column(
               children: [
                 _SquareMapButton(
-                  icon: Icons.my_location_rounded,
-                  tooltip: 'Konumuma dön',
+                  icon: hasLocation
+                      ? Icons.my_location_rounded
+                      : Icons.location_searching_rounded,
+                  tooltip: hasLocation ? 'Konumuma dön' : 'Konumunu aç',
                   isPrimary: true,
                   onTap: _recenter,
                 ),
@@ -141,23 +198,11 @@ class _RingStopsPageState extends ConsumerState<RingStopsPage> {
             ),
           ),
 
-          // Sol üst: hat seçici, altında durum çipi.
+          // Sol ust: tek, kompakt hat + yon kontrolu.
           Positioned(
             top: MediaQuery.of(context).padding.top + 68,
             left: 20,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const _RouteLineToggle(),
-                const SizedBox(height: 8),
-                _StatusChip(
-                  label: hasLocation
-                      ? '${stops.length} durak yakında'
-                      : 'Konumunu aç',
-                  onTap: hasLocation ? null : () => _requestLocation(context),
-                ),
-              ],
-            ),
+            child: RouteMapFilters(onFilterChanged: _onRouteFilterChanged),
           ),
 
           // Yükleme / hata / boş durumlar haritanın üstünde bir kart olarak.
@@ -204,9 +249,7 @@ class _RingStopsPageState extends ConsumerState<RingStopsPage> {
                 stops: stops,
                 selectedId: selectedId,
                 controller: _pageController!,
-                onPageChanged: (index) =>
-                    ref.read(selectedStopProvider.notifier).state =
-                        stops[index].stop.id,
+                onPageChanged: _selectFromStrip,
                 onShowLines: (stopId) => openStopDetail(context, ref, stopId),
                 onWalkingDirections: _openWalkingDirections,
               ),
@@ -223,7 +266,97 @@ class _RingStopsPageState extends ConsumerState<RingStopsPage> {
       if (!mounted) return;
       if (ref.read(selectedStopProvider) == stopId) return;
       ref.read(selectedStopProvider.notifier).state = stopId;
-      if (_pageController?.hasClients ?? false) _pageController!.jumpToPage(0);
+      _jumpStripWithoutCamera(0);
+    });
+  }
+
+  void _selectInitialStopAfterFrame(NearbyStop nearby) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      _initialStopApplied = true;
+      _searchController.clear();
+      ref.read(stopQueryProvider.notifier).state = '';
+      if (nearby.stop.lineNames.isNotEmpty) {
+        final activeLine = ref.read(activeRouteLineProvider);
+        final activeDirection = ref.read(activeRouteDirectionProvider);
+        final line = activeLine != null && nearby.stop.servesLine(activeLine)
+            ? activeLine
+            : nearby.stop.lineNames.first;
+        ref.read(selectedRouteLineProvider.notifier).state = line;
+
+        final services = nearby.stop.servedBy.where(
+          (service) => service.shortName == line,
+        );
+        if (services.isNotEmpty) {
+          ref.read(selectedRouteDirectionProvider.notifier).state =
+              activeDirection != null &&
+                  nearby.stop.servesRoute(line, activeDirection)
+              ? activeDirection
+              : services.first.directionId;
+        }
+      }
+      ref.read(selectedStopProvider.notifier).state = nearby.stop.id;
+    });
+  }
+
+  void _discardMissingInitialStopAfterFrame() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() => _initialStopApplied = true);
+    });
+  }
+
+  void _syncStripAfterFrame(String stopId) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !(_pageController?.hasClients ?? false)) return;
+
+      final index = ref
+          .read(visibleStopsProvider)
+          .indexWhere((nearby) => nearby.stop.id == stopId);
+      if (index >= 0) _jumpStripWithoutCamera(index);
+    });
+  }
+
+  /// Hat/yön değişimi seçili durağı ve kart şeridini sıfırlar; haritanın
+  /// kamera konumuna dokunmaz. Kullanıcının kurduğu zoom ve kadraj korunur.
+  void _onRouteFilterChanged() {
+    ref.read(selectedStopProvider.notifier).state = null;
+    _autoSelectWhenEmpty = false;
+    _syncedVisibleStopsKey = null;
+    _suppressStripCameraFocus = true;
+
+    // Filtre state'i callback'ten hemen sonra degisir. Yeni liste cizildigi
+    // karede seridi basa al; PageView'in programatik bildirimi kamerayi
+    // hareket ettirmesin.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _jumpStripWithoutCamera(0);
+    });
+  }
+
+  void _selectFromStrip(int index) {
+    final stops = ref.read(visibleStopsProvider);
+    if (index < 0 || index >= stops.length) return;
+    if (_suppressStripCameraFocus) return;
+
+    final stopId = stops[index].stop.id;
+    ref.read(selectedStopProvider.notifier).state = stopId;
+
+    setState(() {
+      _focusStopId = stopId;
+      _focusStopTick++;
+    });
+  }
+
+  void _jumpStripWithoutCamera(int index) {
+    final controller = _pageController;
+    _suppressStripCameraFocus = true;
+    if (controller != null && controller.hasClients) {
+      controller.jumpToPage(index);
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _suppressStripCameraFocus = false;
     });
   }
 
@@ -236,11 +369,17 @@ class _RingStopsPageState extends ConsumerState<RingStopsPage> {
         .indexWhere((n) => n.stop.id == stopId);
     if (index < 0) return;
 
-    _pageController?.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeOut,
-    );
+    final controller = _pageController;
+    if (controller == null || !controller.hasClients) return;
+
+    _suppressStripCameraFocus = true;
+    controller
+        .animateToPage(
+          index,
+          duration: const Duration(milliseconds: 280),
+          curve: Curves.easeOut,
+        )
+        .whenComplete(() => _suppressStripCameraFocus = false);
   }
 
   /// Bir güzergâh çizgisine dokunulduğunda hangi hat olduğunu gösterir.
@@ -360,89 +499,6 @@ class _StopCardStrip extends StatelessWidget {
   }
 }
 
-/// Haritada hangi hattın çizileceğini seçen segment kontrolü.
-///
-/// Seçenekler `assets/routes/au_hatlar.json` içeriğinden türetilir — hat
-/// listesi koda gömülmez. Veri yüklenmediyse hiç çizilmez.
-class _RouteLineToggle extends ConsumerWidget {
-  const _RouteLineToggle();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    final lines = ref.watch(routeLineNamesProvider);
-    if (lines.length < 2) return const SizedBox.shrink();
-
-    final selected = ref.watch(selectedRouteLineProvider);
-    final active = selected != null && lines.contains(selected)
-        ? selected
-        : lines.first;
-
-    return Material(
-      color: colorScheme.surface,
-      borderRadius: BorderRadius.circular(16),
-      elevation: 3,
-      shadowColor: Colors.black.withValues(alpha: 0.3),
-      child: Padding(
-        padding: const EdgeInsets.all(3),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final line in lines)
-              _ToggleSegment(
-                label: line,
-                isActive: line == active,
-                onTap: () =>
-                    ref.read(selectedRouteLineProvider.notifier).state = line,
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ToggleSegment extends StatelessWidget {
-  final String label;
-  final bool isActive;
-  final VoidCallback onTap;
-
-  const _ToggleSegment({
-    required this.label,
-    required this.isActive,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final radius = BorderRadius.circular(13);
-
-    return Material(
-      color: isActive ? colorScheme.primary : Colors.transparent,
-      borderRadius: radius,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: radius,
-        child: Container(
-          height: 32,
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: isActive ? colorScheme.onPrimary : colorScheme.onSurface,
-              fontSize: 12.5,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 /// Üstte beyaza, altta koyuya çalan ince perde — beyaz butonlar ve beyaz
 /// kartlar açık renkli harita karolarının üzerinde de seçilebilsin diye.
 class _MapScrim extends StatelessWidget {
@@ -549,56 +605,6 @@ class _SquareMapButton extends StatelessWidget {
   }
 }
 
-/// "N durak yakında" / "Konumunu aç". Konum izni akışının giriş noktası —
-/// eski [_EnableLocationBanner] bandının yerini alır.
-class _StatusChip extends StatelessWidget {
-  final String label;
-  final VoidCallback? onTap;
-
-  const _StatusChip({required this.label, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final radius = BorderRadius.circular(16);
-
-    return Material(
-      color: colorScheme.onSurface.withValues(alpha: 0.88),
-      borderRadius: radius,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: radius,
-        child: Container(
-          height: 32,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          alignment: Alignment.center,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                onTap == null
-                    ? Icons.place_rounded
-                    : Icons.my_location_rounded,
-                size: 15,
-                color: colorScheme.surface,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  color: colorScheme.surface,
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _MapSearchField extends ConsumerWidget {
   final TextEditingController controller;
 
@@ -663,7 +669,11 @@ class _MapMessageCard extends StatelessWidget {
   final String title;
   final String? subtitle;
 
-  const _MapMessageCard({required this.icon, required this.title, this.subtitle});
+  const _MapMessageCard({
+    required this.icon,
+    required this.title,
+    this.subtitle,
+  });
 
   @override
   Widget build(BuildContext context) {

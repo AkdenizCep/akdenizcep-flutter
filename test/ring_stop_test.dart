@@ -47,9 +47,7 @@ void main() {
     });
 
     test('yalnizca AÜ102 ve AÜ103 var', () {
-      final lines = {
-        for (final stop in bundle.stops) ...stop.lineNames,
-      };
+      final lines = {for (final stop in bundle.stops) ...stop.lineNames};
 
       expect(lines, {'AÜ102', 'AÜ103'});
     });
@@ -113,6 +111,10 @@ void main() {
 
       expect(stop.servesLine('AÜ103'), isTrue);
       expect(stop.servesLine('AÜ102'), isFalse);
+      expect(stop.servesRoute('AÜ103', 0), isTrue);
+      expect(stop.servesRoute('AÜ103', 1), isFalse);
+      expect(stop.routeSequenceFor('AÜ103', 0), 10);
+      expect(stop.routeSequenceFor('AÜ103', 1), isNull);
     });
 
     test('bir hattin duraklari sirali dizilebilir', () {
@@ -129,6 +131,9 @@ void main() {
     expect(round.stops, hasLength(bundle.stops.length));
     expect(round.stops.first.name, bundle.stops.first.name);
     expect(round.stops.first.lng, bundle.stops.first.lng);
-    expect(round.stops.first.servedBy.length, bundle.stops.first.servedBy.length);
+    expect(
+      round.stops.first.servedBy.length,
+      bundle.stops.first.servedBy.length,
+    );
   });
 }

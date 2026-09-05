@@ -258,7 +258,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: 'stops',
-                    builder: (context, state) => const RingStopsPage(),
+                    builder: (context, state) => RingStopsPage(
+                      initialStopId: state.uri.queryParameters['stop'],
+                    ),
                   ),
                 ],
               ),

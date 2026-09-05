@@ -15,8 +15,9 @@ import 'ring_format.dart';
 /// olur" gibi ifadeler kullanılmamalıdır.
 class StopDetailSheet extends ConsumerWidget {
   final String stopId;
+  final VoidCallback? onShowOnMap;
 
-  const StopDetailSheet({super.key, required this.stopId});
+  const StopDetailSheet({super.key, required this.stopId, this.onShowOnMap});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -130,6 +131,18 @@ class StopDetailSheet extends ConsumerWidget {
                 ],
               ),
             ),
+            if (onShowOnMap != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: onShowOnMap,
+                    icon: const Icon(Icons.map_outlined, size: 18),
+                    label: const Text('Haritada Göster'),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -207,7 +220,11 @@ class _FinishedForToday extends ConsumerWidget {
           )
         else
           for (final departure in tomorrow)
-            _DepartureRow(departure: departure, isNext: false, isTomorrow: true),
+            _DepartureRow(
+              departure: departure,
+              isNext: false,
+              isTomorrow: true,
+            ),
       ],
     );
   }

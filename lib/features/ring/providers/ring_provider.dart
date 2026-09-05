@@ -213,27 +213,28 @@ final stopDeparturesProvider = Provider.family<List<StopDeparture>, String>((
 
   return StopDepartures.merge(
     schedules: schedules,
-    routes: ref.watch(routeShapesProvider).valueOrNull ?? RouteShapeBundle.empty,
+    routes:
+        ref.watch(routeShapesProvider).valueOrNull ?? RouteShapeBundle.empty,
     showWeekend: ref.watch(showWeekendProvider),
     now: ref.watch(nowProvider),
   );
 });
 
 /// Bugun sefer kalmadiginda gosterilecek "yarin ilk kalkis" satirlari.
-final stopTomorrowFirstsProvider =
-    Provider.family<List<StopDeparture>, String>((ref, stopId) {
-      final schedules = _schedulesThrough(ref, stopId);
-      if (schedules.isEmpty) return const [];
+final stopTomorrowFirstsProvider = Provider.family<List<StopDeparture>, String>(
+  (ref, stopId) {
+    final schedules = _schedulesThrough(ref, stopId);
+    if (schedules.isEmpty) return const [];
 
-      return StopDepartures.tomorrowFirsts(
-        schedules: schedules,
-        routes:
-            ref.watch(routeShapesProvider).valueOrNull ??
-            RouteShapeBundle.empty,
-        showWeekend: ref.watch(showWeekendProvider),
-        now: ref.watch(nowProvider),
-      );
-    });
+    return StopDepartures.tomorrowFirsts(
+      schedules: schedules,
+      routes:
+          ref.watch(routeShapesProvider).valueOrNull ?? RouteShapeBundle.empty,
+      showWeekend: ref.watch(showWeekendProvider),
+      now: ref.watch(nowProvider),
+    );
+  },
+);
 
 List<RingSchedule> _schedulesThrough(Ref ref, String stopId) {
   final stop = ref.watch(ringStopMapProvider)[stopId];
@@ -326,6 +327,9 @@ final activeScheduleRouteShapeProvider = Provider.family<RouteShape?, bool>((
 /// Haritada cizilen hat. `null` = veri henuz gelmedi; ilk hat secilir.
 final selectedRouteLineProvider = StateProvider<String?>((_) => null);
 
+/// Haritada cizilen yon. `null` = secili hattin ilk yonu.
+final selectedRouteDirectionProvider = StateProvider<int?>((_) => null);
+
 /// Toggle'in secenekleri — veriden turetilir, kodda sabit hat listesi yok.
 final routeLineNamesProvider = Provider<List<String>>((ref) {
   final bundle = ref.watch(routeShapesProvider).valueOrNull;
@@ -342,8 +346,8 @@ final activeRouteLineProvider = Provider<String?>((ref) {
   return selected != null && names.contains(selected) ? selected : names.first;
 });
 
-/// Secili hattin iki yonu de.
-final visibleRouteShapesProvider = Provider<List<RouteShape>>((ref) {
+/// Secili hattin veride bulunan tum yonleri.
+final activeRouteLineShapesProvider = Provider<List<RouteShape>>((ref) {
   final bundle = ref.watch(routeShapesProvider).valueOrNull;
   final line = ref.watch(activeRouteLineProvider);
   if (bundle == null || line == null) return const [];
@@ -351,12 +355,33 @@ final visibleRouteShapesProvider = Provider<List<RouteShape>>((ref) {
   return bundle.forLine(line);
 });
 
+/// Cozulmus yon: secim yoksa secili hattin ilk yonu.
+final activeRouteDirectionProvider = Provider<int?>((ref) {
+  final shapes = ref.watch(activeRouteLineShapesProvider);
+  if (shapes.isEmpty) return null;
+
+  final selected = ref.watch(selectedRouteDirectionProvider);
+  return selected != null &&
+          shapes.any((shape) => shape.directionId == selected)
+      ? selected
+      : shapes.first.directionId;
+});
+
+/// Haritada yalnizca secili hat + yonun guzergahi cizilir.
+final visibleRouteShapesProvider = Provider<List<RouteShape>>((ref) {
+  final shapes = ref.watch(activeRouteLineShapesProvider);
+  final direction = ref.watch(activeRouteDirectionProvider);
+  if (direction == null) return const [];
+
+  return shapes.where((shape) => shape.directionId == direction).toList();
+});
+
 /// Secili hattin yon basina guzergahi — yon etiketleri buradan okunur.
 final activeRouteShapeProvider = Provider.family<RouteShape?, bool>((
   ref,
   isReturn,
 ) {
-  final shapes = ref.watch(visibleRouteShapesProvider);
+  final shapes = ref.watch(activeRouteLineShapesProvider);
   final wanted = directionIdFor(isReturn);
   final match = shapes.where((s) => s.directionId == wanted);
   return match.isEmpty ? null : match.first;
@@ -370,16 +395,29 @@ final selectedStopProvider = StateProvider<String?>((_) => null);
 /// Harita ekranindaki arama kutusu.
 final stopQueryProvider = StateProvider<String>((_) => '');
 
-/// Harita ekraninda gorunen duraklar: once secili hat, sonra arama sorgusu.
+/// Harita ekraninda gorunen duraklar: hat + yon, sonra arama sorgusu.
 ///
-/// Toggle cizgiyi, pinleri ve kart seridini birlikte cevirir — kullanici
-/// "su an AÜ102 hattina bakiyorum" der ve ekrandaki her sey o hatta aittir.
+/// Seciciler cizgiyi, pinleri ve kart seridini birlikte cevirir — ekrandaki
+/// her sey ayni hat ve yone aittir.
 final visibleStopsProvider = Provider<List<NearbyStop>>((ref) {
   var stops = ref.watch(nearbyStopsProvider);
 
   final line = ref.watch(activeRouteLineProvider);
-  if (line != null) {
-    stops = stops.where((n) => n.stop.servesLine(line)).toList();
+  final direction = ref.watch(activeRouteDirectionProvider);
+  if (line != null && direction != null) {
+    stops = stops
+        .where((nearby) => nearby.stop.servesRoute(line, direction))
+        .toList();
+
+    // Konum yokken kartlar secili guzergahin gercek durak sirasini izler.
+    // Konum varsa [nearbyStopsProvider]'in mesafe sirasi korunur.
+    if (stops.every((nearby) => nearby.distanceMeters == null)) {
+      stops.sort((a, b) {
+        final aSequence = a.stop.routeSequenceFor(line, direction) ?? 1 << 20;
+        final bSequence = b.stop.routeSequenceFor(line, direction) ?? 1 << 20;
+        return aSequence.compareTo(bSequence);
+      });
+    }
   }
 
   final query = normalizeForSearch(ref.watch(stopQueryProvider));
@@ -389,7 +427,6 @@ final visibleStopsProvider = Provider<List<NearbyStop>>((ref) {
       .where((n) => normalizeForSearch(n.stop.name).contains(query))
       .toList();
 });
-
 
 /// Bir duraktan gecen tarifeler.
 ///

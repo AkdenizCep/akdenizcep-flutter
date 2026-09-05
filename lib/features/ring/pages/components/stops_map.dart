@@ -6,6 +6,7 @@ import '../../../../shared/providers/location_provider.dart';
 import '../../models/ring_stop.dart';
 import '../../models/route_shape.dart';
 import '../../providers/ring_provider.dart';
+import 'route_map_animation_plan.dart';
 
 /// Duraklarin haritasi. Konum izni yoksa kampus merkezine odaklanir ve mavi
 /// nokta gosterilmez — sayfa yine calisir.
@@ -39,6 +40,15 @@ class StopsMap extends ConsumerStatefulWidget {
   /// da kamera geri gelmelidir.
   final int recenterTick;
 
+  /// Kart seridinde kullanicinin sectigi duraga kamerayi tasir. Kimlik ayni
+  /// kalsa bile [focusTick] artirilabildigi icin komut tekrar calisabilir.
+  final String? focusStopId;
+  final int focusTick;
+
+  /// Detay yapragindan gelindiginde ilk kamera hedefi kullanici konumu degil,
+  /// kullanicinin zaten sectigi durak olur.
+  final String? initialFocusStopId;
+
   const StopsMap({
     super.key,
     required this.stops,
@@ -47,13 +57,17 @@ class StopsMap extends ConsumerStatefulWidget {
     this.onRouteTap,
     this.mapType = MapType.normal,
     this.recenterTick = 0,
+    this.focusStopId,
+    this.focusTick = 0,
+    this.initialFocusStopId,
   });
 
   @override
   ConsumerState<StopsMap> createState() => _StopsMapState();
 }
 
-class _StopsMapState extends ConsumerState<StopsMap> {
+class _StopsMapState extends ConsumerState<StopsMap>
+    with SingleTickerProviderStateMixin {
   static const _campusCenter = LatLng(36.8969, 30.6364);
 
   /// Durak pini. Maps'in damla bicimli varsayilan pini yerine otobus
@@ -79,12 +93,63 @@ class _StopsMapState extends ConsumerState<StopsMap> {
   /// `null` kalir ve Maps'in varsayilan pini kullanilir — duraklar bir kare
   /// bile kaybolmaz.
   final _pins = ValueNotifier<_StopPins?>(null);
+
+  /// Native harita katmanina gonderilen animasyon kareleri 36 adimla
+  /// sinirlidir. Bu, cizgiyi akici tutarken her ekran yenilemesinde platform
+  /// kanalindan yeni bir polyline koleksiyonu gecilmesini onler.
+  final _routeProgress = ValueNotifier(1.0);
+  late final AnimationController _routeAnimationController;
+  RouteMapAnimationPlan? _routeAnimationPlan;
+  int _lastAnimationStep = -1;
+
   bool _pinsRequested = false;
+  bool _initialFocusApplied = false;
 
   @override
   void initState() {
     super.initState();
+    _routeAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 850),
+    )..addListener(_updateRouteAnimationFrame);
+    _refreshRouteAnimationPlan();
     WidgetsBinding.instance.addPostFrameCallback((_) => _mountWhenSettled());
+  }
+
+  void _updateRouteAnimationFrame() {
+    const frameCount = 36;
+    final eased = Curves.easeInOutCubic.transform(
+      _routeAnimationController.value,
+    );
+    final step = (eased * frameCount).round().clamp(0, frameCount);
+    if (step == _lastAnimationStep) return;
+
+    _lastAnimationStep = step;
+    _routeProgress.value = step / frameCount;
+  }
+
+  void _refreshRouteAnimationPlan() {
+    _routeAnimationPlan = widget.routes.isEmpty
+        ? null
+        : RouteMapAnimationPlan(
+            route: widget.routes.first,
+            stops: widget.stops,
+          );
+  }
+
+  void _startRouteAnimation() {
+    _routeAnimationController.stop();
+    _lastAnimationStep = -1;
+
+    // Sistem animasyonlari kapatildiysa bilgi geciktirilmeden tam rota
+    // gosterilir. Kamera her iki durumda da oldugu yerde kalir.
+    if (MediaQuery.maybeOf(context)?.disableAnimations ?? false) {
+      _routeProgress.value = 1;
+      return;
+    }
+
+    _routeProgress.value = 0;
+    _routeAnimationController.forward(from: 0);
   }
 
   /// Gecis animasyonu bitene kadar bekler. Route animasyonu yoksa (sekme
@@ -138,7 +203,35 @@ class _StopsMapState extends ConsumerState<StopsMap> {
   @override
   void didUpdateWidget(StopsMap oldWidget) {
     super.didUpdateWidget(oldWidget);
+    final routeChanged =
+        _routeSignature(oldWidget.routes) != _routeSignature(widget.routes);
+    final stopsChanged =
+        _stopSignature(oldWidget.stops) != _stopSignature(widget.stops);
+    if (routeChanged || stopsChanged) _refreshRouteAnimationPlan();
+    if (routeChanged && widget.routes.isNotEmpty) _startRouteAnimation();
+
     if (widget.recenterTick != oldWidget.recenterTick) _recenterOnUser();
+    if (widget.focusTick != oldWidget.focusTick && widget.focusStopId != null) {
+      _panToStop(widget.focusStopId!);
+    }
+
+    if (oldWidget.initialFocusStopId != widget.initialFocusStopId) {
+      _initialFocusApplied = false;
+    }
+    final initialFocusId = widget.initialFocusStopId;
+    if (!_initialFocusApplied &&
+        initialFocusId != null &&
+        _containsStop(widget.stops, initialFocusId)) {
+      _initialFocusApplied = _focusStop(initialFocusId);
+    }
+  }
+
+  String _routeSignature(List<RouteShape> routes) =>
+      routes.map((route) => route.id).join('|');
+
+  String _stopSignature(List<RingStop> stops) {
+    final ids = stops.map((stop) => stop.id).toList()..sort();
+    return ids.join('|');
   }
 
   void _recenterOnUser() {
@@ -149,6 +242,33 @@ class _StopsMapState extends ConsumerState<StopsMap> {
         LatLng(position.latitude, position.longitude),
         15.5,
       ),
+    );
+  }
+
+  bool _containsStop(List<RingStop> stops, String stopId) =>
+      stops.any((stop) => stop.id == stopId);
+
+  bool _focusStop(String stopId) {
+    final matches = widget.stops.where((stop) => stop.id == stopId);
+    final controller = _controller;
+    if (matches.isEmpty || controller == null) return false;
+
+    final stop = matches.first;
+    controller.animateCamera(
+      CameraUpdate.newLatLngZoom(LatLng(stop.lat, stop.lng), 16.5),
+    );
+    return true;
+  }
+
+  void _panToStop(String stopId) {
+    final matches = widget.stops.where((stop) => stop.id == stopId);
+    if (matches.isEmpty) return;
+
+    final stop = matches.first;
+    // Kart secimi mevcut zoom seviyesini korur; kullanicinin harita kadraji
+    // yalnizca gerekli oldugu kadar yatay/dikey tasinir.
+    _controller?.animateCamera(
+      CameraUpdate.newLatLng(LatLng(stop.lat, stop.lng)),
     );
   }
 
@@ -201,9 +321,11 @@ class _StopsMapState extends ConsumerState<StopsMap> {
   @override
   void dispose() {
     _controller?.dispose();
+    _routeAnimationController.dispose();
     _canMount.dispose();
     _isReady.dispose();
     _pins.dispose();
+    _routeProgress.dispose();
     super.dispose();
   }
 
@@ -215,23 +337,19 @@ class _StopsMapState extends ConsumerState<StopsMap> {
     // Konum sonradan gelirse kamerayi kullaniciya tasi.
     ref.listen(userPositionProvider, (previous, next) {
       if (next == null || previous != null) return;
+      if (widget.initialFocusStopId != null) return;
       _controller?.animateCamera(
         CameraUpdate.newLatLngZoom(LatLng(next.latitude, next.longitude), 15.5),
       );
     });
 
-    // Kart seridinde baska bir durak one ciktiginda kamera oraya gider.
-    ref.listen(selectedStopProvider, (previous, next) {
-      if (next == null || next == previous) return;
-      final matches = widget.stops.where((s) => s.id == next);
-      if (matches.isEmpty) return;
-      final stop = matches.first;
-      _controller?.animateCamera(
-        CameraUpdate.newLatLng(LatLng(stop.lat, stop.lng)),
-      );
-    });
-
-    final target = position == null
+    final initialMatches = widget.stops.where(
+      (stop) => stop.id == widget.initialFocusStopId,
+    );
+    final initialStop = initialMatches.isEmpty ? null : initialMatches.first;
+    final target = initialStop != null
+        ? LatLng(initialStop.lat, initialStop.lng)
+        : position == null
         ? _campusCenter
         : LatLng(position.latitude, position.longitude);
 
@@ -245,60 +363,83 @@ class _StopsMapState extends ConsumerState<StopsMap> {
           children: [
             ValueListenableBuilder<_StopPins?>(
               valueListenable: _pins,
-              builder: (context, pins, child) => GoogleMap(
-                initialCameraPosition: CameraPosition(target: target, zoom: 15),
-                mapType: widget.mapType,
-                onMapCreated: (controller) {
-                  _controller = controller;
-                  _isReady.value = true;
-                  _fitToRoutes();
-                },
-                markers: {
-                  for (final stop in widget.stops)
-                    Marker(
-                      markerId: MarkerId(stop.id),
-                      position: LatLng(stop.lat, stop.lng),
-                      // Secili durak buyuk cizilir; kart seridiyle hangi pinin
-                      // eslestigi bakisla anlasilir. Pin rengi hatta gore
-                      // degismez — toggle ayni anda tek hat gosterdigi icin
-                      // renk zaten ayirt edici bir bilgi tasimiyor, cizgi
-                      // hattin rengini veriyor.
-                      icon: pins == null
-                          ? BitmapDescriptor.defaultMarker
-                          : (stop.id == selectedId
-                                ? pins.selected
-                                : pins.normal),
-                      infoWindow: InfoWindow(
-                        title: stop.name,
-                        snippet: stop.lineNames.join(' · '),
-                        onTap: () => widget.onStopTap(stop.id),
-                      ),
-                      onTap: () => widget.onStopTap(stop.id),
+              builder: (context, pins, child) => ValueListenableBuilder<double>(
+                valueListenable: _routeProgress,
+                builder: (context, routeProgress, child) {
+                  final plan = _routeAnimationPlan;
+                  final animatingRoute = plan != null && routeProgress < 1;
+                  final visibleStopIds = animatingRoute
+                      ? plan.visibleStopIdsAt(routeProgress)
+                      : const <String>{};
+
+                  return GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: target,
+                      zoom: 15,
                     ),
+                    mapType: widget.mapType,
+                    onMapCreated: (controller) {
+                      _controller = controller;
+                      _isReady.value = true;
+                      final focusId = widget.initialFocusStopId;
+                      if (focusId != null && _focusStop(focusId)) {
+                        _initialFocusApplied = true;
+                      } else {
+                        _fitToRoutes();
+                      }
+                    },
+                    markers: {
+                      for (final stop in widget.stops)
+                        if (!animatingRoute || visibleStopIds.contains(stop.id))
+                          Marker(
+                            markerId: MarkerId(stop.id),
+                            position: LatLng(stop.lat, stop.lng),
+                            // Secili durak buyuk cizilir; kart seridiyle hangi pinin
+                            // eslestigi bakisla anlasilir. Pin rengi hatta gore
+                            // degismez — toggle ayni anda tek hat gosterdigi icin
+                            // renk zaten ayirt edici bir bilgi tasimiyor, cizgi
+                            // hattin rengini veriyor.
+                            icon: pins == null
+                                ? BitmapDescriptor.defaultMarker
+                                : (stop.id == selectedId
+                                      ? pins.selected
+                                      : pins.normal),
+                            infoWindow: InfoWindow(
+                              title: stop.name,
+                              snippet: stop.lineNames.join(' · '),
+                              onTap: () => widget.onStopTap(stop.id),
+                            ),
+                            onTap: () => widget.onStopTap(stop.id),
+                          ),
+                    },
+                    polylines: {
+                      for (final route in widget.routes)
+                        Polyline(
+                          polylineId: PolylineId(route.id),
+                          points: [
+                            for (final point
+                                in plan?.route.id == route.id
+                                    ? plan!.pointsAt(routeProgress)
+                                    : route.points)
+                              LatLng(point.lat, point.lng),
+                          ],
+                          color: _routeColor(route.color),
+                          width: 5,
+                          startCap: Cap.roundCap,
+                          endCap: Cap.roundCap,
+                          jointType: JointType.round,
+                          consumeTapEvents: widget.onRouteTap != null,
+                          onTap: () => widget.onRouteTap?.call(route),
+                        ),
+                    },
+                    myLocationEnabled: position != null,
+                    // Konum butonu sayfanin kendi yuzen butonlarinda; haritanin
+                    // yerlesik butonu kart seridiyle cakisiyordu.
+                    myLocationButtonEnabled: false,
+                    zoomControlsEnabled: false,
+                    mapToolbarEnabled: false,
+                  );
                 },
-                polylines: {
-                  for (final route in widget.routes)
-                    Polyline(
-                      polylineId: PolylineId(route.id),
-                      points: [
-                        for (final point in route.points)
-                          LatLng(point.lat, point.lng),
-                      ],
-                      color: _routeColor(route.color),
-                      width: 5,
-                      startCap: Cap.roundCap,
-                      endCap: Cap.roundCap,
-                      jointType: JointType.round,
-                      consumeTapEvents: widget.onRouteTap != null,
-                      onTap: () => widget.onRouteTap?.call(route),
-                    ),
-                },
-                myLocationEnabled: position != null,
-                // Konum butonu sayfanin kendi yuzen butonlarinda; haritanin
-                // yerlesik butonu kart seridiyle cakisiyordu.
-                myLocationButtonEnabled: false,
-                zoomControlsEnabled: false,
-                mapToolbarEnabled: false,
               ),
             ),
             // Harita hazir olana dek ustte kalir; SDK yuklenirken altta

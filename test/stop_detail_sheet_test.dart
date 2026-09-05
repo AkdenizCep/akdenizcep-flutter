@@ -41,14 +41,14 @@ void main() {
   ];
 
   final nearby = [
-    NearbyStop(
-      stop: stops.first,
-      distanceMeters: 553,
-      schedules: schedules,
-    ),
+    NearbyStop(stop: stops.first, distanceMeters: 553, schedules: schedules),
   ];
 
-  Widget wrap({required DateTime now, List<NearbyStop>? stopsOverride}) {
+  Widget wrap({
+    required DateTime now,
+    List<NearbyStop>? stopsOverride,
+    VoidCallback? onShowOnMap,
+  }) {
     return ProviderScope(
       overrides: [
         nearbyStopsProvider.overrideWith((ref) => stopsOverride ?? nearby),
@@ -67,8 +67,10 @@ void main() {
           (ref) => RingDepartures.isWeekendDay(now),
         ),
       ],
-      child: const MaterialApp(
-        home: Scaffold(body: StopDetailSheet(stopId: 'durak_1')),
+      child: MaterialApp(
+        home: Scaffold(
+          body: StopDetailSheet(stopId: 'durak_1', onShowOnMap: onShowOnMap),
+        ),
       ),
     );
   }
@@ -166,8 +168,23 @@ void main() {
     await tester.pumpWidget(wrap(now: DateTime(2026, 7, 27, 8, 48)));
     await tester.pumpAndSettle();
 
-    expect(find.text('Saatler hattın kalkış noktasına aittir.'), findsOneWidget);
+    expect(
+      find.text('Saatler hattın kalkış noktasına aittir.'),
+      findsOneWidget,
+    );
     expect(find.textContaining('varış'), findsNothing);
     expect(find.textContaining('gelir'), findsNothing);
+  });
+
+  testWidgets('haritada goster aksiyonu secilen duragi iletir', (tester) async {
+    var didTap = false;
+    await tester.pumpWidget(
+      wrap(now: DateTime(2026, 7, 27, 8, 48), onShowOnMap: () => didTap = true),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Haritada Göster'));
+
+    expect(didTap, isTrue);
   });
 }

@@ -147,6 +147,24 @@ class RingStop {
   bool servesLine(String shortName) =>
       servedBy.any((s) => s.shortName == shortName);
 
+  /// Durak belirtilen hattin belirtilen yonunde kullaniliyor mu?
+  bool servesRoute(String shortName, int directionId) => servedBy.any(
+    (service) =>
+        service.shortName == shortName && service.directionId == directionId,
+  );
+
+  /// Belirtilen hat + yondeki durak sirasi. O guzergahta degilse `null`.
+  int? routeSequenceFor(String shortName, int directionId) {
+    final matches = servedBy.where(
+      (service) =>
+          service.shortName == shortName && service.directionId == directionId,
+    );
+    if (matches.isEmpty) return null;
+    return matches
+        .map((service) => service.stopSequence)
+        .reduce((a, b) => a < b ? a : b);
+  }
+
   /// Guzergah sirasi — konum bilinmiyorken siralama icin.
   /// Birden fazla hatta geciyorsa en kucugu alinir.
   int get routeOrder {
