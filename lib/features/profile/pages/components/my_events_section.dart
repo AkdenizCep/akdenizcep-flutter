@@ -3,131 +3,143 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../shared/components/error_view.dart';
+import '../../../../shared/providers/event_feed_provider.dart';
 import '../../models/profile_event_summary.dart';
 import '../../providers/profile_provider.dart';
 
 class MyEventsSection extends ConsumerWidget {
-  const MyEventsSection({super.key});
+  final bool joined;
+  final int? limit;
+  const MyEventsSection({super.key, this.joined = false, this.limit = 2});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final eventsAsync = ref.watch(myEventsProvider);
-    final colorScheme = Theme.of(context).colorScheme;
-
+    final eventsAsync = joined
+        ? ref.watch(joinedEventsProvider)
+        : ref.watch(myEventsProvider);
     return eventsAsync.when(
       data: (events) {
         if (events.isEmpty) {
           return Text(
-            'Henüz etkinlik oluşturmadın.',
+            joined
+                ? 'Henüz bir etkinliğe katılmadın.'
+                : 'Henüz etkinlik oluşturmadın.',
             style: TextStyle(
-              color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           );
         }
-
         return Column(
           children: [
-            for (var i = 0; i < events.length; i++) ...[
-              if (i > 0) const SizedBox(height: 10),
-              _EventTile(event: events[i]),
-            ],
+            for (final event in limit == null ? events : events.take(limit!))
+              ProfileEventTile(event: event),
           ],
         );
       },
       loading: () => const SizedBox(
-        height: 32,
+        height: 72,
         child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
       ),
-      error: (_, _) => const SizedBox.shrink(),
+      error: (_, _) => ErrorView(
+        message: 'Etkinlikler yüklenemedi.',
+        onRetry: () {
+          if (joined) {
+            ref.invalidate(eventFeedProvider);
+          } else {
+            ref.invalidate(myEventsProvider);
+          }
+        },
+      ),
     );
   }
 }
 
-class _EventTile extends StatelessWidget {
+class ProfileEventTile extends StatelessWidget {
   final ProfileEventSummary event;
-
-  const _EventTile({required this.event});
+  const ProfileEventTile({super.key, required this.event});
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(18),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(18),
-          onTap: () => context.push('/event/${event.id}'),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFF135BEC), Color(0xFF5C4FE0)],
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => context.push(
+          event.clubId == null
+              ? '/event/${event.id}'
+              : '/club/${event.clubId}/event/${event.id}',
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              Container(
+                width: 52,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: colors.primaryContainer.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      DateFormat('d', 'tr').format(event.date),
+                      style: TextStyle(
+                        fontSize: 21,
+                        fontWeight: FontWeight.w600,
+                        color: colors.primary,
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(13),
-                  ),
-                  child: const Icon(
-                    Icons.event_rounded,
-                    size: 18,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        event.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: colorScheme.onSurface,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 14,
-                        ),
+                    Text(
+                      DateFormat(
+                        'MMM',
+                        'tr',
+                      ).format(event.date).replaceAll('i', 'İ').toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: colors.primary,
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '${DateFormat('d MMMM, HH:mm', 'tr').format(event.date)} · ${event.location}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                        ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      event.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${DateFormat('HH:mm', 'tr').format(event.date)} · ${event.location}',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: colors.outline,
+                size: 24,
+              ),
+            ],
           ),
         ),
       ),

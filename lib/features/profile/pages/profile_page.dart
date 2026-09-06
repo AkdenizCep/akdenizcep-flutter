@@ -13,15 +13,10 @@ import '../../../shared/providers/user_provider.dart';
 import '../../../shared/utils/error_message.dart';
 import '../../auth/models/app_user.dart';
 import '../providers/profile_provider.dart';
-import 'components/change_password_button.dart';
-import 'components/feedback_button.dart';
 import 'components/followed_clubs_section.dart';
 import 'components/my_events_section.dart';
-import 'components/my_qr_button.dart';
 import 'components/profile_info_card.dart';
-import 'components/rated_meals_section.dart';
-import 'components/sign_out_button.dart';
-import 'components/theme_selection_button.dart';
+import 'components/profile_section.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -98,7 +93,9 @@ class ProfilePage extends ConsumerWidget {
         icon: Icons.check_circle_outline_rounded,
       );
     } catch (error, stackTrace) {
-      debugPrint('Profil fotoğrafı güncellenirken hata oluştu: $error\n$stackTrace');
+      debugPrint(
+        'Profil fotoğrafı güncellenirken hata oluştu: $error\n$stackTrace',
+      );
       if (!context.mounted) return;
       showProgressSnackBar(
         context,
@@ -119,7 +116,9 @@ class ProfilePage extends ConsumerWidget {
         icon: Icons.check_circle_outline_rounded,
       );
     } catch (error, stackTrace) {
-      debugPrint('Profil fotoğrafı kaldırılırken hata oluştu: $error\n$stackTrace');
+      debugPrint(
+        'Profil fotoğrafı kaldırılırken hata oluştu: $error\n$stackTrace',
+      );
       if (!context.mounted) return;
       showProgressSnackBar(
         context,
@@ -134,105 +133,74 @@ class ProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userAsync = ref.watch(currentUserProvider);
     final photoBusy = ref.watch(profilePhotoControllerProvider).isLoading;
-
+    final colors = Theme.of(context).colorScheme;
     return Scaffold(
+      backgroundColor: colors.surface,
       appBar: AppBar(
         title: const Text('Profilim'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
+        centerTitle: false,
+        backgroundColor: colors.surface,
+        titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+          fontSize: 24,
+          fontWeight: FontWeight.w700,
+        ),
+        actions: [
+          IconButton(
+            tooltip: 'Ayarlar',
+            onPressed: () => context.push('/profile/settings'),
+            icon: const Icon(Icons.settings_outlined),
+          ),
+          const SizedBox(width: 12),
+        ],
       ),
-      body: userAsync.when(
-        data: (user) {
-          if (user == null) return const SizedBox.shrink();
-
-          return SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(
-              20,
-              8,
-              20,
-              132 + MediaQuery.of(context).padding.bottom,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ProfileInfoCard(
-                  user: user,
-                  photoBusy: photoBusy,
-                  onPhotoTap: () => _openPhotoActions(context, ref, user),
-                ),
-                const SizedBox(height: 16),
-                const MyQrButton(),
-                const SizedBox(height: 28),
-                _SectionTitle(title: 'Takip Edilen Topluluklar'),
-                const SizedBox(height: 12),
-                const FollowedClubsSection(),
-                const SizedBox(height: 28),
-                _SectionTitle(title: 'Oluşturduğun Etkinlikler'),
-                const SizedBox(height: 12),
-                const MyEventsSection(),
-                const SizedBox(height: 28),
-                _SectionTitle(title: 'Yemekhane Puanların'),
-                const SizedBox(height: 12),
-                const RatedMealsSection(),
-                const SizedBox(height: 28),
-                _SectionTitle(title: 'Geri Bildirim'),
-                const SizedBox(height: 12),
-                FeedbackButton(user: user),
-                const SizedBox(height: 28),
-                const ThemeSelectionButton(),
-                const SizedBox(height: 12),
-                ChangePasswordButton(email: user.email),
-                const SizedBox(height: 12),
-                const SignOutButton(),
-              ],
-            ),
-          );
-        },
-        loading: () => const LoadingOverlay(),
-        error: (e, _) => ErrorView(message: errorMessage(e)),
-      ),
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
-  final String title;
-
-  const _SectionTitle({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Row(
-      // Buyuk yazi tipi olceginde baslik iki satira inebilir; cubuk ilk
-      // satirla hizali kalsin.
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 4,
-          height: 14,
-          margin: const EdgeInsets.only(top: 2),
-          decoration: BoxDecoration(
-            color: colorScheme.primary,
-            borderRadius: BorderRadius.circular(2),
+      body: SafeArea(
+        top: false,
+        child: userAsync.when(
+          data: (user) {
+            if (user == null) {
+              return const Center(
+                child: Text('Profilini görmek için oturum açmalısın.'),
+              );
+            }
+            return SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ProfileInfoCard(
+                    user: user,
+                    photoBusy: photoBusy,
+                    onPhotoTap: () => _openPhotoActions(context, ref, user),
+                  ),
+                  const SizedBox(height: 48),
+                  ProfileSection(
+                    title: 'Topluluklarım',
+                    onViewAll: () => context.push('/profile/clubs'),
+                    child: const FollowedClubsSection(),
+                  ),
+                  const SizedBox(height: 32),
+                  ProfileSection(
+                    title: 'Katıldığım',
+                    onViewAll: () => context.push('/profile/joined-events'),
+                    child: const MyEventsSection(joined: true),
+                  ),
+                  const SizedBox(height: 24),
+                  ProfileSection(
+                    title: 'Oluşturduğum',
+                    onViewAll: () => context.push('/profile/created-events'),
+                    child: const MyEventsSection(),
+                  ),
+                ],
+              ),
+            );
+          },
+          loading: () => const LoadingOverlay(),
+          error: (e, _) => ErrorView(
+            message: errorMessage(e),
+            onRetry: () => ref.invalidate(currentUserProvider),
           ),
         ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            title.toUpperCase(),
-            style: TextStyle(
-              color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w800,
-              fontSize: 12.5,
-              height: 1.35,
-              letterSpacing: 0.8,
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

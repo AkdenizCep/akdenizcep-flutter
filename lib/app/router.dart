@@ -32,6 +32,9 @@ import '../features/map/pages/map_page.dart';
 import '../features/profile/pages/my_qr_page.dart';
 import '../features/profile/pages/profile_page.dart';
 import '../features/profile/pages/profile_photo_editor_page.dart';
+import '../features/profile/pages/settings_page.dart';
+import '../features/profile/pages/account_info_page.dart';
+import '../features/profile/pages/profile_list_page.dart';
 import '../features/ring/pages/ring_page.dart';
 import '../features/ring/pages/ring_stops_page.dart';
 import '../features/student_events/pages/create_event_page.dart';
@@ -169,6 +172,31 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ProfilePage(),
         routes: [
+          GoRoute(
+            path: 'settings',
+            builder: (context, state) => const SettingsPage(),
+            routes: [
+              GoRoute(
+                path: 'account',
+                builder: (context, state) => const AccountInfoPage(),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: 'clubs',
+            builder: (context, state) =>
+                const ProfileListPage(kind: ProfileListKind.clubs),
+          ),
+          GoRoute(
+            path: 'joined-events',
+            builder: (context, state) =>
+                const ProfileListPage(kind: ProfileListKind.joined),
+          ),
+          GoRoute(
+            path: 'created-events',
+            builder: (context, state) =>
+                const ProfileListPage(kind: ProfileListKind.created),
+          ),
           GoRoute(
             path: 'photo-editor',
             parentNavigatorKey: _rootNavigatorKey,

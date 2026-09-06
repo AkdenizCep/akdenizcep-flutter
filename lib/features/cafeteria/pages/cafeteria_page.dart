@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../shared/components/error_view.dart';
@@ -31,6 +32,7 @@ class CafeteriaPage extends ConsumerWidget {
     final menuAsync = ref.watch(menuProvider);
     final selectedDate = ref.watch(selectedDateProvider);
     final entries = ref.watch(menuEntriesProvider);
+    final user = ref.watch(currentUserProvider).valueOrNull;
 
     final bottomInset = MediaQuery.of(context).padding.bottom;
 
@@ -54,6 +56,11 @@ class CafeteriaPage extends ConsumerWidget {
                   : null,
               onPickDate: () => _pickDate(context, ref, selectedDate),
               onShowInfo: () => _showInfoSheet(context, ref),
+              userInitial: user?.name.isNotEmpty == true
+                  ? user!.name[0].toUpperCase()
+                  : '?',
+              userImageUrl: user?.photoUrl,
+              onProfileTap: () => context.push('/profile'),
             ),
             // Kartlar basligin uzerine biner. Transform yerlesimi degistirmedigi
             // icin alttaki bosluktan ayni miktar dusuluyor.

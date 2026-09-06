@@ -19,6 +19,9 @@ class CafeteriaHero extends StatelessWidget {
   final VoidCallback? onNextDay;
   final VoidCallback onPickDate;
   final VoidCallback onShowInfo;
+  final String userInitial;
+  final String? userImageUrl;
+  final VoidCallback onProfileTap;
 
   const CafeteriaHero({
     super.key,
@@ -28,6 +31,9 @@ class CafeteriaHero extends StatelessWidget {
     required this.onNextDay,
     required this.onPickDate,
     required this.onShowInfo,
+    required this.userInitial,
+    required this.userImageUrl,
+    required this.onProfileTap,
   });
 
   bool get _isToday => DateUtils.isSameDay(date, DateTime.now());
@@ -96,6 +102,11 @@ class CafeteriaHero extends StatelessWidget {
                     icon: Icons.calendar_month_rounded,
                     tooltip: 'Tarih seç',
                     onTap: onPickDate,
+                  ),
+                  AppTopBarAction.avatar(
+                    initial: userInitial,
+                    imageUrl: userImageUrl,
+                    onTap: onProfileTap,
                   ),
                 ],
               ),

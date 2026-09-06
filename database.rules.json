@@ -1,0 +1,49 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "admin_uids": {
+      ".write": "auth != null && auth.token.email != null && auth.token.email.matches(/.*@ogr[.]akdeniz[.]edu[.]tr$/) && root.child('admin_uids').child(auth.uid).val() === true && newData.hasChildren()",
+      ".validate": "newData.hasChildren()",
+      "$uid": {
+        ".read": "auth != null && auth.token.email != null && auth.token.email.matches(/.*@ogr[.]akdeniz[.]edu[.]tr$/) && (auth.uid === $uid || root.child('admin_uids').child(auth.uid).val() === true)",
+        ".validate": "!newData.exists() || newData.val() === true"
+      }
+    },
+    "cafeteria_menu": {
+      ".read": "auth != null && auth.token.email != null && auth.token.email.matches(/.*@ogr[.]akdeniz[.]edu[.]tr$/)",
+      "$date": {
+        ".write": "auth != null && auth.token.email != null && auth.token.email.matches(/.*@ogr[.]akdeniz[.]edu[.]tr$/) && root.child('admin_uids').child(auth.uid).val() === true && $date.matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)",
+        ".validate": "newData.hasChildren()",
+        "$index": {
+          ".validate": "$index.matches(/^(0|[1-9][0-9]*)$/) && newData.isString() && newData.val().length > 0"
+        }
+      }
+    },
+    "ring_schedule": {
+      ".read": "auth != null && auth.token.email != null && auth.token.email.matches(/.*@ogr[.]akdeniz[.]edu[.]tr$/)",
+      "$lineId": {
+        "weekday": {
+          ".write": "auth != null && auth.token.email != null && auth.token.email.matches(/.*@ogr[.]akdeniz[.]edu[.]tr$/) && root.child('admin_uids').child(auth.uid).val() === true && data.parent().child('stops').exists()",
+          "$index": {
+            ".validate": "$index.matches(/^(0|[1-9][0-9]*)$/) && newData.isString() && newData.val().matches(/^([01][0-9]|2[0-3]):[0-5][0-9]$/)"
+          }
+        },
+        "weekend": {
+          ".write": "auth != null && auth.token.email != null && auth.token.email.matches(/.*@ogr[.]akdeniz[.]edu[.]tr$/) && root.child('admin_uids').child(auth.uid).val() === true && data.parent().child('stops').exists()",
+          "$index": {
+            ".validate": "$index.matches(/^(0|[1-9][0-9]*)$/) && newData.isString() && newData.val().matches(/^([01][0-9]|2[0-3]):[0-5][0-9]$/)"
+          }
+        },
+        "stops": {
+          ".write": false,
+          ".validate": "newData.val() === data.val()"
+        }
+      }
+    },
+    "ring_stops": {
+      ".read": "auth != null && auth.token.email != null && auth.token.email.matches(/.*@ogr[.]akdeniz[.]edu[.]tr$/)",
+      ".write": false
+    }
+  }
+}

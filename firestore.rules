@@ -2,51 +2,64 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
+    function isSignedIn() { return request.auth != null; }
     function isAkdenizStudent() {
-      return isSignedIn() &&
+      return isSignedIn() && request.auth.token.email is string &&
         request.auth.token.email.matches('.*@ogr[.]akdeniz[.]edu[.]tr$');
     }
-
-    function isOwner(uid) {
-      return isSignedIn() && request.auth.uid == uid;
-    }
-
-    function isClubPresident(clubId) {
+    function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
+    function isAdmin() {
       return isAkdenizStudent() &&
-        request.auth.uid == get(/databases/$(database)/documents/clubs/$(clubId)).data.adminUid;
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
-
-    function clubAdminUids(clubId) {
-      let club = get(/databases/$(database)/documents/clubs/$(clubId)).data;
-      return 'adminUids' in club ? club.adminUids : [];
+    function adminConfig() {
+      return get(/databases/$(database)/documents/admin_config/current).data;
     }
-
-    // Başkan (adminUid) ya da başkanın eklediği yönetici üye (adminUids).
-    function isClubAdmin(clubId) {
-      return isClubPresident(clubId) ||
-        (isAkdenizStudent() && request.auth.uid in clubAdminUids(clubId));
+    function adminConfigAfter() {
+      return getAfter(/databases/$(database)/documents/admin_config/current).data;
     }
-
-    // `clubs/{clubId}` dokümanının kendi update kuralı içinde kullanılır —
-    // `resource` zaten kulüp dokümanı olduğundan ek bir get() gerekmez.
-    function isResourceClubPresident() {
-      return isAkdenizStudent() && request.auth.uid == resource.data.adminUid;
+    function targetIsStudent(uid) {
+      let target = get(/databases/$(database)/documents/users/$(uid)).data;
+      return target.email is string &&
+        target.email.matches('.*@ogr[.]akdeniz[.]edu[.]tr$');
     }
-
-    function isResourceClubAdmin() {
-      return isResourceClubPresident() ||
-        (isAkdenizStudent() &&
-          request.auth.uid in ('adminUids' in resource.data ? resource.data.adminUids : []));
+    function canCreateStudentContent() {
+      let user = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return isAkdenizStudent() && (
+        user.postingRestricted != true ||
+        (user.postingRestrictedUntil is timestamp &&
+          user.postingRestrictedUntil <= request.time)
+      );
     }
-
-    // "votes" haritasında SADECE çağıranın kendi anahtarı eklenmiş/silinmiş/
-    // değiştirilmiş olabilir ve varsa değeri 1 (faydalı) ya da -1 (faydasız)
-    // olmak zorunda. Başkasının oyu bu yoldan değiştirilemez.
+    function isVisible() { return resource.data.moderationStatus == 'visible'; }
+    function createsVisibleContent() {
+      return request.resource.data.moderationStatus == 'visible' &&
+        request.resource.data.moderatedAt == null &&
+        request.resource.data.moderatedBy == null;
+    }
+    function isAdminModerationUpdate() {
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      return isAdmin() &&
+        changed.hasOnly(['moderationStatus', 'moderatedAt', 'moderatedBy']) &&
+        request.resource.data.moderationStatus in ['visible', 'hidden'] &&
+        (request.resource.data.moderatedAt == request.time || request.resource.data.moderatedAt is timestamp) &&
+        request.resource.data.moderatedBy == request.auth.uid;
+    }
+    function isAdminUserUpdate() {
+      let changed = request.resource.data.diff(resource.data).affectedKeys();
+      return isAdmin() && (
+        changed.hasOnly(['photoUrl', 'bio']) ||
+        (
+          changed.hasOnly([
+            'photoUrl', 'bio', 'postingRestricted', 'postingRestrictedUntil',
+            'restrictionUpdatedAt', 'restrictionUpdatedBy'
+          ]) &&
+          changed.hasAny(['postingRestricted', 'postingRestrictedUntil']) &&
+          request.resource.data.restrictionUpdatedBy == request.auth.uid &&
+          (request.resource.data.restrictionUpdatedAt == request.time || request.resource.data.restrictionUpdatedAt is timestamp)
+        )
+      );
+    }
     function isValidVoteChange(uid) {
       let beforeVotes = resource.data.votes is map ? resource.data.votes : {};
       let afterVotes = request.resource.data.votes is map ? request.resource.data.votes : {};
@@ -54,10 +67,6 @@ service cloud.firestore {
       return voteDiff.affectedKeys().hasOnly([uid]) &&
         (!(uid in afterVotes) || afterVotes[uid] in [1, -1]);
     }
-
-    // Etkinliklere katılım: bir öğrenci yalnızca "attendeeIds" ve
-    // "attendeeCount" alanlarını, yalnızca kendi uid'ini ekleyip çıkararak
-    // değiştirebilir. Etkinliğin diğer alanlarına dokunamaz.
     function isValidAttendanceChange(uid) {
       let changed = request.resource.data.diff(resource.data).affectedKeys();
       let beforeIds = resource.data.attendeeIds is list ? resource.data.attendeeIds : [];
@@ -68,15 +77,6 @@ service cloud.firestore {
         joined.hasOnly([uid]) && left.hasOnly([uid]) &&
         request.resource.data.attendeeCount == afterIds.size();
     }
-
-    // Etkinlik altındaki sorular/yorumlar — her iki etkinlik türü için aynı.
-    function isCommentAuthor() {
-      return isAkdenizStudent() && request.auth.uid == resource.data.authorUid;
-    }
-
-    // Kampüs fotoğrafı beğenisi: "likedBy" listesinde SADECE çağıranın kendi
-    // uid'i eklenmiş/çıkarılmış olabilir, başka alan ya da başkasının
-    // beğenisi bu yoldan değiştirilemez.
     function isValidLikeChange(uid) {
       let beforeLikes = resource.data.likedBy is list ? resource.data.likedBy : [];
       let afterLikes = request.resource.data.likedBy is list ? request.resource.data.likedBy : [];
@@ -85,175 +85,265 @@ service cloud.firestore {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likedBy']) &&
         added.hasOnly([uid]) && removed.hasOnly([uid]);
     }
+    function isClubPresident(clubId) {
+      return isAkdenizStudent() && request.auth.uid ==
+        get(/databases/$(database)/documents/clubs/$(clubId)).data.adminUid;
+    }
+    function clubAdminUids(clubId) {
+      let club = get(/databases/$(database)/documents/clubs/$(clubId)).data;
+      return 'adminUids' in club ? club.adminUids : [];
+    }
+    function isClubAdmin(clubId) {
+      return isClubPresident(clubId) ||
+        (isAkdenizStudent() && request.auth.uid in clubAdminUids(clubId));
+    }
+    function isResourceClubPresident() {
+      return isAkdenizStudent() && request.auth.uid == resource.data.adminUid;
+    }
+    function isResourceClubAdmin() {
+      return isResourceClubPresident() ||
+        (isAkdenizStudent() && request.auth.uid in
+          ('adminUids' in resource.data ? resource.data.adminUids : []));
+    }
+
+    match /admins/{uid} {
+      allow get: if isAkdenizStudent() && (request.auth.uid == uid || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isAdmin() &&
+        !exists(/databases/$(database)/documents/admins/$(uid)) &&
+        targetIsStudent(uid) &&
+        request.resource.data.keys().hasOnly(['uid', 'email', 'createdAt', 'createdBy']) &&
+        request.resource.data.uid == uid &&
+        request.resource.data.email == get(/databases/$(database)/documents/users/$(uid)).data.email &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.createdBy == request.auth.uid &&
+        adminConfigAfter().adminCount == adminConfig().adminCount + 1 &&
+        adminConfigAfter().revision == adminConfig().revision + 1 &&
+        adminConfigAfter().lastChangedUid == uid &&
+        adminConfigAfter().lastChangeType == 'add';
+      allow delete: if isAdmin() && adminConfig().adminCount > 1 &&
+        adminConfigAfter().adminCount == adminConfig().adminCount - 1 &&
+        adminConfigAfter().revision == adminConfig().revision + 1 &&
+        adminConfigAfter().lastChangedUid == uid &&
+        adminConfigAfter().lastChangeType == 'remove';
+      allow update: if false;
+    }
+
+    match /admin_config/current {
+      allow read: if isAdmin();
+      allow create, delete: if false;
+      allow update: if isAdmin() &&
+        request.resource.data.keys().hasOnly([
+          'adminCount', 'revision', 'lastChangedUid', 'lastChangeType',
+          'updatedAt', 'updatedBy'
+        ]) &&
+        request.resource.data.adminCount >= 1 &&
+        request.resource.data.revision == resource.data.revision + 1 &&
+        request.resource.data.updatedAt == request.time &&
+        request.resource.data.updatedBy == request.auth.uid &&
+        (
+          (request.resource.data.lastChangeType == 'add' &&
+            request.resource.data.adminCount == resource.data.adminCount + 1 &&
+            !exists(/databases/$(database)/documents/admins/$(request.resource.data.lastChangedUid)) &&
+            existsAfter(/databases/$(database)/documents/admins/$(request.resource.data.lastChangedUid))) ||
+          (request.resource.data.lastChangeType == 'remove' &&
+            resource.data.adminCount > 1 &&
+            request.resource.data.adminCount == resource.data.adminCount - 1 &&
+            exists(/databases/$(database)/documents/admins/$(request.resource.data.lastChangedUid)) &&
+            !existsAfter(/databases/$(database)/documents/admins/$(request.resource.data.lastChangedUid)))
+        );
+    }
 
     match /users/{uid} {
       allow read: if isAkdenizStudent();
-      allow create: if isOwner(uid);
-      // Profil fotoğrafı Cloudinary yüklemesinden sonra kullanıcının kendi
-      // belgesinde photoUrl alanını güncellemesi için izin verilir.
-      allow update: if isOwner(uid) &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'followedClubs',
-          'ratedMealIds',
-          'savedEventIds',
-          'photoUrl'
-        ]);
+      allow create: if isOwner(uid) &&
+        request.resource.data.email == request.auth.token.email;
+      allow update: if (
+        isOwner(uid) && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['followedClubs', 'ratedMealIds', 'savedEventIds', 'photoUrl'])
+      ) || isAdminUserUpdate();
       allow delete: if false;
     }
 
     match /clubs/{clubId} {
       allow read: if isAkdenizStudent();
-      allow create, delete: if false;
-      // "Takip et/etme" akışında followerCount güncellenir; herhangi bir
-      // yönetici (başkan ya da üye) profil alanlarını düzenler; yönetici
-      // üye listesi (adminUids) SADECE başkan tarafından değiştirilebilir.
-      // Takipçi sayısı ve onay rozeti bu yoldan hiç değiştirilemez.
-      allow update: if isAkdenizStudent() && (
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (isAkdenizStudent() && (
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followerCount']) ||
-        (isResourceClubAdmin() &&
-          request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['name', 'description', 'category', 'logoUrl', 'coverUrl', 'foundedYear'])) ||
-        (isResourceClubPresident() &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['adminUids']))
-      );
+        (isResourceClubAdmin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'name', 'description', 'category', 'logoUrl', 'coverUrl', 'foundedYear'
+        ])) ||
+        (isResourceClubPresident() && request.resource.data.diff(resource.data)
+          .affectedKeys().hasOnly(['adminUids']))
+      ));
 
-      // isResourceClubPresident() burada KULLANILAMAZ: bu alt koleksiyondaki
-      // `resource`, üye dokümanına ait olur, kulübe değil — clubId path
-      // değişkeniyle ayrı bir get() yapan isClubPresident() kullanılır.
       match /members/{memberUid} {
         allow read: if isAkdenizStudent();
-        allow create, delete: if isClubPresident(clubId);
+        allow create: if (isAdmin() || isClubPresident(clubId)) &&
+          get(/databases/$(database)/documents/clubs/$(clubId)).data.active == true;
+        allow delete: if isAdmin() || isClubPresident(clubId);
         allow update: if false;
       }
 
       match /club-events/{ceventId} {
-        allow read: if isAkdenizStudent();
-        allow create, delete: if isClubAdmin(clubId);
-        // Kulüp yöneticisi her alanı düzenler; diğer öğrenciler yalnızca
-        // etkinliğe katılır/ayrılır.
-        allow update: if isAkdenizStudent() && (
-          isClubAdmin(clubId) ||
-          isValidAttendanceChange(request.auth.uid)
-        );
+        allow read: if isAdmin() || isVisible();
+        allow create: if (isAdmin() || isClubAdmin(clubId)) &&
+          get(/databases/$(database)/documents/clubs/$(clubId)).data.active == true &&
+          createsVisibleContent();
+        allow delete: if isAdmin() || isClubAdmin(clubId);
+        allow update: if isAdminModerationUpdate() || isAdmin() ||
+          (isAkdenizStudent() &&
+            (isClubAdmin(clubId) || isValidAttendanceChange(request.auth.uid)));
 
         match /comments/{commentId} {
-          allow read: if isAkdenizStudent();
-          allow create: if isAkdenizStudent() &&
-            request.auth.uid == request.resource.data.authorUid;
-          allow update, delete: if isCommentAuthor();
+          allow read: if isAdmin() || (isVisible() &&
+            get(/databases/$(database)/documents/clubs/$(clubId)/club-events/$(ceventId))
+              .data.moderationStatus == 'visible');
+          allow create: if canCreateStudentContent() &&
+            request.auth.uid == request.resource.data.authorUid &&
+            get(/databases/$(database)/documents/clubs/$(clubId)/club-events/$(ceventId))
+              .data.moderationStatus == 'visible' && createsVisibleContent();
+          allow update: if isAdminModerationUpdate() ||
+            (isAkdenizStudent() && request.auth.uid == resource.data.authorUid &&
+              request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text']));
+          allow delete: if isAdmin() ||
+            (isAkdenizStudent() && request.auth.uid == resource.data.authorUid);
         }
 
-        // QR ile kapıda alınan yoklama kayıtları. Yalnızca kulüp yöneticileri
-        // okuyup yazabilir; bir kayıt tek sefer oluşturulur, güncellenemez/
-        // silinemez (tekrar okutma "zaten kayıtlı" olarak istemcide ele alınır).
         match /attendance/{attendeeUid} {
-          allow read: if isClubAdmin(clubId);
+          allow read: if isAdmin() || isClubAdmin(clubId);
           allow create: if isClubAdmin(clubId) &&
             request.resource.data.recordedBy == request.auth.uid;
-          allow update, delete: if false;
+          allow update: if false;
+          allow delete: if isAdmin();
         }
       }
     }
 
-    // collectionGroup('club-events') sorgusu için — etkinlik akışı tüm
-    // kulüplerin etkinliklerini tek sorguda okur.
     match /{path=**}/club-events/{ceventId} {
+      allow read: if isAdmin() || isVisible();
+      allow update: if isAdminModerationUpdate() || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /{path=**}/comments/{commentId} {
+      allow read: if isAdmin() || isVisible();
+      allow update: if isAdminModerationUpdate();
+      allow delete: if isAdmin();
+    }
+
+    match /{path=**}/members/{memberUid} {
+      allow read: if isAkdenizStudent();
+    }
+
+    match /{path=**}/attendance/{attendeeUid} {
+      allow read: if isAdmin();
+    }
+
+    match /{path=**}/ratings/{uid} {
       allow read: if isAkdenizStudent();
     }
 
     match /announcements/{announcementId} {
-      allow read: if isAkdenizStudent();
-      allow write: if false;
+      allow read: if isAdmin() ||
+        (isAkdenizStudent() && resource.data.status == 'published');
+      allow create, update, delete: if isAdmin();
     }
 
     match /student-events/{seventId} {
-      allow read: if isAkdenizStudent();
-      allow create: if isAkdenizStudent() &&
-        request.auth.uid == request.resource.data.authorUid;
-      allow delete: if isAkdenizStudent() &&
-        request.auth.uid == resource.data.authorUid;
-      // Etkinlik sahibi her alanı düzenler; diğer öğrenciler yalnızca katılır.
-      allow update: if isAkdenizStudent() && (
-        request.auth.uid == resource.data.authorUid ||
-        isValidAttendanceChange(request.auth.uid)
-      );
+      allow read: if isAdmin() || isVisible();
+      allow create: if canCreateStudentContent() &&
+        request.auth.uid == request.resource.data.authorUid && createsVisibleContent();
+      allow delete: if isAdmin() ||
+        (isAkdenizStudent() && request.auth.uid == resource.data.authorUid);
+      allow update: if isAdminModerationUpdate() ||
+        (isAkdenizStudent() && (
+          (request.auth.uid == resource.data.authorUid &&
+            !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+              'authorUid', 'createdAt', 'moderationStatus', 'moderatedAt', 'moderatedBy'
+            ])) || isValidAttendanceChange(request.auth.uid)
+        ));
 
       match /comments/{commentId} {
-        allow read: if isAkdenizStudent();
-        allow create: if isAkdenizStudent() &&
-          request.auth.uid == request.resource.data.authorUid;
-        allow update, delete: if isCommentAuthor();
+        allow read: if isAdmin() || (isVisible() &&
+          get(/databases/$(database)/documents/student-events/$(seventId))
+            .data.moderationStatus == 'visible');
+        allow create: if canCreateStudentContent() &&
+          request.auth.uid == request.resource.data.authorUid &&
+          get(/databases/$(database)/documents/student-events/$(seventId))
+            .data.moderationStatus == 'visible' && createsVisibleContent();
+        allow update: if isAdminModerationUpdate() ||
+          (isAkdenizStudent() && request.auth.uid == resource.data.authorUid &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text']));
+        allow delete: if isAdmin() ||
+          (isAkdenizStudent() && request.auth.uid == resource.data.authorUid);
       }
     }
 
     match /lost_found_items/{itemId} {
-      allow read: if isAkdenizStudent();
-      allow create: if isAkdenizStudent() &&
-        request.auth.uid == request.resource.data.authorUid;
-      // Sahibi ilani duzenler/siler (ör. cozuldu isaretleme); baskasi dokunamaz.
-      allow update, delete: if isAkdenizStudent() &&
-        request.auth.uid == resource.data.authorUid;
+      allow read: if isAdmin() || isVisible();
+      allow create: if canCreateStudentContent() &&
+        request.auth.uid == request.resource.data.authorUid && createsVisibleContent();
+      allow update: if isAdminModerationUpdate() ||
+        (isAkdenizStudent() && request.auth.uid == resource.data.authorUid &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isResolved']));
+      allow delete: if isAdmin() ||
+        (isAkdenizStudent() && request.auth.uid == resource.data.authorUid);
     }
 
     match /campus_photos/{photoId} {
-      allow read: if isAkdenizStudent();
-      allow create: if isAkdenizStudent() &&
-        request.auth.uid == request.resource.data.authorUid;
-      // Fotoğrafın düzenlenebilir bir alanı yok (yalnızca silinebilir) —
-      // update SADECE beğeni ekleme/çıkarma için var. Sahibe de "her alanı
-      // değiştir" izni verilmiyor; aksi halde kendi likedBy'ına sahte uid
-      // yazıp beğeni sayısını şişirebilirdi.
-      allow update: if isAkdenizStudent() && isValidLikeChange(request.auth.uid);
-      allow delete: if isAkdenizStudent() &&
-        request.auth.uid == resource.data.authorUid;
+      allow read: if isAdmin() || isVisible();
+      allow create: if canCreateStudentContent() &&
+        request.auth.uid == request.resource.data.authorUid && createsVisibleContent();
+      allow update: if isAdminModerationUpdate() ||
+        (isAkdenizStudent() && isValidLikeChange(request.auth.uid));
+      allow delete: if isAdmin() ||
+        (isAkdenizStudent() && request.auth.uid == resource.data.authorUid);
 
       match /comments/{commentId} {
-        allow read: if isAkdenizStudent();
-        allow create: if isAkdenizStudent() &&
-          request.auth.uid == request.resource.data.authorUid;
-        allow update: if false;
-        allow delete: if isCommentAuthor();
+        allow read: if isAdmin() || (isVisible() &&
+          get(/databases/$(database)/documents/campus_photos/$(photoId))
+            .data.moderationStatus == 'visible');
+        allow create: if canCreateStudentContent() &&
+          request.auth.uid == request.resource.data.authorUid &&
+          get(/databases/$(database)/documents/campus_photos/$(photoId))
+            .data.moderationStatus == 'visible' && createsVisibleContent();
+        allow update: if isAdminModerationUpdate();
+        allow delete: if isAdmin() ||
+          (isAkdenizStudent() && request.auth.uid == resource.data.authorUid);
       }
     }
 
-    // `board` daha once hic kural tanimlanmamisti — eslesmeyen yol reddedilir,
-    // yani deploy edilince ilan panosu tumuyle calismaz kalirdi. Diger
-    // ogrenci-uretimi koleksiyonlarla (student-events) ayni desen.
     match /board/{itemId} {
-      allow read: if isAkdenizStudent();
-      allow create: if isAkdenizStudent() &&
-        request.auth.uid == request.resource.data.authorUid;
-      allow delete: if isAkdenizStudent() &&
-        request.auth.uid == resource.data.authorUid;
-      allow update: if false;
+      allow read: if isAdmin() || isVisible();
+      allow create: if canCreateStudentContent() &&
+        request.auth.uid == request.resource.data.authorUid && createsVisibleContent();
+      allow update: if isAdminModerationUpdate();
+      allow delete: if isAdmin() ||
+        (isAkdenizStudent() && request.auth.uid == resource.data.authorUid);
     }
 
-    // Geri bildirimler sadece Firebase Console'dan okunur; uygulama
-    // icinde kimse (yazan dahil) kendi veya baskasinin feedback'ini
-    // okuyamaz/degistiremez, sadece gonderebilir.
     match /feedback/{feedbackId} {
-      allow create: if isAkdenizStudent() &&
-        request.auth.uid == request.resource.data.uid;
-      allow read, update, delete: if false;
+      allow create: if isAkdenizStudent() && request.auth.uid == request.resource.data.uid;
+      allow read: if isAdmin();
+      allow update, delete: if false;
     }
 
     match /cafeteria_ratings/{ratingId} {
-      allow read: if isAkdenizStudent();
-      allow write: if isAkdenizStudent();
-
+      allow read, write: if isAkdenizStudent();
       match /ratings/{uid} {
         allow read: if isAkdenizStudent();
         allow create: if isOwner(uid);
         allow delete: if false;
-
-        // Yorum sahibi kendi rating/comment alanlarını değiştiremez (mevcut
-        // davranış korunur); başka bir öğrenci ise sadece "votes" haritasında
-        // kendi oyunu ekleyebilir/değiştirebilir/geri alabilir.
-        allow update: if isAkdenizStudent() &&
+        allow update: if isAdmin() || (isAkdenizStudent() &&
           request.auth.uid != uid &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['votes']) &&
-          isValidVoteChange(request.auth.uid);
+          isValidVoteChange(request.auth.uid));
       }
+    }
+
+    match /deletion_jobs/{jobId} {
+      allow read, create, update, delete: if isAdmin();
     }
   }
 }

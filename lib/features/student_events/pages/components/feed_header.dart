@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../shared/components/app_top_bar.dart';
 import '../../../../shared/providers/event_feed_provider.dart';
+import '../../../../shared/providers/user_provider.dart';
 
 /// Sayfa başlığı: standart [AppTopBar] + altında açılıp kapanan arama alanı.
 class FeedHeader extends ConsumerStatefulWidget {
@@ -41,6 +43,11 @@ class _FeedHeaderState extends ConsumerState<FeedHeader> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final userAsync = ref.watch(currentUserProvider);
+    final user = userAsync.valueOrNull;
+    final userInitial = user?.name.isNotEmpty == true
+        ? user!.name[0].toUpperCase()
+        : '?';
 
     return AppTopBar(
       title: 'Etkinlikler',
@@ -54,6 +61,11 @@ class _FeedHeaderState extends ConsumerState<FeedHeader> {
           icon: Icons.add_rounded,
           tooltip: 'Etkinlik oluştur',
           onTap: widget.onCreate,
+        ),
+        AppTopBarAction.avatar(
+          initial: userInitial,
+          imageUrl: user?.photoUrl,
+          onTap: () => context.push('/profile'),
         ),
       ],
       bottom: _searchOpen
