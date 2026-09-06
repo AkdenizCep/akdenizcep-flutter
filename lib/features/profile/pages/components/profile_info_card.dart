@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../auth/models/app_user.dart';
 import '../../../../shared/components/user_avatar.dart';
@@ -18,167 +18,75 @@ class ProfileInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(22, 26, 22, 22),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF135BEC), Color(0xFF5C4FE0)],
-        ),
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF135BEC).withValues(alpha: 0.28),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: photoBusy ? null : onPhotoTap,
-            child: Tooltip(
-              message: 'Profil fotoğrafını değiştir',
+    final colors = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Semantics(
+          button: true,
+          enabled: !photoBusy,
+          child: Tooltip(
+            message: 'Profil fotoğrafını değiştir',
+            child: InkWell(
+              onTap: photoBusy ? null : onPhotoTap,
+              customBorder: const CircleBorder(),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.42),
-                      ),
-                    ),
-                    child: UserAvatar(
-                      name: user.name,
-                      imageUrl: user.photoUrl,
-                      diameter: 76,
-                      backgroundColor: Colors.white.withValues(alpha: 0.18),
-                      foregroundColor: Colors.white,
-                      textStyle: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 30,
-                      ),
-                    ),
+                  UserAvatar(
+                    name: user.name,
+                    imageUrl: user.photoUrl,
+                    diameter: 72,
                   ),
                   if (photoBusy)
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.black.withValues(alpha: 0.45),
-                      ),
-                      child: const Center(
-                        child: SizedBox.square(
-                          dimension: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
+                    const SizedBox.square(
+                      dimension: 72,
+                      child: CircularProgressIndicator(strokeWidth: 3),
                     ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          Text(
-            user.name.isNotEmpty ? user.name : 'Öğrenci',
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w800,
-              fontSize: 19,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            user.email,
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.82),
-              fontWeight: FontWeight.w600,
-              fontSize: 13.5,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Row(
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: _InfoTile(
-                  icon: Icons.badge_rounded,
-                  label: 'Öğrenci No',
-                  value: user.studentId.isNotEmpty ? user.studentId : '-',
+              Text(
+                user.name.isEmpty ? 'Öğrenci' : user.name,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontSize: 23,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _InfoTile(
-                  icon: Icons.calendar_today_rounded,
-                  label: 'Üyelik',
-                  value: DateFormat('d MMMM yyyy', 'tr').format(user.createdAt),
+              const SizedBox(height: 10),
+              FilledButton.tonalIcon(
+                onPressed: () => context.push('/qr'),
+                icon: const Icon(Icons.qr_code_rounded, size: 24),
+                label: const Text('QR kodum'),
+                style: FilledButton.styleFrom(
+                  foregroundColor: colors.primary,
+                  backgroundColor: colors.primaryContainer.withValues(
+                    alpha: 0.5,
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  minimumSize: const Size(0, 48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
             ],
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _InfoTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _InfoTile({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 16, color: Colors.white.withValues(alpha: 0.85)),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.78),
-              fontWeight: FontWeight.w700,
-              fontSize: 11,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w800,
-              fontSize: 13.5,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

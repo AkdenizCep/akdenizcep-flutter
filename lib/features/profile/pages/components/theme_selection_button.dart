@@ -1,20 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'settings_tile.dart';
 
 import '../../../../shared/providers/theme_provider.dart';
 
 class ThemeSelectionButton extends ConsumerWidget {
-  const ThemeSelectionButton({super.key});
+  final bool asSettingsTile;
+  const ThemeSelectionButton({super.key, this.asSettingsTile = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final themeMode = ref.watch(themeModeProvider);
-    final isDark = themeMode == ThemeMode.dark ||
+    final isDark =
+        themeMode == ThemeMode.dark ||
         (themeMode == ThemeMode.system &&
             MediaQuery.platformBrightnessOf(context) == Brightness.dark);
 
     final currentLabel = isDark ? 'Siyah Tema' : 'Beyaz Tema';
+
+    if (asSettingsTile) {
+      return SettingsTile(
+        title: 'Görünüm',
+        subtitle: themeMode == ThemeMode.system
+            ? 'Sistem teması'
+            : currentLabel,
+        onTap: () => _showThemeSheet(context, ref, isDark),
+      );
+    }
 
     return SizedBox(
       width: double.infinity,
@@ -28,9 +42,7 @@ class ThemeSelectionButton extends ConsumerWidget {
             borderRadius: BorderRadius.circular(18),
           ),
         ),
-        icon: Icon(
-          isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-        ),
+        icon: Icon(isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded),
         label: Text(
           'Tema: $currentLabel',
           style: const TextStyle(fontWeight: FontWeight.w700),
@@ -59,9 +71,8 @@ class ThemeSelectionButton extends ConsumerWidget {
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
                   child: Text(
                     'Tema Seçimi',
-                    style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                    style: Theme.of(sheetContext).textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w800),
                   ),
                 ),
                 Divider(
@@ -77,12 +88,17 @@ class ThemeSelectionButton extends ConsumerWidget {
                     'Beyaz Tema',
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  trailing: !isDark
-                      ? Icon(Icons.check_circle_rounded, color: colorScheme.primary)
+                  trailing: ref.read(themeModeProvider) == ThemeMode.light
+                      ? Icon(
+                          Icons.check_circle_rounded,
+                          color: colorScheme.primary,
+                        )
                       : null,
                   onTap: () {
-                    ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.light);
-                    Navigator.of(sheetContext).pop();
+                    ref
+                        .read(themeModeProvider.notifier)
+                        .setThemeMode(ThemeMode.light);
+                    sheetContext.pop();
                   },
                 ),
                 ListTile(
@@ -94,15 +110,36 @@ class ThemeSelectionButton extends ConsumerWidget {
                     'Siyah Tema',
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  trailing: isDark
-                      ? Icon(Icons.check_circle_rounded, color: colorScheme.primary)
+                  trailing: ref.read(themeModeProvider) == ThemeMode.dark
+                      ? Icon(
+                          Icons.check_circle_rounded,
+                          color: colorScheme.primary,
+                        )
                       : null,
                   onTap: () {
-                    ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark);
-                    Navigator.of(sheetContext).pop();
+                    ref
+                        .read(themeModeProvider.notifier)
+                        .setThemeMode(ThemeMode.dark);
+                    sheetContext.pop();
                   },
                 ),
                 const SizedBox(height: 8),
+                ListTile(
+                  leading: const Icon(Icons.brightness_auto_outlined),
+                  title: const Text('Sistem teması'),
+                  trailing: ref.read(themeModeProvider) == ThemeMode.system
+                      ? Icon(
+                          Icons.check_circle_rounded,
+                          color: colorScheme.primary,
+                        )
+                      : null,
+                  onTap: () {
+                    ref
+                        .read(themeModeProvider.notifier)
+                        .setThemeMode(ThemeMode.system);
+                    sheetContext.pop();
+                  },
+                ),
               ],
             ),
           ),

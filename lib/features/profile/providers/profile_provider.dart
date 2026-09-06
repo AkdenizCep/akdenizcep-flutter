@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/providers/user_provider.dart';
+import '../../../shared/providers/event_feed_provider.dart';
 import '../models/profile_club_summary.dart';
 import '../models/profile_event_summary.dart';
 import '../models/profile_rated_meal.dart';
@@ -25,15 +26,15 @@ class ProfilePhotoController extends AutoDisposeAsyncNotifier<void> {
     if (state.isLoading) return;
     state = const AsyncLoading();
     try {
-      final user = ref.read(currentUserProvider).valueOrNull ??
+      final user =
+          ref.read(currentUserProvider).valueOrNull ??
           await ref.read(currentUserProvider.future);
       if (user == null || user.id.isEmpty) {
         throw Exception('Profil fotoğrafı yüklemek için oturum açmalısın.');
       }
-      await ref.read(profilePhotoServiceProvider).uploadProfilePhoto(
-        uid: user.id,
-        jpegBytes: jpegBytes,
-      );
+      await ref
+          .read(profilePhotoServiceProvider)
+          .uploadProfilePhoto(uid: user.id, jpegBytes: jpegBytes);
       state = const AsyncData(null);
     } catch (error, stackTrace) {
       debugPrint('ProfilePhotoController.upload hatası: $error\n$stackTrace');
@@ -46,7 +47,8 @@ class ProfilePhotoController extends AutoDisposeAsyncNotifier<void> {
     if (state.isLoading) return;
     state = const AsyncLoading();
     try {
-      final user = ref.read(currentUserProvider).valueOrNull ??
+      final user =
+          ref.read(currentUserProvider).valueOrNull ??
           await ref.read(currentUserProvider.future);
       if (user == null || user.id.isEmpty) {
         throw Exception('Profil fotoğrafını kaldırmak için oturum açmalısın.');
@@ -75,6 +77,35 @@ final myEventsProvider = StreamProvider<List<ProfileEventSummary>>((ref) {
   final user = ref.watch(currentUserProvider).valueOrNull;
   if (user == null) return Stream.value(const []);
   return ref.watch(profileServiceProvider).getMyEvents(user.id);
+});
+
+final joinedEventsProvider = Provider<AsyncValue<List<ProfileEventSummary>>>((
+  ref,
+) {
+  final user = ref.watch(currentUserProvider);
+  return user.when(
+    loading: () => const AsyncLoading(),
+    error: (error, stack) => AsyncError(error, stack),
+    data: (user) {
+      if (user == null) return const AsyncData([]);
+      return ref.watch(eventFeedProvider).whenData((events) {
+        final joined = events
+            .where((event) => event.isJoinedBy(user.id))
+            .map(
+              (event) => ProfileEventSummary(
+                id: event.id,
+                title: event.title,
+                date: event.date,
+                location: event.location,
+                clubId: event.clubId,
+              ),
+            )
+            .toList();
+        joined.sort((a, b) => b.date.compareTo(a.date));
+        return joined;
+      });
+    },
+  );
 });
 
 final myRatedMealsProvider = FutureProvider<List<ProfileRatedMeal>>((ref) {
