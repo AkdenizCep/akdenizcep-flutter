@@ -97,7 +97,7 @@ void main() {
     expect(find.text('12'), findsNWidgets(2));
   });
 
-  testWidgets('bir saati asan geri sayim 176px karta tasmaz', (tester) async {
+  testWidgets('bir saati asan geri sayim karta tasmaz', (tester) async {
     await tester.pumpWidget(
       wrap(const NearbyStopsRow(), now: DateTime(2026, 7, 27, 8, 23)),
     );
@@ -105,6 +105,66 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text('15 sa 32 dk sonra'), findsNWidgets(2));
+  });
+
+  testWidgets('geri sayimin hangi hat ve yone ait oldugunu gosterir', (
+    tester,
+  ) async {
+    final transferStop = stop(
+      'transfer',
+      name: 'DOĞU KAPISI GİRİŞİ',
+      servedBy: [service('AÜ102'), service('AÜ103', isReturn: true)],
+    );
+    final transferSchedules = [
+      RingSchedule(
+        lineId: 'au102_gidis',
+        weekday: const ['08:55'],
+        weekend: const [],
+      ),
+      RingSchedule(
+        lineId: 'au103_donus',
+        weekday: const ['08:51'],
+        weekend: const [],
+      ),
+    ];
+    final transferNearby = NearbyStop(
+      stop: transferStop,
+      distanceMeters: 120,
+      schedules: transferSchedules,
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          nearbyStopsProvider.overrideWith((ref) => [transferNearby]),
+          nearestStopProvider.overrideWith((ref) => transferNearby),
+          ringStopsProvider.overrideWith((ref) => [transferStop]),
+          ringSchedulesProvider.overrideWith(
+            (ref) => Stream.value(transferSchedules),
+          ),
+          routeShapesProvider.overrideWith((ref) => routeBundle()),
+          nowProvider.overrideWith((ref) => DateTime(2026, 7, 27, 8, 48)),
+          showWeekendProvider.overrideWith((ref) => false),
+        ],
+        child: const MaterialApp(home: Scaffold(body: NearbyStopsRow())),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('AÜ103'), findsOneWidget);
+    expect(find.text('Adli Tıp yönü'), findsOneWidget);
+    expect(find.text('3'), findsOneWidget);
+    expect(find.text('İlk duraktan 08:51'), findsOneWidget);
+    expect(find.text('Diğer hat'), findsOneWidget);
+    expect(find.text('AÜ102'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel(
+        'Sıradaki hat AÜ103, Adli Tıp yönü. '
+        'İlk duraktan 08:51, 3 dakika sonra.',
+      ),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('ulasim ana ekrani butun halinde hatasiz cizilir', (
