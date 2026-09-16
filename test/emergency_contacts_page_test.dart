@@ -18,33 +18,36 @@ void main() {
 
     for (final text in [
       'Kampüs Güvenliği',
-      'GÜVENLİK İHBAR HATTI',
-      '0242 310 22 22',
+      'Güvenlik İhbar Hattı',
+      '0 242 310 22 22',
       'Yerleşke içinden dahili 112 veya 22 22',
       'Koruma ve Güvenlik Şube Müdürlüğü',
       'Güvenlik Amirliği',
       'Güvenlik Şefliği',
       'Güvenlik Trafik',
       '0 242 310 17 41',
-      'Santrali Ara  •  0242 227 44 00',
+      '0 242 227 44 00',
       'Meltem Kapısı',
-      '1664',
+      'Doğu kapısı · Dahili 1664',
       'Toros Kapısı',
-      '3379',
+      'Güney kapısı · Dahili 3379',
       'Uncalı Kapısı',
-      '6921',
+      'Batı kapısı · Dahili 6921',
       'Teknokent Kapısı',
-      '6013',
+      'Kuzey kapısı · Dahili 6013',
     ]) {
       expect(find.text(text), findsOneWidget);
     }
 
-    expect(find.text('DAHİLİ'), findsNWidgets(4));
-    expect(find.text('Şimdi Ara'), findsOneWidget);
+    expect(find.textContaining('kapısı · Dahili'), findsNWidgets(4));
+    expect(find.textContaining('Büro hattı'), findsNWidgets(4));
     expect(find.textContaining('7/24'), findsNothing);
     expect(find.textContaining('Ara 112'), findsNothing);
     expect(find.textContaining('Resmî kaynak'), findsNothing);
-    expect(find.textContaining('Nasıl aranır?'), findsOneWidget);
+    expect(
+      find.textContaining('Santrali ara, bağlantı kurulunca'),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
   });
 
@@ -73,6 +76,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('6013'), findsOneWidget);
+    expect(find.text('Kuzey kapısı · Dahili 6013'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }
