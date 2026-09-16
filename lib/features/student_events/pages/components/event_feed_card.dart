@@ -208,11 +208,7 @@ class _AuthorRow extends StatelessWidget {
   final EventCategory category;
   final VoidCallback? onTap;
 
-  const _AuthorRow({
-    required this.event,
-    required this.category,
-    this.onTap,
-  });
+  const _AuthorRow({required this.event, required this.category, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -267,14 +263,14 @@ class _AuthorRow extends StatelessWidget {
   }
 }
 
-class _AuthorAvatar extends StatelessWidget {
+class _AuthorAvatar extends ConsumerWidget {
   final FeedEvent event;
   final EventCategory category;
 
   const _AuthorAvatar({required this.event, required this.category});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final radius = BorderRadius.circular(15);
 
@@ -303,7 +299,7 @@ class _AuthorAvatar extends StatelessWidget {
       );
     }
 
-    return Container(
+    final fallback = Container(
       width: 46,
       height: 46,
       alignment: Alignment.center,
@@ -317,6 +313,23 @@ class _AuthorAvatar extends StatelessWidget {
           fontSize: 18,
           fontWeight: FontWeight.w900,
         ),
+      ),
+    );
+
+    final photoUrl =
+        ref.watch(userProfileProvider(event.authorUid)).valueOrNull?.photoUrl ??
+        '';
+    if (photoUrl.isEmpty) return fallback;
+
+    return ClipRRect(
+      borderRadius: radius,
+      child: CachedNetworkImage(
+        imageUrl: photoUrl,
+        width: 46,
+        height: 46,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => fallback,
+        errorWidget: (context, url, error) => fallback,
       ),
     );
   }

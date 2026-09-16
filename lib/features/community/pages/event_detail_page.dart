@@ -27,11 +27,8 @@ class EventDetailPage extends ConsumerWidget {
     final club = ref.watch(clubDetailProvider(clubId)).valueOrNull;
     final user = ref.watch(currentUserProvider).valueOrNull;
 
-    final canScan =
-        event?.qrAttendance == true &&
-        club != null &&
-        user != null &&
-        club.isAdmin(user.id);
+    final canEdit = club != null && user != null && club.isAdmin(user.id);
+    final canScan = event?.qrAttendance == true && canEdit;
 
     return EventDetailView(
       eventRef: eventRef,
@@ -43,6 +40,9 @@ class EventDetailPage extends ConsumerWidget {
           ? AttendanceEntryCard(
               onTap: () => context.push('/club/$clubId/event/$eventId/scan'),
             )
+          : null,
+      onEdit: canEdit
+          ? () => context.push('/club/$clubId/event/$eventId/edit')
           : null,
     );
   }

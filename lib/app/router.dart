@@ -45,6 +45,8 @@ import '../features/web_portal/pages/web_portal_page.dart';
 import '../shared/components/loading_overlay.dart';
 import '../shared/components/error_view.dart';
 import '../shared/constants/web_portals.dart';
+import '../shared/models/feed_event.dart';
+import '../shared/pages/event_image_viewer_page.dart';
 
 // Shell branch navigator keys — birden fazla branch aynı yolu paylaşmasın
 final _shellHomeKey = GlobalKey<NavigatorState>(debugLabel: 'shellHome');
@@ -126,6 +128,26 @@ final routerProvider = Provider<GoRouter>((ref) {
             ),
             routes: [
               GoRoute(
+                path: 'image',
+                parentNavigatorKey: _rootNavigatorKey,
+                builder: (context, state) => EventImageViewerPage(
+                  eventRef: EventRef.club(
+                    clubId: state.pathParameters['clubId']!,
+                    eventId: state.pathParameters['eventId']!,
+                  ),
+                ),
+              ),
+              GoRoute(
+                path: 'edit',
+                parentNavigatorKey: _rootNavigatorKey,
+                builder: (context, state) => EditEventPage(
+                  eventRef: EventRef.club(
+                    clubId: state.pathParameters['clubId']!,
+                    eventId: state.pathParameters['eventId']!,
+                  ),
+                ),
+              ),
+              GoRoute(
                 path: 'scan',
                 parentNavigatorKey: _rootNavigatorKey,
                 builder: (context, state) => EventAttendanceScanPage(
@@ -156,6 +178,22 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) =>
             StudentEventDetailPage(eventId: state.pathParameters['eventId']!),
+        routes: [
+          GoRoute(
+            path: 'image',
+            parentNavigatorKey: _rootNavigatorKey,
+            builder: (context, state) => EventImageViewerPage(
+              eventRef: EventRef.student(state.pathParameters['eventId']!),
+            ),
+          ),
+          GoRoute(
+            path: 'edit',
+            parentNavigatorKey: _rootNavigatorKey,
+            builder: (context, state) => EditEventPage(
+              eventRef: EventRef.student(state.pathParameters['eventId']!),
+            ),
+          ),
+        ],
       ),
       GoRoute(
         path: '/community',

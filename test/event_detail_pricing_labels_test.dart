@@ -2,6 +2,7 @@ import 'package:akdenizcep/shared/components/event_detail_view.dart';
 import 'package:akdenizcep/shared/models/feed_event.dart';
 import 'package:akdenizcep/shared/providers/event_feed_provider.dart';
 import 'package:akdenizcep/shared/providers/user_provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -50,6 +51,58 @@ void main() {
     expect(find.text('Ücretsiz'), findsNothing);
     expect(find.text('Kayıt gerekli'), findsNothing);
     expect(find.text('Katıl'), findsOneWidget);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(home: SizedBox.shrink()),
+      ),
+    );
+    await tester.pump();
+  });
+
+  testWidgets('etkinlik kapağı detay alanını cover ile doldurur', (
+    tester,
+  ) async {
+    const eventRef = EventRef.student('event-with-cover');
+    final event = FeedEvent(
+      id: eventRef.eventId,
+      source: EventSource.student,
+      title: 'Fotoğraflı Etkinlik',
+      date: DateTime(2026, 9, 10, 18),
+      location: 'Olbia A Salonu',
+      description: 'Etkinlik açıklaması',
+      imageUrl: 'https://example.com/event-cover.jpg',
+      category: 'Sosyal',
+      createdAt: DateTime(2026, 9),
+    );
+
+    final container = ProviderContainer(
+      overrides: [
+        eventDetailProvider(
+          eventRef,
+        ).overrideWith((ref) => Stream.value(event)),
+        eventCommentsProvider(
+          eventRef,
+        ).overrideWith((ref) => Stream.value(const [])),
+        currentUserProvider.overrideWith((ref) => Stream.value(null)),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(home: EventDetailView(eventRef: eventRef)),
+      ),
+    );
+    await tester.pump();
+
+    final image = tester.widget<CachedNetworkImage>(
+      find.byType(CachedNetworkImage).first,
+    );
+    expect(image.fit, BoxFit.cover);
+    expect(find.byType(Hero), findsOneWidget);
 
     await tester.pumpWidget(
       UncontrolledProviderScope(

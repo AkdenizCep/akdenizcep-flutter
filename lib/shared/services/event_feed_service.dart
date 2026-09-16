@@ -143,6 +143,33 @@ class EventFeedService {
     }
   }
 
+  Future<void> updateClubEvent({
+    required String clubId,
+    required String eventId,
+    required String adminUid,
+    required Map<String, dynamic> data,
+  }) async {
+    try {
+      final club = await _db.collection('clubs').doc(clubId).get();
+      final clubData = club.data();
+      final adminUids = List<String>.from(
+        clubData?['adminUids'] ?? const <String>[],
+      );
+      if (clubData?['adminUid'] != adminUid && !adminUids.contains(adminUid)) {
+        throw Exception('Bu etkinligi duzenleme yetkiniz yok.');
+      }
+
+      await _db
+          .collection('clubs')
+          .doc(clubId)
+          .collection(_clubEventsCollection)
+          .doc(eventId)
+          .update(data);
+    } on FirebaseException catch (e) {
+      throw Exception('Topluluk etkinligi guncellenemedi: ${e.message}');
+    }
+  }
+
   /// Katıl / ayrıl. Kontenjan dolu bir etkinliğe katılım transaction içinde
   /// reddedilir, böylece iki kullanıcı son koltuğu aynı anda alamaz.
   Future<void> toggleJoin({

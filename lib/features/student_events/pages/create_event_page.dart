@@ -8,8 +8,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../shared/components/category_dropdown_field.dart';
+import '../../../shared/components/error_view.dart';
+import '../../../shared/components/loading_overlay.dart';
 import '../../../shared/components/progress_snackbar.dart';
 import '../../../shared/models/club_option.dart';
+import '../../../shared/models/feed_event.dart';
 import '../../../shared/providers/event_feed_provider.dart';
 import '../../../shared/providers/nav_visibility_provider.dart';
 import '../../../shared/providers/user_provider.dart';
@@ -19,9 +22,31 @@ import '../../../shared/utils/event_category.dart';
 import '../providers/student_events_provider.dart';
 import 'event_location_picker_page.dart';
 
+class EditEventPage extends ConsumerWidget {
+  final EventRef eventRef;
+
+  const EditEventPage({super.key, required this.eventRef});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final eventAsync = ref.watch(eventDetailProvider(eventRef));
+
+    return eventAsync.when(
+      data: (event) =>
+          CreateEventPage(key: ValueKey(event.ref), initialEvent: event),
+      loading: () => const Scaffold(body: LoadingOverlay()),
+      error: (error, _) => Scaffold(
+        body: SafeArea(child: ErrorView(message: errorMessage(error))),
+      ),
+    );
+  }
+}
+
 /// Ekran 1f — etkinlik oluşturma.
 class CreateEventPage extends ConsumerStatefulWidget {
-  const CreateEventPage({super.key});
+  final FeedEvent? initialEvent;
+
+  const CreateEventPage({super.key, this.initialEvent});
 
   @override
   ConsumerState<CreateEventPage> createState() => _CreateEventPageState();
@@ -37,6 +62,7 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
 
   ClubOption? _selectedClub;
   File? _coverImage;
+  String _existingImageUrl = '';
   DateTime? _date;
   TimeOfDay? _time;
   EventLocationSelection? _selectedLocation;
@@ -44,6 +70,37 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
   bool _hasQuota = false;
   bool _qrAttendance = false;
   bool _submitting = false;
+
+  bool get _isEditing => widget.initialEvent != null;
+  bool get _isClubEvent =>
+      widget.initialEvent?.isClubEvent == true || _selectedClub != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final event = widget.initialEvent;
+    if (event == null) return;
+
+    _titleController.text = event.title;
+    _descriptionController.text = event.description;
+    _existingImageUrl = event.imageUrl;
+    _date = DateUtils.dateOnly(event.date);
+    _time = TimeOfDay.fromDateTime(event.date);
+    if (event.locationLatitude != null && event.locationLongitude != null) {
+      _selectedLocation = (
+        title: event.location,
+        latitude: event.locationLatitude!,
+        longitude: event.locationLongitude!,
+      );
+    }
+    _categoryId = EventCategory.resolve(
+      event.category,
+      fallbackText: '${event.title} ${event.description}',
+    ).id;
+    _hasQuota = event.capacity != null;
+    _quotaController.text = event.capacity?.toString() ?? '30';
+    _qrAttendance = event.qrAttendance;
+  }
 
   @override
   void dispose() {
@@ -76,7 +133,10 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
         imageQuality: 85,
       );
       if (picked == null) return;
-      setState(() => _coverImage = File(picked.path));
+      setState(() {
+        _coverImage = File(picked.path);
+        _existingImageUrl = '';
+      });
     } catch (e) {
       if (!mounted) return;
       showProgressSnackBar(
@@ -123,7 +183,7 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
 
     setState(() => _submitting = true);
     try {
-      var imageUrl = '';
+      var imageUrl = _existingImageUrl;
       if (_coverImage != null) {
         imageUrl = await CloudinaryService().uploadImage(
           file: _coverImage!,
@@ -137,7 +197,36 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
       final club = _selectedClub;
       final location = _selectedLocation!;
 
-      if (club != null) {
+      final data = <String, dynamic>{
+        'title': _titleController.text.trim(),
+        'date': _eventDateTime,
+        'location': location.title,
+        'locationLatitude': location.latitude,
+        'locationLongitude': location.longitude,
+        'description': _descriptionController.text.trim(),
+        'category': _categoryId,
+        'imageUrl': imageUrl,
+        'capacity': capacity,
+        if (_isClubEvent) 'qrAttendance': _qrAttendance,
+      };
+
+      if (_isEditing) {
+        final event = widget.initialEvent!;
+        if (event.isClubEvent) {
+          await ref
+              .read(eventFeedServiceProvider)
+              .updateClubEvent(
+                clubId: event.clubId!,
+                eventId: event.id,
+                adminUid: user.id,
+                data: data,
+              );
+        } else {
+          await ref
+              .read(studentEventsServiceProvider)
+              .updateEvent(eventId: event.id, authorUid: user.id, data: data);
+        }
+      } else if (club != null) {
         await ref
             .read(eventFeedServiceProvider)
             .createClubEvent(
@@ -191,8 +280,9 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final adminClubs =
-        ref.watch(adminClubsProvider).valueOrNull ?? const <ClubOption>[];
+    final adminClubs = _isEditing
+        ? const <ClubOption>[]
+        : ref.watch(adminClubsProvider).valueOrNull ?? const <ClubOption>[];
 
     return Scaffold(
       body: SafeArea(
@@ -201,7 +291,10 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
           children: [
             Column(
               children: [
-                _TopBar(onClose: () => context.pop()),
+                _TopBar(
+                  title: _isEditing ? 'Etkinliği Düzenle' : 'Etkinlik Oluştur',
+                  onClose: () => context.pop(),
+                ),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.fromLTRB(20, 12, 20, 150),
@@ -223,8 +316,12 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
                         ],
                         _CoverPicker(
                           image: _coverImage,
+                          imageUrl: _existingImageUrl,
                           onTap: _pickCover,
-                          onClear: () => setState(() => _coverImage = null),
+                          onClear: () => setState(() {
+                            _coverImage = null;
+                            _existingImageUrl = '';
+                          }),
                         ),
                         const SizedBox(height: 22),
                         const _FieldLabel('Başlık'),
@@ -321,7 +418,7 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
                           onChanged: (value) =>
                               setState(() => _hasQuota = value),
                         ),
-                        if (_selectedClub != null) ...[
+                        if (_isClubEvent) ...[
                           const SizedBox(height: 14),
                           _QrAttendanceCard(
                             enabled: _qrAttendance,
@@ -342,6 +439,7 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
               child: _SubmitBar(
                 enabled: _canSubmit,
                 submitting: _submitting,
+                editing: _isEditing,
                 onPressed: _submit,
               ),
             ),
@@ -353,9 +451,10 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
 }
 
 class _TopBar extends StatelessWidget {
+  final String title;
   final VoidCallback onClose;
 
-  const _TopBar({required this.onClose});
+  const _TopBar({required this.title, required this.onClose});
 
   @override
   Widget build(BuildContext context) {
@@ -370,7 +469,7 @@ class _TopBar extends StatelessWidget {
           ),
           Expanded(
             child: Text(
-              'Etkinlik Oluştur',
+              title,
               textAlign: TextAlign.center,
               style: Theme.of(
                 context,
@@ -604,11 +703,13 @@ class _AuthorModeOption extends StatelessWidget {
 
 class _CoverPicker extends StatelessWidget {
   final File? image;
+  final String imageUrl;
   final VoidCallback onTap;
   final VoidCallback onClear;
 
   const _CoverPicker({
     required this.image,
+    required this.imageUrl,
     required this.onTap,
     required this.onClear,
   });
@@ -618,17 +719,30 @@ class _CoverPicker extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    if (image != null) {
+    if (image != null || imageUrl.isNotEmpty) {
       return Stack(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(18),
-            child: Image.file(
-              image!,
-              height: 150,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+            child: image != null
+                ? Image.file(
+                    image!,
+                    height: 150,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  )
+                : Image.network(
+                    imageUrl,
+                    height: 150,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => Container(
+                      height: 150,
+                      color: colorScheme.surfaceContainerHighest,
+                      alignment: Alignment.center,
+                      child: const Icon(Icons.broken_image_outlined),
+                    ),
+                  ),
           ),
           Positioned(
             top: 8,
@@ -923,11 +1037,13 @@ class _QrAttendanceCard extends StatelessWidget {
 class _SubmitBar extends StatelessWidget {
   final bool enabled;
   final bool submitting;
+  final bool editing;
   final VoidCallback onPressed;
 
   const _SubmitBar({
     required this.enabled,
     required this.submitting,
+    required this.editing,
     required this.onPressed,
   });
 
@@ -972,8 +1088,15 @@ class _SubmitBar extends StatelessWidget {
                     color: colorScheme.onPrimary,
                   ),
                 )
-              : const Icon(Icons.campaign_rounded, size: 22),
-          label: Text(submitting ? 'Paylaşılıyor...' : 'Etkinliği Paylaş'),
+              : Icon(
+                  editing ? Icons.save_rounded : Icons.campaign_rounded,
+                  size: 22,
+                ),
+          label: Text(
+            submitting
+                ? (editing ? 'Kaydediliyor...' : 'Paylaşılıyor...')
+                : (editing ? 'Değişiklikleri Kaydet' : 'Etkinliği Paylaş'),
+          ),
         ),
       ),
     );

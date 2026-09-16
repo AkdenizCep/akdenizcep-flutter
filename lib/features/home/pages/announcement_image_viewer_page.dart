@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../shared/components/swipe_down_image_viewer.dart';
 import '../../../shared/utils/error_message.dart';
 import '../models/announcement.dart';
 import '../providers/home_provider.dart';
@@ -39,9 +40,8 @@ class AnnouncementImageViewerPage extends ConsumerWidget {
           }
           return _ZoomableImage(announcement: announcement);
         },
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: Colors.white),
-        ),
+        loading: () =>
+            const Center(child: CircularProgressIndicator(color: Colors.white)),
         error: (e, _) => _ViewerMessage(text: errorMessage(e)),
       ),
     );
@@ -55,9 +55,8 @@ class _ZoomableImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InteractiveViewer(
-      minScale: 1,
-      maxScale: 4,
+    return SwipeDownImageViewer(
+      onDismiss: () => Navigator.of(context).pop(),
       child: Center(
         child: Hero(
           tag: 'announcement-image-${announcement.id}',
@@ -92,7 +91,10 @@ class _ViewerMessage extends StatelessWidget {
         child: Text(
           text,
           textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );

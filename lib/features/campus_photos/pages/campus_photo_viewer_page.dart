@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../shared/components/progress_snackbar.dart';
+import '../../../shared/components/swipe_down_image_viewer.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../shared/utils/error_message.dart';
 import '../../../shared/utils/relative_time.dart';
@@ -33,9 +34,8 @@ class CampusPhotoViewerPage extends ConsumerWidget {
           }
           return _PhotoView(photo: photo);
         },
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: Colors.white),
-        ),
+        loading: () =>
+            const Center(child: CircularProgressIndicator(color: Colors.white)),
         error: (e, _) => _ViewerMessage(text: errorMessage(e)),
       ),
     );
@@ -50,9 +50,7 @@ class _PhotoView extends ConsumerWidget {
   Future<void> _toggleLike(BuildContext context, WidgetRef ref) async {
     final uid = ref.read(currentUserProvider).valueOrNull?.id;
     if (uid == null) return;
-    await ref
-        .read(photoLikeProvider.notifier)
-        .toggle(photo: photo, uid: uid);
+    await ref.read(photoLikeProvider.notifier).toggle(photo: photo, uid: uid);
   }
 
   Future<void> _delete(BuildContext context, WidgetRef ref) async {
@@ -130,9 +128,8 @@ class _PhotoView extends ConsumerWidget {
       child: Stack(
         children: [
           Positioned.fill(
-            child: InteractiveViewer(
-              minScale: 1,
-              maxScale: 4,
+            child: SwipeDownImageViewer(
+              onDismiss: () => Navigator.of(context).pop(),
               child: Center(
                 child: Hero(
                   tag: 'campus-photo-${photo.id}',
@@ -246,7 +243,10 @@ class _TopBar extends StatelessWidget {
           if (isOwner)
             IconButton(
               onPressed: onDelete,
-              icon: const Icon(Icons.delete_outline_rounded, color: Colors.white),
+              icon: const Icon(
+                Icons.delete_outline_rounded,
+                color: Colors.white,
+              ),
             ),
         ],
       ),
@@ -342,7 +342,10 @@ class _ViewerMessage extends StatelessWidget {
         child: Text(
           text,
           textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );

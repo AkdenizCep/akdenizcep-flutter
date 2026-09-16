@@ -10,6 +10,7 @@ import '../utils/event_category.dart';
 class EventVisual extends StatelessWidget {
   final String imageUrl;
   final EventCategory category;
+  final BoxFit fit;
 
   /// Sağ altta taşan filigran ikon boyutu. `null` ise filigran çizilmez.
   final double? watermarkSize;
@@ -22,6 +23,7 @@ class EventVisual extends StatelessWidget {
     super.key,
     required this.imageUrl,
     required this.category,
+    this.fit = BoxFit.cover,
     this.watermarkSize = 170,
     this.scrimHeight = 110,
     this.scrimOpacity = 0.45,
@@ -37,13 +39,11 @@ class EventVisual extends StatelessWidget {
         if (imageUrl.isNotEmpty)
           CachedNetworkImage(
             imageUrl: imageUrl,
-            fit: BoxFit.cover,
+            fit: fit,
             placeholder: (context, _) =>
                 ColoredBox(color: colorScheme.surfaceContainer),
-            errorWidget: (context, _, _) => _Fallback(
-              category: category,
-              watermarkSize: watermarkSize,
-            ),
+            errorWidget: (context, _, _) =>
+                _Fallback(category: category, watermarkSize: watermarkSize),
           )
         else
           _Fallback(category: category, watermarkSize: watermarkSize),

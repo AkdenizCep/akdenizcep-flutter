@@ -19,10 +19,13 @@ class StudentEventDetailPage extends ConsumerWidget {
     final event = ref.watch(eventDetailProvider(eventRef)).valueOrNull;
     final currentUser = ref.watch(currentUserProvider).valueOrNull;
     final isAuthor =
-        currentUser != null && event != null && event.authorUid == currentUser.id;
+        currentUser != null &&
+        event != null &&
+        event.authorUid == currentUser.id;
 
     return EventDetailView(
       eventRef: eventRef,
+      onEdit: isAuthor ? () => context.push('/event/$eventId/edit') : null,
       onDelete: isAuthor
           ? () async {
               await ref

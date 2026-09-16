@@ -76,8 +76,10 @@ class _DetailContent extends StatelessWidget {
                 children: [
                   Text(
                     announcement.title,
-                    style: Theme.of(context).textTheme.headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.w800, height: 1.28),
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      height: 1.28,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Row(
@@ -90,13 +92,10 @@ class _DetailContent extends StatelessWidget {
                       const SizedBox(width: 6),
                       Text(
                         relativeTime(announcement.createdAt),
-                        style: Theme.of(context).textTheme.bodyMedium
-                            ?.copyWith(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant,
-                              fontWeight: FontWeight.w600,
-                            ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ),
@@ -153,12 +152,14 @@ class _AnnouncementHero extends StatelessWidget {
             right: 0,
             bottom: 0,
             height: 130,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black45],
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black45],
+                  ),
                 ),
               ),
             ),

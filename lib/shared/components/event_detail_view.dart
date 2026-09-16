@@ -10,6 +10,7 @@ import '../models/feed_event.dart';
 import '../providers/event_feed_provider.dart';
 import '../providers/nav_visibility_provider.dart';
 import '../providers/user_provider.dart';
+import '../pages/event_image_viewer_page.dart';
 import '../utils/error_message.dart';
 import '../utils/event_category.dart';
 import '../utils/event_map_links.dart';
@@ -36,6 +37,9 @@ class EventDetailView extends ConsumerStatefulWidget {
   final Widget? attendanceCard;
 
   /// Yalnızca etkinliğin sahibi için dolu gelir.
+  final VoidCallback? onEdit;
+
+  /// Yalnızca etkinliğin sahibi için dolu gelir.
   final Future<void> Function()? onDelete;
 
   const EventDetailView({
@@ -43,6 +47,7 @@ class EventDetailView extends ConsumerStatefulWidget {
     required this.eventRef,
     this.clubCard,
     this.attendanceCard,
+    this.onEdit,
     this.onDelete,
   });
 
@@ -93,6 +98,13 @@ class _EventDetailViewState extends ConsumerState<EventDetailView>
               _Hero(
                 event: event,
                 category: category,
+                onOpenImage: event.imageUrl.isEmpty
+                    ? null
+                    : () => context.push(
+                        event.isClubEvent
+                            ? '/club/${event.clubId}/event/${event.id}/image'
+                            : '/event/${event.id}/image',
+                      ),
                 isSaved: user?.savedEventIds.contains(event.id) ?? false,
                 onToggleSaved: user == null
                     ? null
@@ -166,6 +178,17 @@ class _EventDetailViewState extends ConsumerState<EventDetailView>
                       if (widget.attendanceCard != null) ...[
                         const SizedBox(height: 14),
                         widget.attendanceCard!,
+                      ],
+                      if (widget.onEdit != null) ...[
+                        const SizedBox(height: 14),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: widget.onEdit,
+                            icon: const Icon(Icons.edit_rounded),
+                            label: const Text('Etkinliği Düzenle'),
+                          ),
+                        ),
                       ],
                       const SizedBox(height: 22),
                       Text(
@@ -266,6 +289,7 @@ class _Hero extends StatelessWidget {
   final FeedEvent event;
   final EventCategory category;
   final bool isSaved;
+  final VoidCallback? onOpenImage;
   final VoidCallback? onToggleSaved;
   final Future<void> Function()? onDelete;
 
@@ -273,6 +297,7 @@ class _Hero extends StatelessWidget {
     required this.event,
     required this.category,
     required this.isSaved,
+    required this.onOpenImage,
     required this.onToggleSaved,
     required this.onDelete,
   });
@@ -287,12 +312,30 @@ class _Hero extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          EventVisual(
-            imageUrl: event.imageUrl,
-            category: category,
-            scrimHeight: 150,
-            scrimOpacity: 0.55,
-          ),
+          if (event.imageUrl.isNotEmpty)
+            Semantics(
+              button: true,
+              label: 'Etkinlik görselini tam ekran aç',
+              child: GestureDetector(
+                onTap: onOpenImage,
+                child: Hero(
+                  tag: eventImageHeroTag(event.ref),
+                  child: EventVisual(
+                    imageUrl: event.imageUrl,
+                    category: category,
+                    scrimHeight: 150,
+                    scrimOpacity: 0.55,
+                  ),
+                ),
+              ),
+            )
+          else
+            EventVisual(
+              imageUrl: event.imageUrl,
+              category: category,
+              scrimHeight: 150,
+              scrimOpacity: 0.55,
+            ),
           Positioned(
             top: topInset + 8,
             left: 20,
