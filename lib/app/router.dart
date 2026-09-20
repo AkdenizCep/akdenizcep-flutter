@@ -267,6 +267,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const MyQrPage(),
       ),
+      // Hem ana sayfadan hem kampüs sayfasından açılabilir — kök navigator'a
+      // eklenir ki geri tuşu, hangi sayfadan açıldığına bakmaksızın kaldığımız
+      // yere dönsün.
+      GoRoute(
+        path: '/academic-calendar',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AcademicCalendarPage(),
+      ),
       GoRoute(
         path: '/announcements',
         parentNavigatorKey: _rootNavigatorKey,
@@ -372,10 +380,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'emergency-contacts',
                     builder: (context, state) => const EmergencyContactsPage(),
-                  ),
-                  GoRoute(
-                    path: 'academic-calendar',
-                    builder: (context, state) => const AcademicCalendarPage(),
                   ),
                   GoRoute(
                     path: 'lost-found',

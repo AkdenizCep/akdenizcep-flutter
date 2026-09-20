@@ -7,6 +7,7 @@ import '../../../shared/components/error_view.dart';
 import '../../../shared/components/loading_overlay.dart';
 import '../../../shared/utils/error_message.dart';
 import '../../../shared/utils/relative_time.dart';
+import '../../../shared/utils/system_nav_inset.dart';
 import '../models/lost_found_category.dart';
 import '../models/lost_found_item.dart';
 import '../providers/lost_found_provider.dart';
@@ -20,6 +21,7 @@ class LostFoundPage extends ConsumerWidget {
     final itemsAsync = ref.watch(lostFoundItemsProvider);
     final filtered = ref.watch(filteredLostFoundItemsProvider);
     final myListingsOnly = ref.watch(showMyListingsOnlyProvider);
+    final extraLift = systemNavExtraLift(context);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Kayıp & Buluntu')),
@@ -33,7 +35,7 @@ class LostFoundPage extends ConsumerWidget {
                   return _EmptyState(myListingsOnly: myListingsOnly);
                 }
                 return ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
+                  padding: EdgeInsets.fromLTRB(16, 4, 16, 100 + extraLift),
                   itemCount: filtered.length,
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 10),
@@ -52,9 +54,11 @@ class LostFoundPage extends ConsumerWidget {
       // Uygulamanın yüzen alt navigasyon çubuğu ekranın en altına biniyor;
       // varsayılan FAB konumu onun arkasında kalıp görünmez olurdu (bkz.
       // student_events_page.dart'taki aynı çözüm). Çubuğa daha yakın dursun
-      // diye boşluk 120'den 90'a indirildi.
+      // diye boşluk giderek azaltıldı. Sabit 3 tuşlu sistem navigasyonu olan
+      // telefonlarda ekstra pay veriyoruz, yoksa buton o çubuğun arkasında
+      // kalır.
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 90),
+        padding: EdgeInsets.only(bottom: 40 + extraLift),
         child: FloatingActionButton.extended(
           onPressed: () => context.go('/campus/lost-found/create'),
           icon: const Icon(Icons.add_rounded),

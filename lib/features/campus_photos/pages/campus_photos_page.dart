@@ -8,6 +8,7 @@ import '../../../shared/components/loading_overlay.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../shared/utils/error_message.dart';
 import '../../../shared/utils/relative_time.dart';
+import '../../../shared/utils/system_nav_inset.dart';
 import '../models/campus_photo.dart';
 import '../providers/campus_photo_provider.dart';
 import 'components/photo_comments_sheet.dart';
@@ -18,6 +19,7 @@ class CampusPhotosPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final photosAsync = ref.watch(campusPhotosProvider);
+    final extraLift = systemNavExtraLift(context);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Kampüs Fotoğrafları')),
@@ -25,9 +27,9 @@ class CampusPhotosPage extends ConsumerWidget {
         data: (photos) {
           if (photos.isEmpty) return const _EmptyState();
           return ListView.separated(
-            padding: const EdgeInsets.fromLTRB(0, 4, 0, 100),
+            padding: EdgeInsets.fromLTRB(16, 12, 16, 100 + extraLift),
             itemCount: photos.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 14),
+            separatorBuilder: (context, index) => const SizedBox(height: 16),
             itemBuilder: (context, index) => _PhotoPost(photo: photos[index]),
           );
         },
@@ -35,7 +37,7 @@ class CampusPhotosPage extends ConsumerWidget {
         error: (e, _) => ErrorView(message: errorMessage(e)),
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 90),
+        padding: EdgeInsets.only(bottom: 10 + extraLift),
         child: FloatingActionButton.extended(
           onPressed: () => context.go('/campus/photos/create'),
           icon: const Icon(Icons.add_a_photo_outlined),
@@ -61,6 +63,7 @@ class _PhotoPost extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     ref.watch(photoLikeProvider);
     final likeNotifier = ref.read(photoLikeProvider.notifier);
@@ -70,22 +73,34 @@ class _PhotoPost extends ConsumerWidget {
     final commentCount =
         ref.watch(photoCommentsProvider(photo.id)).valueOrNull?.length ?? 0;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-          child: Row(
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.18 : 0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+            spreadRadius: -6,
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
               CircleAvatar(
                 radius: 17,
-                backgroundColor: colorScheme.surfaceContainerHighest,
+                backgroundColor: colorScheme.primaryContainer,
                 child: Text(
                   photo.authorName.isNotEmpty
                       ? photo.authorName[0].toUpperCase()
                       : '?',
                   style: TextStyle(
-                    color: colorScheme.onSurfaceVariant,
+                    color: colorScheme.onPrimaryContainer,
                     fontWeight: FontWeight.w800,
                     fontSize: 13,
                   ),
@@ -115,77 +130,115 @@ class _PhotoPost extends ConsumerWidget {
               ),
             ],
           ),
-        ),
-        GestureDetector(
-          onTap: () => context.go('/campus/photos/${photo.id}'),
-          child: Hero(
-            tag: 'campus-photo-${photo.id}',
-            child: AspectRatio(
-              aspectRatio: 4 / 3,
-              child: CachedNetworkImage(
-                imageUrl: photo.imageUrl,
-                fit: BoxFit.cover,
-                placeholder: (context, url) =>
-                    Container(color: colorScheme.surfaceContainerHighest),
-                errorWidget: (context, url, error) => Container(
-                  color: colorScheme.surfaceContainerHighest,
-                  child: Icon(
-                    Icons.image_not_supported_outlined,
-                    color: colorScheme.onSurfaceVariant,
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: () => context.go('/campus/photos/${photo.id}'),
+            child: Hero(
+              tag: 'campus-photo-${photo.id}',
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: AspectRatio(
+                  aspectRatio: 4 / 3,
+                  child: CachedNetworkImage(
+                    imageUrl: photo.imageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) =>
+                        Container(color: colorScheme.surfaceContainerHighest),
+                    errorWidget: (context, url, error) => Container(
+                      color: colorScheme.surfaceContainerHighest,
+                      child: Icon(
+                        Icons.image_not_supported_outlined,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(10, 6, 16, 0),
-          child: Row(
+          const SizedBox(height: 8),
+          Row(
             children: [
-              IconButton(
-                onPressed: () => _toggleLike(ref),
-                icon: Icon(
-                  liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                  color: liked ? const Color(0xFFE0245E) : colorScheme.onSurface,
-                ),
+              _StatAction(
+                icon: liked
+                    ? Icons.favorite_rounded
+                    : Icons.favorite_border_rounded,
+                iconColor: liked ? const Color(0xFFE0245E) : colorScheme.onSurface,
+                label: likeCount > 0 ? '$likeCount' : null,
+                onTap: () => _toggleLike(ref),
               ),
-              if (likeCount > 0)
-                Text(
-                  '$likeCount',
-                  style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
-                ),
-              const SizedBox(width: 6),
-              IconButton(
-                onPressed: () => PhotoCommentsSheet.show(context, photo.id),
-                icon: const Icon(Icons.mode_comment_outlined),
+              const SizedBox(width: 18),
+              _StatAction(
+                icon: Icons.mode_comment_outlined,
+                iconColor: colorScheme.onSurface,
+                label: commentCount > 0 ? '$commentCount' : null,
+                onTap: () => PhotoCommentsSheet.show(context, photo.id),
               ),
-              if (commentCount > 0)
-                Text(
-                  '$commentCount',
-                  style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
-                ),
             ],
           ),
-        ),
-        if (photo.caption.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-            child: Text.rich(
+          if (photo.caption.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text.rich(
               TextSpan(
                 children: [
                   TextSpan(
                     text: '${photo.authorName} ',
-                    style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
+                    style: textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                  TextSpan(
-                    text: photo.caption,
-                    style: textTheme.bodyMedium,
-                  ),
+                  TextSpan(text: photo.caption, style: textTheme.bodyMedium),
                 ],
               ),
             ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _StatAction extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String? label;
+  final VoidCallback onTap;
+
+  const _StatAction({
+    required this.icon,
+    required this.iconColor,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 22, color: iconColor),
+              if (label != null) ...[
+                const SizedBox(width: 5),
+                Text(
+                  label!,
+                  style: textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ],
           ),
-      ],
+        ),
+      ),
     );
   }
 }

@@ -11,6 +11,7 @@ import '../../../shared/providers/nav_visibility_provider.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../shared/utils/error_message.dart';
 import '../../../shared/utils/phone_launcher.dart';
+import '../../../shared/utils/system_nav_inset.dart';
 import '../../../shared/utils/web_launcher.dart';
 import '../providers/home_provider.dart';
 import 'components/announcement_slider.dart';
@@ -97,6 +98,7 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final extraLift = systemNavExtraLift(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -112,7 +114,7 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+        padding: EdgeInsets.fromLTRB(24, 16, 24, 24 + extraLift),
         child: Container(
           height: 68,
           decoration: BoxDecoration(
@@ -308,7 +310,7 @@ class HomeContentPage extends ConsumerWidget {
       body: SafeArea(
         bottom: false,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 110),
+          padding: EdgeInsets.only(bottom: 110 + systemNavExtraLift(context)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -475,7 +477,7 @@ class HomeContentPage extends ConsumerWidget {
                       iconBgColor: Theme.of(
                         context,
                       ).colorScheme.primaryContainer,
-                      onTap: () => context.go('/campus/academic-calendar'),
+                      onTap: () => context.push('/academic-calendar'),
                     ),
                     _QuickAccessCard(
                       title: 'Kampüs\nGüvenlik',

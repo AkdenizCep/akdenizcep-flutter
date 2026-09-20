@@ -39,7 +39,7 @@ class CampusPage extends ConsumerWidget {
         title: 'Akademik Takvim',
         description: 'Kayıt, sınav ve tatil tarihleri',
         icon: Icons.event_note_outlined,
-        onTap: () => context.go('/campus/academic-calendar'),
+        onTap: () => context.push('/academic-calendar'),
       ),
     ];
     final safetyServices = [

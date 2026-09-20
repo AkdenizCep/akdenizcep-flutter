@@ -8,6 +8,7 @@ import '../../../shared/components/swipe_down_image_viewer.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../shared/utils/error_message.dart';
 import '../../../shared/utils/relative_time.dart';
+import '../../../shared/utils/system_nav_inset.dart';
 import '../models/campus_photo.dart';
 import '../providers/campus_photo_provider.dart';
 import 'components/photo_comments_sheet.dart';
@@ -84,6 +85,12 @@ class _PhotoView extends ConsumerWidget {
     final router = GoRouter.of(context);
     final messenger = ScaffoldMessenger.of(context);
     final colorScheme = Theme.of(context).colorScheme;
+    final snackBarMargin = EdgeInsets.fromLTRB(
+      16,
+      0,
+      16,
+      40 + systemNavExtraLift(context),
+    );
 
     try {
       await ref
@@ -98,7 +105,7 @@ class _PhotoView extends ConsumerWidget {
         // Varsayılan floating davranışı FAB'ın üstüne çıkmasın diye bildirimi
         // yükseğe kaldırıyor; geri dönülen listede FAB olduğu için burada
         // yüzen alt nav çubuğuna yakın, sabit bir konum veriliyor.
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 90),
+        margin: snackBarMargin,
       );
     } catch (e) {
       showProgressSnackBar(
@@ -108,7 +115,7 @@ class _PhotoView extends ConsumerWidget {
         message: errorMessage(e),
         icon: Icons.error_outline_rounded,
         accentColor: colorScheme.error,
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 90),
+        margin: snackBarMargin,
       );
     }
   }
