@@ -31,10 +31,12 @@ class EventFeedService {
   Stream<List<FeedEvent>> getFeed() {
     final studentEvents = _db
         .collection(_studentCollection)
+        .where('moderationStatus', isEqualTo: 'visible')
         .orderBy('date', descending: true)
         .snapshots();
     final clubEvents = _db
         .collectionGroup(_clubEventsCollection)
+        .where('moderationStatus', isEqualTo: 'visible')
         .orderBy('date', descending: true)
         .snapshots();
     final clubs = _db.collection('clubs').snapshots();
@@ -137,6 +139,9 @@ class EventFeedService {
             'attendeeIds': [adminUid],
             'attendeeCount': 1,
             'createdAt': FieldValue.serverTimestamp(),
+            'moderationStatus': 'visible',
+            'moderatedAt': null,
+            'moderatedBy': null,
           });
     } on FirebaseException catch (e) {
       throw Exception('Topluluk etkinligi olusturulamadi: ${e.message}');
@@ -217,6 +222,7 @@ class EventFeedService {
   Stream<List<EventComment>> getComments(EventRef ref) {
     return _docRef(ref)
         .collection('comments')
+        .where('moderationStatus', isEqualTo: 'visible')
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
@@ -238,6 +244,9 @@ class EventFeedService {
         'authorName': authorName,
         'text': text,
         'createdAt': FieldValue.serverTimestamp(),
+        'moderationStatus': 'visible',
+        'moderatedAt': null,
+        'moderatedBy': null,
       });
     } on FirebaseException catch (e) {
       throw Exception('Yorum eklenemedi: ${e.message}');

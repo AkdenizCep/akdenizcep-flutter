@@ -2,12 +2,40 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/lost_found_item.dart';
 
+Map<String, dynamic> lostFoundCreatePayload({
+  required String authorUid,
+  required String authorName,
+  required String type,
+  required String title,
+  required String description,
+  required String category,
+  required String location,
+  String imageUrl = '',
+  String contactPhone = '',
+}) => {
+  'authorUid': authorUid,
+  'authorName': authorName,
+  'type': type,
+  'title': title,
+  'description': description,
+  'category': category,
+  'imageUrl': imageUrl,
+  'location': location,
+  'contactPhone': contactPhone,
+  'isResolved': false,
+  'createdAt': FieldValue.serverTimestamp(),
+  'moderationStatus': 'visible',
+  'moderatedAt': null,
+  'moderatedBy': null,
+};
+
 class LostFoundService {
   final _db = FirebaseFirestore.instance;
 
   Stream<List<LostFoundItem>> getItems() {
     return _db
         .collection('lost_found_items')
+        .where('moderationStatus', isEqualTo: 'visible')
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
@@ -29,19 +57,17 @@ class LostFoundService {
     String contactPhone = '',
   }) async {
     try {
-      await _db.collection('lost_found_items').add({
-        'authorUid': authorUid,
-        'authorName': authorName,
-        'type': type,
-        'title': title,
-        'description': description,
-        'category': category,
-        'imageUrl': imageUrl,
-        'location': location,
-        'contactPhone': contactPhone,
-        'isResolved': false,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+      await _db.collection('lost_found_items').add(lostFoundCreatePayload(
+        authorUid: authorUid,
+        authorName: authorName,
+        type: type,
+        title: title,
+        description: description,
+        category: category,
+        location: location,
+        imageUrl: imageUrl,
+        contactPhone: contactPhone,
+      ));
     } on FirebaseException catch (e) {
       throw Exception('İlan oluşturulamadı: ${e.message}');
     }

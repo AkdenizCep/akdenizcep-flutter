@@ -3,12 +3,30 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/campus_photo.dart';
 import '../models/photo_comment.dart';
 
+Map<String, dynamic> campusPhotoCreatePayload({
+  required String authorUid,
+  required String authorName,
+  required String imageUrl,
+  String caption = '',
+}) => {
+  'authorUid': authorUid,
+  'authorName': authorName,
+  'imageUrl': imageUrl,
+  'caption': caption,
+  'likedBy': <String>[],
+  'createdAt': FieldValue.serverTimestamp(),
+  'moderationStatus': 'visible',
+  'moderatedAt': null,
+  'moderatedBy': null,
+};
+
 class CampusPhotoService {
   final _db = FirebaseFirestore.instance;
 
   Stream<List<CampusPhoto>> getPhotos() {
     return _db
         .collection('campus_photos')
+        .where('moderationStatus', isEqualTo: 'visible')
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
@@ -25,14 +43,12 @@ class CampusPhotoService {
     String caption = '',
   }) async {
     try {
-      await _db.collection('campus_photos').add({
-        'authorUid': authorUid,
-        'authorName': authorName,
-        'imageUrl': imageUrl,
-        'caption': caption,
-        'likedBy': <String>[],
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+      await _db.collection('campus_photos').add(campusPhotoCreatePayload(
+        authorUid: authorUid,
+        authorName: authorName,
+        imageUrl: imageUrl,
+        caption: caption,
+      ));
     } on FirebaseException catch (e) {
       throw Exception('Fotoğraf paylaşılamadı: ${e.message}');
     }
@@ -76,6 +92,7 @@ class CampusPhotoService {
         .collection('campus_photos')
         .doc(photoId)
         .collection('comments')
+        .where('moderationStatus', isEqualTo: 'visible')
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
@@ -101,6 +118,9 @@ class CampusPhotoService {
             'authorName': authorName,
             'text': text,
             'createdAt': FieldValue.serverTimestamp(),
+            'moderationStatus': 'visible',
+            'moderatedAt': null,
+            'moderatedBy': null,
           });
     } on FirebaseException catch (e) {
       throw Exception('Yorum gönderilemedi: ${e.message}');

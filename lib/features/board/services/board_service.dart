@@ -8,6 +8,7 @@ class BoardService {
   Stream<List<BoardItem>> getItems() {
     return _db
         .collection('board')
+        .where('moderationStatus', isEqualTo: 'visible')
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
@@ -30,6 +31,9 @@ class BoardService {
         'content': content,
         'category': category,
         'createdAt': FieldValue.serverTimestamp(),
+        'moderationStatus': 'visible',
+        'moderatedAt': null,
+        'moderatedBy': null,
       });
     } on FirebaseException catch (e) {
       throw Exception('Ilan olusturulamadi: ${e.message}');

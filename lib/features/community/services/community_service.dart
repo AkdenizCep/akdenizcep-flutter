@@ -32,6 +32,7 @@ class CommunityService {
         .collection('clubs')
         .doc(clubId)
         .collection('club-events')
+        .where('moderationStatus', isEqualTo: 'visible')
         .orderBy('date', descending: true)
         .snapshots()
         .map(

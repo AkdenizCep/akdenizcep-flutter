@@ -25,6 +25,7 @@ class ProfileService {
     return _db
         .collection('student-events')
         .where('authorUid', isEqualTo: uid)
+        .where('moderationStatus', isEqualTo: 'visible')
         .snapshots()
         .map((snap) {
           final events = snap.docs

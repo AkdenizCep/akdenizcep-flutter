@@ -95,6 +95,15 @@ test("süresi geçmiş kısıtlama yeni paylaşıma engel olmaz", {skip: !rulesE
   await assertSucceeds(addDoc(collection(db("student"), "board"), boardPayload()));
 });
 
+test("kısıtlama alanları henüz taşınmamış öğrenci görünür içerik oluşturabilir", {skip: !rulesEnabled}, async () => {
+  await env.withSecurityRulesDisabled(async (context) => {
+    await setDoc(doc(context.firestore(), "users/student"), {
+      name: "Student", email: "student@ogr.akdeniz.edu.tr", studentId: "2",
+    });
+  });
+  await assertSucceeds(addDoc(collection(db("student"), "board"), boardPayload()));
+});
+
 test("kısıtlama beğeni ve etkinliğe katılım alanlarını engellemez", {skip: !rulesEnabled}, async () => {
   await seed("indefinite");
   await env.withSecurityRulesDisabled(async (context) => {
