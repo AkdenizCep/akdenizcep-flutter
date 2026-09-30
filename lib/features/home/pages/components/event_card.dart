@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../shared/components/event_visual.dart';
 import '../../../../shared/models/feed_event.dart';
+import '../../../../shared/utils/event_category.dart';
 
 class EventCard extends StatelessWidget {
   final FeedEvent event;
@@ -13,6 +15,10 @@ class EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final dateStr = DateFormat('dd MMMM', 'tr').format(event.date);
     final timeStr = DateFormat('HH:mm', 'tr').format(event.date);
+    final category = EventCategory.resolve(
+      event.category,
+      fallbackText: '${event.title} ${event.description}',
+    );
 
     return GestureDetector(
       onTap: onTap,
@@ -31,22 +37,20 @@ class EventCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 120,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                ),
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
               ),
-              child: Icon(
-                Icons.event,
-                size: 40,
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+              child: SizedBox(
+                height: 120,
+                width: double.infinity,
+                child: EventVisual(
+                  imageUrl: event.imageUrl,
+                  category: category,
+                  watermarkSize: 90,
+                  scrimHeight: 0,
+                ),
               ),
             ),
             Padding(
