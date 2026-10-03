@@ -1,135 +1,120 @@
-# Handoff: Ulaşım (Ring) — ana ekran, yakındaki duraklar haritası, durak yaprağı
+# Handoff: Ulaşım (Ring) — ana ekran (9a) + tüm tarife yaprağı (9c)
 
-Kaynak tasarım dosyası: `Ulasim.dc.html` (bu klasördeki kopya). Bu paketin kapsadığı üç ekran:
+Kaynak tasarım: `Ulasim.dc.html` (bu klasördeki kopya). **Yalnızca iki ekran geçerlidir:**
 
-| Tasarım id | Ekran | Uygulanacak dosya |
+| Tasarım id | Ekran | Uygulanacak yer |
 | --- | --- | --- |
-| **5a** | Ulaşım ana ekranı (revize) | `lib/features/ring/pages/ring_page.dart` + components |
-| **2b** | Yakındaki duraklar — tam ekran harita | `lib/features/ring/pages/ring_stops_page.dart`, `components/stops_map.dart` |
-| **5b** | Durak detayı — yarım sayfa yaprak | `lib/features/ring/pages/components/stop_detail_sheet.dart` |
+| **9a** | Ulaşım ana ekranı | `lib/features/ring/pages/ring_page.dart` + components |
+| **9c** | Tüm tarife — yaprak (bottom sheet) | `FullScheduleSheet`'in yerini alan yeni `TimetableSheet` |
 
-Diğer id'ler (1a–1c, 2a, 2c, 3a, 4a–4f, 5c, 5d) elenen alternatiflerdir — **uygulanmayacak**.
+`9b` (harita sayfası) dosyada durur ama **bu pakete dahil değildir** — "Haritada Gör" mevcut harita rotasına (`openStopsPage`) gider, o sayfaya dokunulmaz. Önceki paketteki 5a / 2b / 5b tasarımları **iptal**; eski README'yi kullanma.
 
-Hedef: Flutter + Riverpod + go_router, Google Maps (`google_maps_flutter`), Firebase RTDB.
-Ölçüler 390×844 (iPhone 13/14) referansıyla verilmiştir; hepsi mantıksal px.
+Hedef: Flutter + Riverpod + go_router. Ölçüler 390×844 referansıyla, mantıksal px.
 
 ---
 
+## Kavram: yön yok, **kalkış noktası** var
+
+Kullanıcıya "hangi yöne gidiyor" gösterilmez; **otobüsün nereden kalktığı** gösterilir. İki kalkış noktası vardır: **Adli Tıp** ve **Meltem Kapısı**. **AÜ102 ve AÜ103 her zaman aynı anda** görünür. Ana ekranın ve tarife yaprağının omurgası budur.
+
+Veri eşlemesi (**önce doğrula, uydurma**): her `RingSchedule` (hat + yön) için "kalkış noktası" = o tarifenin rotasındaki ilk durağın adı. Ana ekran, tarifeleri bu ada göre gruplar. Repoda bu bilgi türetilemiyorsa uygulamadan önce sor.
+
+Hat renkleri (yalnızca iki hat var): **ilk hat → `colorScheme.primary`, ikinci hat → `colorScheme.onSurface`** (beyaz metin). İkiden fazla hat çıkarsa palet için sor.
+
 ## Ortak dil
 
-Renkler `lib/app/theme.dart` içindeki mevcut şemadan gelir — **hiçbir yerde sabit hex yazma**:
+Hiçbir yerde sabit hex yazma — `lib/app/theme.dart` şemasını kullan:
 
 | Tasarımdaki değer | Tema karşılığı |
 | --- | --- |
 | `#135BEC` | `colorScheme.primary` |
-| `#E8F0FF` | `colorScheme.primaryContainer` |
-| `#082B76` | `colorScheme.onPrimaryContainer` |
-| `#171A22` | `colorScheme.onSurface` |
-| `#44474F` | `colorScheme.onSurfaceVariant` |
-| `#9AA1B0` | `onSurfaceVariant` @ ~0.7 alfa |
-| `#D6DCE8` / `#EDF1F7` | `colorScheme.outlineVariant` (kenarlıklarda ~0.6 alfa) |
-| `#F2F5FA` / `#F7F8FB` | `surfaceContainerLow` / `surfaceContainerHighest` |
+| `#E8F0FF` | `primaryContainer` |
+| `#171A22` | `onSurface` |
+| `#44474F` | `onSurfaceVariant` |
+| `#9AA1B0` / `#B4BAC6` | `onSurfaceVariant` @ ~0.7 / ~0.45 alfa |
+| `#D6DCE8` / `#EDF1F7` | `outlineVariant` (kenarlık) / bölücü çizgi ~0.6 alfa |
+| `#F2F5FA` / `#F7F8FB` | `surfaceContainerLow` / zemin |
 
-Tipografi: Roboto. Kullanılan ağırlıklar 900 (başlık/saat), 800 (etiket, buton), 700/600 (yardımcı metin), 500 (placeholder).
-Geometri: sayfa yatay kenarı **20**; hero kart radius **24–26**; kart radius **20–22**; chip/rozet radius **8–9**; dokunma hedefleri ≥ 44.
-Liste alt padding: `130 + MediaQuery.padding.bottom` (yüzen nav barın altında kalmasın) — mevcut değer korunur.
-İkonlar: Material Symbols Rounded → `Icons.*_rounded`. Yeni asset yok.
+Roboto; ağırlıklar 900 (saat, başlık), 800 (etiket), 700/600 (yardımcı). Sayfa yatay kenarı **20**, liste alt padding'i `130 + MediaQuery.padding.bottom`. İkonlar `Icons.*_rounded`. Yeni asset yok (harita önizlemesi hariç, aşağıya bak).
 
-Dil kuralı (mevcut kodun yorumundaki uyarı geçerli): üniversite durak bazlı saat yayınlamıyor. Gösterilen her saat **hattın kalkış noktasından ayrılma** zamanıdır. "varış", "gelir", "otobüs burada olur" gibi ifadeler kullanılmaz; her listenin altında `Saatler hattın kalkış noktasına aittir.` notu kalır.
+Dil kuralı: üniversite durak bazlı saat yayınlamıyor; her saat **kalkış noktasından ayrılma** saatidir. "varış / gelir / durağa ulaşır" yazma. "dk sonra" = kalkışa kalan süre. (Tasarımda not satırı yok; istersen tarife yaprağının altına "Saatler kalkış noktasına aittir." eklenebilir — sor.)
 
 ---
 
-## Ekran 5a — Ulaşım ana ekranı (revize)
+## 9a — Ulaşım ana ekranı
 
-Mevcut `_RingContent` sırası: header → hero → arama → sık kullanılan duraklar → 2'li ızgara.
-**Yeni sıra:**
+Sıra: **başlık → Yakındaki duraklar slider → Adli Tıp bloğu → Meltem Kapısı bloğu → alt buton satırı.** Eski hero kart (`NextDepartureCard`), hat pill'leri, arama çubuğu ve 2'li ızgara **kaldırılır**.
 
-1. `RingHeader` (değişmez): "AkdenizCep" üst satırı + "Ulaşım" başlığı + sağda 40×40 avatar.
-2. **`NextDepartureCard` (hero)** — mevcut kart korunur, **kartın içine yeni bir alt şerit eklenir**:
-   - Kartın alt kenarında `1px` `Colors.white @ 0.22` üst çizgi, üstünde 14 boşluk, üstündeki içerikten 16 sonra.
-   - Şerit üç eşit `Expanded`: **ÖNCEKİ**, **SONRAKİ**, **SON SEFER**.
-   - Etiketler: Roboto 700 / 9.5px / letterSpacing .08em / `white @ .70`.
-   - Değerler: Roboto 900 / 15px. ÖNCEKİ değeri `white @ .65` (geçmiş olduğu için soluk), diğer ikisi tam beyaz.
-   - Veri: `RingDepartures` üzerinden — `previousTime`, `upcoming` listesinin 2. elemanı (yani `nextTime`'dan sonraki kalkış), `times.last`. Değer yoksa `—` yazılır, satır gizlenmez.
-   - Bu şerit **yalnızca `departures.isToday`** iken canlı; hafta sonu/hafta içi tarifesi görüntüleniyorsa (`isToday == false`) ÖNCEKİ yerine ilk kalkış gösterilir ve alt açıklama satırı "Tarife görüntülüyorsun" der.
-3. **Arama satırı** — `RingSearchBar` (mevcut bileşen, radius 28 → tasarımdaki 20'ye çekilir; hint metni aynı) **+ sağında 50×50 favori butonu**:
-   - Satır: `Row(children: [Expanded(RingSearchBar), SizedBox(width:10), _FavoriteStopsButton()])`.
-   - Buton: 50×50, radius 20, `surface` zemin, `outlineVariant` 1px kenarlık, ortada 22px `Icons.star_rounded` `colorScheme.primary`.
-   - Davranış: favori duraklar yaprağını açar (`showModalBottomSheet`, `StopDetailSheet` ile aynı nav-gizleme sarmalayıcısı). Favori yoksa yaprakta "Henüz favori durağın yok — bir durağın yanındaki yıldıza dokun." boş durumu.
-4. **YAKINDAKİ DURAKLAR** başlığı (Roboto 900 / 11.5 / ls .09em / `onSurface`) + sağda "Tümü ›" (Roboto 800 / 11.5 / `primary`, dokunma → duraklar sayfası).
-   - Mevcut `FavoriteStopsRow` bu bölümün yerini alır ve **`NearbyStopsRow`** olarak yeniden adlandırılır. "SIK KULLANILAN DURAKLAR" başlığı ve `_defaultStops` sahte veri **kaldırılır** (veri yoksa bölüm hiç çizilmez).
-   - Kart: 176 genişlik, radius 20, `surface`, `outlineVariant` kenarlık. İçerik sırası:
-     - Satır 1: 18px `Icons.location_on_rounded` (en yakın durakta `primary`, diğerlerinde `onSurfaceVariant @ .7`) + durak adı (Roboto 800 / 14).
-     - Satır 2: `distanceText` + " · " + `walkingTimeText` (Roboto 600 / 11.5 / `onSurfaceVariant`).
-     - Satır 3: geri sayım — sayı Roboto 900 / 22 / `primary`, yanında "dk sonra" Roboto 700 / 11.5.
-     - Satır 4: o duraktan geçen hat rozetleri (yükseklik 22, radius 7, `surfaceContainerLow`, Roboto 900 / 10).
-   - **En yakın durak** kartı `primary` renkli 1px kenarlıkla işaretlenir.
-   - Geri sayım: o durağın `schedules` listesindeki tüm tarifelerin `RingDepartures.untilNext` değerlerinin **en küçüğü**. Bugün sefer kalmadıysa sayı yerine "Bugün bitti", altında yarının ilk kalkışı.
-5. **2'li ızgara** (`RingGridActions`) — kart yüksekliği 150 → tasarımda içerik kadar (ikon 40×40 radius 14 + başlık, sol hizalı, padding 16, radius 20):
-   - Sol: **Tüm Tarife**, `Icons.calendar_month_rounded` — mevcut `FullScheduleSheet`.
-   - Sağ: **Haritada Gör**, `Icons.map_rounded` — `openStopsPage`. (Eski başlık "Yakındaki\nDuraklar" ve `location_on` ikonu değişti; artık yakındaki duraklar yukarıdaki şeritte.)
+### Başlık
+"AkdenizCep" 14/900 (`Cep` primary) + altında "Ulaşım" 23/900. Sağda iki **40×40 daire** buton (surface, 1px outlineVariant): `search_rounded` 21 (mevcut arama akışını açar) ve `star_rounded` 21 primary dolu (favori duraklar yaprağı, mevcut davranış). İçerik ilk öğeye 10 boşlukla başlar.
 
-**Kaldırılanlar:** hiçbir duyuru/gecikme şeridi eklenmez (tasarımda denendi, elendi); ana ekranda **hatlar listesi yok** — hat seçimi yalnızca hero kartın pill'leriyle yapılır.
+### Yakındaki duraklar (yatay slider)
+- Başlık satırı (üst 10 / alt 6): "YAKINDAKİ DURAKLAR" 11.5/900 ls .09em · sağda "Tümü ›" 11.5/800 primary (mevcut duraklar sayfası).
+- `ListView(scrollDirection: horizontal)`, kenarlara taşar (yatay padding 20, öğe aralığı 10).
+- **Kart** 170 genişlik, radius 20, padding 12×14, surface, 1px outlineVariant. **En yakın durak** kartının kenarlığı 1px primary.
+  1. Satır 1: `location_on_rounded` 17 (en yakında primary, diğerlerinde muted) + durak adı 14/800.
+  2. Satır 2 (üst 3): `distanceText` + " · " + `walkingTimeText` — 11/600 onSurfaceVariant, tek satır.
+  3. Satır 3 (üst 10): solda **en erken kalkışa kalan dk** — sayı 28/900 primary ls −.02em + " dk sonra" 12/800; sağda **o kalkışı yapan hattın rozeti** (22 yükseklik, radius 7, yatay 7, 10/900, hat rengi dolu / beyaz metin).
+  4. Ayırıcı: üstte 1px çizgi, üst 10 boşluk + 9 padding. "HATLAR" 10/700 ls .06em muted, yanında **o duraktan geçen tüm hatların** küçük rozetleri (20 yükseklik, radius 6, yatay 7, 9.5/900, `surfaceContainerLow` zemin / onSurfaceVariant). Tek hat geçiyorsa tek rozet — boş/gri slot **yok**.
+- Geri sayım: o durağın tüm tarifelerinin `RingDepartures.untilNext` değerlerinin en küçüğü; rozet o tarifenin hattı. Bugün sefer kalmadıysa sayı yerine "Bugün bitti" (rozet gizlenir).
+- Kart dokunma: mevcut `StopDetailSheet` (bu pakette değişmez).
+- Veri yoksa bölüm hiç çizilmez; sahte/varsayılan durak verisi eklenmez.
 
----
+### Kalkış noktası blokları (×2)
+Blok üst boşluğu 10. **Başlık satırı** (alt 5): `location_on_rounded` 19 primary dolu · nokta adı 16/900 · "kalkış noktası" 11.5/600 onSurfaceVariant · `Spacer` · (yalnızca kullanıcıya en yakın noktada) "SANA EN YAKIN" etiketi — 9/900 ls .06em, primary metin / `primaryContainer` zemin, radius 6, padding 3×6. Konum yoksa etiket yok.
 
-## Ekran 2b — Yakındaki duraklar (tam ekran harita)
+**Kart:** surface, 1px outlineVariant, radius 20, içerik kırpılır. İçinde iki **hat satırı** (her satır padding 8×14, satırlar arası 1px üst çizgi):
+- Üst satır: hat rozeti **53×26**, radius 8, 11.5/900 · `Expanded` **kalkış saati** 27/900 ls −.02em, tabular rakamlar · sağda **geri sayım hapı** (28 yükseklik, radius 14, yatay 11, 12.5/900): "N dk sonra". **Ekrandaki en yakın kalkış** (tüm satırlar içinde) `primary` dolu/beyaz metin; diğerleri `surfaceContainerLow` / onSurface.
+- Alt satır (üst 5, sol padding 64, tek satır 11.5/600 onSurfaceVariant): `Önceki HH:mm` (muted .7) · `Sonra HH:mm` — değerler 800, onSurface. (Son sefer yalnızca 9c'de gösterilir.)
+- Satırlar o noktanın hatlarını **kalkışa göre** sıralar. Değer yoksa "—" yaz, satırı gizleme.
+- Bloklar sırası: kullanıcıya yakın olan üstte; konum yoksa sabit sıra.
+- Bugün sefer kalmadıysa: saat yerine "Yarın HH:mm" (hap gizlenir), alt satır "Bugün bitti".
+- Bu ekran her zaman **bugünün** tarifesini canlı gösterir (`nowProvider` saniyelik).
 
-Mevcut `RingStopsPage` (240px harita + altında liste) **tam ekran haritaya** dönüşür.
-
-- `AppBar` kaldırılır; `Scaffold(extendBodyBehindAppBar)` yerine `Stack`:
-  1. `StopsMap` tüm alanı kaplar (`Positioned.fill`). Gecikmeli montaj + `_MapPlaceholder` davranışı **aynen korunur**.
-  2. Üstte okunabilirlik için ince beyaz→şeffaf gradyan (üst %22), altta şeffaf→`black @ .16`.
-  3. Üst satır (status bar altında, `top: 52`, yatay 20): 44×44 dairesel beyaz geri butonu (`Icons.arrow_back_rounded`, gölge `0 3 12 black@.14`) + `Expanded` beyaz arama alanı (yükseklik 44, radius 22, `Icons.search_rounded` + "Durak ara").
-  4. Sağ kenarda dikey buton yığını (`top: 112`, 42×42, radius 15, beyaz, gölgeli): `Icons.my_location_rounded` (`primary`) ve `Icons.layers_rounded` (`onSurfaceVariant`).
-  5. Sol üstte durum çipi: yükseklik 32, radius 16, `onSurface @ .88` zemin, `Icons.place_rounded` 15px + "N durak yakında" (Roboto 800 / 11.5, beyaz). Konum izni yoksa metin "Konumunu aç" olur ve dokunma `_requestLocation`'ı çağırır — **mevcut `_EnableLocationBanner` bu çipin yerini alır** (izin akışı, snackbar ve "Ayarlar" aksiyonu aynı kalır).
-  6. Altta yatay kaydırmalı durak kartları (`bottom: 104`, yatay padding 20, aralık 12): kart 274 genişlik, radius 24, beyaz, gölge `0 8 28 rgba(16,24,40,.20)`, `PageView`/`ListView` + `snap`.
-     - Kart içeriği: 40×40 radius 14 pin kutusu (seçili kart `primary` zemin + beyaz ikon; diğerleri `primaryContainer` + `primary` ikon) · durak adı Roboto 900 / 16 · `distanceText` + `walkingTimeText` · sağda favori yıldızı (dolu/boş) · hat rozetleri (`primaryContainer`, Roboto 900 / 11) · ayırıcı üstünde sıradaki kalkış satırı ("Sıradaki kalkış **08:51** · 3 dk" / bugün bittiyse "Bugün bitti · yarın ilk kalkış 06:31") · altta 42 yükseklikli `primary` "Hatları gör" butonu + 42×42 `surfaceContainerLow` `Icons.directions_walk_rounded` butonu.
-  7. Yüzen alt nav bar görünür kalır (`bottomNavVisibleProvider` **true**) — kart şeridi onun üstünde durur.
-- **Kart ↔ pin senkronu:** kaydırma seçili kartı değiştirir → `GoogleMapController.animateCamera` o durağa gider ve marker vurgulanır; haritada bir pine dokunmak ilgili kartı öne getirir. Seçili durak için ayrı bir `StateProvider<String?> selectedStopProvider` eklenir.
-- "Hatları gör" → **5b yaprağı** (`StopDetailSheet`). Yaprak açılırken `bottomNavVisibleProvider = false` (mevcut davranış).
-- Konum yoksa: harita kampüs merkezine odaklanır, mesafe/yürüme satırları gizlenir, kartlar güzergâh sırasına göre dizilir (`nearbyStopsProvider` bunu zaten yapıyor).
-- `_LoadingView`, `_StopsErrorView`, `_NoStopsView` korunur; artık haritanın üstünde ortalanmış beyaz bir kart olarak gösterilir.
+### Alt buton satırı
+Üst 12, iki kart yan yana (aralık 10), **ikisi de 84 yükseklik, radius 24, `box-sizing: border-box`** (kenarlık yüksekliği bozmamalı — `SizedBox(height: 84)` içinde aynı yapıda `Container` + `BoxDecoration.border`).
+- **Haritada Gör** (flex 1.6): primary zemin, gölge `0 10 24 primary@.3`. Arka planda **harita önizlemesi** (statik harita görüntüsü veya `liteModeEnabled` mini `GoogleMap` — seçenek için sor), üstünde soldan sağa gradyan: primary %0–45, primary@.5 %75, primary@.1 %100. Sol üst 30×30 radius 10 `white@.2` kutu + `map_rounded` 21 beyaz; sol alt "Haritada Gör" 17/900 beyaz; sağ üst 30×30 beyaz daire + `arrow_forward_rounded` 20 primary. Dokunma → `openStopsPage` (mevcut harita sayfası).
+- **Tüm Tarife** (flex 1): surface, 1px outlineVariant. Aynı yerleşim: sol üst 30×30 radius 10 `primaryContainer` + `calendar_month_rounded` 21 primary; sol alt "Tüm Tarife" 17/900; sağ üst 30×30 daire `surfaceContainerLow` + `arrow_forward_rounded` 20 onSurfaceVariant. Dokunma → **9c yaprağı**.
 
 ---
 
-## Ekran 5b — Durak detayı (yarım sayfa yaprak)
+## 9c — Tüm tarife yaprağı
 
-`StopDetailSheet` yeniden düzenlenir. Yaprak yüksekliği içeriğe göre ~%60 ekran (`isScrollControlled: true`, `DraggableScrollableSheet` gerekmez; `showDragHandle: true` korunur), üst köşe radius 30.
+Ana ekranın üstünde açılan **modal bottom sheet**. `showModalBottomSheet(isScrollControlled: true)`; yükseklik = ekran − ~78 (status bar altından başlar), üst köşe radius 30, zemin surface. Scrim `black@.5`. Açılırken `bottomNavVisibleProvider = false`, kapanınca `finally` ile true (mevcut sarmalayıcı). Aşağı çekince kapanır.
 
-**Başlık bloğu** (padding 20, alt boşluk 14): 24px `Icons.place_rounded` `primary` + durak adı (Roboto 900 / 20) + altında `distanceText` + " · " + `walkingTimeText` (Roboto 600 / 11.5); sağda 40×40 radius 14 `surfaceContainerLow` favori yıldızı (dolu/boş, dokunmayla değişir).
-
-**"SIRADAKİ KALKIŞLAR"** (Roboto 900 / 11.5 / ls .09em) — mevcut hat kartları yerine **kronolojik tek liste**:
-
-- Bu duraktan geçen **tüm tarifelerin** kalkışları tek listede birleşir ve **zamana göre** sıralanır (hat/yön grubu yok). Yeni saf-Dart yardımcı: `StopDepartures.merge({required List<RingSchedule> schedules, required Map<String,RingStop> stopMap, required bool showWeekend, required DateTime now})` → `List<StopDeparture>` (`lineCode`, `direction`, `time`, `until`, `nextTwo`). `RingDepartures.from` her tarife için ayrı çağrılır, sonuçlar düzleştirilir. `ring_departures.dart` gibi Flutter'dan bağımsız kalmalı ve testi yazılmalı.
-- Satır (yükseklik ~ 15+15 padding, aralarında 1px `outlineVariant` üst çizgi):
-  - Sol: 58 genişlikte ortalanmış geri sayım — sayı Roboto 900 / 26, altında birim "DAKİKA" Roboto 800 / 9.5. **İlk satır** `primary` renkli, diğerleri `onSurface` + birim `onSurfaceVariant @ .7`. Süre 1 saati aşarsa `countdownParts` zaten "1 sa 5 dk" veriyor → sayı alanına o metin (Roboto 900 / 18) ve birim "SONRA".
-  - Sağ: hat rozeti (ilk satırda `primary` zemin/beyaz metin, diğerlerinde `primaryContainer`/`onPrimaryContainer`; yükseklik 23, radius 8, Roboto 900 / 10.5) + yön metni `directionSummary` (Roboto 800 / 14); altında "HH:mm · sonrası HH:mm · HH:mm" (Roboto 600 / 11.5 / `onSurfaceVariant`).
-- Bugün sefer kalmadıysa satır listesi yerine: "Bugünün seferleri bitti" başlığı + her hat için "Yarın ilk kalkış HH:mm" satırı (aynı satır düzeni, geri sayım alanında saat).
-- Hat bilgisi girilmemişse mevcut metin korunur: "Bu duraktan geçen hat bilgisi girilmemiş."
-- En altta 16px `Icons.info_outline_rounded` + "Saatler hattın kalkış noktasına aittir."
-- Geri sayımlar `nowProvider` (saniyelik ticker) ile canlıdır; yaprak açıkken her saniye güncellenir.
+1. Tutma çizgisi 38×4, radius 2, `outlineVariant`, üst 10 (`showDragHandle` kullanılabilir).
+2. Başlık satırı (padding 12×20): "Tüm Tarife" 21/900 · sağda 36×36 daire `surfaceContainerLow` + `close_rounded` 20.
+3. Seçiciler (yatay padding 20, aralarında 8):
+   - **Kalkış noktası** — 2 seçenekli segment (Adli Tıp / Meltem Kapısı), yükseklik 40, her seçeneğin solunda `location_on_rounded` 16 (seçili primary, değilse muted).
+   - **Gün** — 2 seçenekli segment (Hafta içi / Hafta sonu), yükseklik 34. "Bugün" seçeneği **yok**; varsayılan seçim bugünün türüdür (`showWeekend`).
+   - Segment: iç padding 3, radius 13, zemin `#EDF1F7` (surfaceContainerHighest), seçili parça surface zeminli, radius 10, gölge `0 1 4 black@.12`; metin 12.5/800 (seçili onSurface, değilse onSurfaceVariant).
+4. **Sütun başlıkları** (üst 16, yatay 20): iki eşit sütun, aralık 10. Her başlık düz metin: hat adı 18/900 onSurface, altında **3px hat renginde çizgi**, padding 0×4×8. Başlık sabit kalır; liste altında kayar. (Kutu/dolgu/rozet **yok**.)
+5. **Liste** — tek `SingleChildScrollView`, padding 0×20×34; içinde iki `Expanded` sütun (aralık 10). Saatler **saat dilimine göre gruplanır**: her grup `Column(gap 3)`, padding dikey 7, üstünde 1px outlineVariant çizgi. Sütunlar birbirinden bağımsızdır (satırların hizalı olması gerekmez — bilinçli).
+   - **Hücre:** yükseklik 38, radius 11, yatay 11, **tam saat "HH:mm"** 17/800, tabular rakamlar.
+   - **Geçmiş:** zemin yok, metin `onSurfaceVariant @ .45`.
+   - **Normal:** `surfaceContainerLow` zemin, onSurface metin.
+   - **Sıradaki (her sütunda ilk gelecek sefer, yalnızca bugünün türü görüntülenirken):** hat rengi dolu, beyaz metin 900, sağda "N dk" 11/800.
+   - **Son sefer:** surface zemin + 1px onSurface kenarlık, sağda "SON" etiketi (9/900 ls .06em, beyaz metin / onSurface zemin, radius 5, padding 3×6).
+   - Bugünün türünden farklı gün seçiliyse geçmiş/sıradaki durumları yok; tüm hücreler "Normal".
+6. Açılışta (bugün görünümü) liste sıradaki sefere kaydırılır (öneri; ölçü tasarımda yok — sor).
 
 ---
 
-## Yeni state / model işleri
+## Yeni / değişen parçalar
 
 | İş | Not |
 | --- | --- |
-| `favoriteStopIdsProvider` | Favori durak id'leri. Kalıcılık `SharedPreferences` (yerel) — kullanıcıya bağlı senkron gerekiyorsa önce sor. Yıldız butonları bunu okur/yazar. |
-| `selectedStopProvider` | 2b'deki kart↔pin senkronu için seçili durak id'si. |
-| `StopDepartures.merge` | 5b'nin kronolojik listesi. Saf Dart, testli. |
-| `nearbyStopsProvider` | Değişmez. Kart geri sayımı için `schedules` üzerinden en yakın `untilNext` hesaplanır (türetilmiş küçük bir provider yeterli). |
-| `RingDepartures` | Değişmez — `previousTime`, `upcoming`, `times.last` alanları 5a şeridi için yeterli. |
-
-Firestore/RTDB şeması değişmez. `RingStop`, `RingSchedule` alanlarına dokunulmaz.
-
----
+| `NearbyStopsRow` | Yatay slider + `NearbyStopCard`. Eski `FavoriteStopsRow` ve `_defaultStops` silinir. |
+| `DeparturePointBlock` + `LineDepartureRow` | Kalkış noktası başına kart; `RingDepartures`'tan `previousTime`, `nextTime`, `upcoming[1]` okunur. |
+| `RingActionsRow` | "Haritada Gör" + "Tüm Tarife" kartları. `RingGridActions` ve `NextDepartureCard` kullanımdan kalkar. |
+| `TimetableSheet` | 9c. `FullScheduleSheet`'in yerini alır. |
+| Kalkış noktası türetme | Tarife → ilk durak adı. Saf Dart, testli. |
+| `RingDepartures` / model / servis | Değişmez. Firestore/RTDB şeması değişmez. |
 
 ## Korunacak davranışlar
 
-- Harita platform view'inin **geçiş animasyonu bitince** monte edilmesi ve `_MapPlaceholder` (bu, "buton tepki vermedi" hatasının çözümüydü — kaldırılmaz).
-- Konum izni akışı: `userPositionProvider.request()`, kalıcı ret → snackbar + "Ayarlar".
-- `bottomNavVisibleProvider` yaprak açılışlarında false, kapanışta true (`finally` bloğu).
+- Konum izni akışı (`userPositionProvider.request()`, kalıcı ret → snackbar + "Ayarlar").
 - Yükleme / hata / boş durum görünümleri.
-- `ring_format.dart` yardımcıları (`lineLabel`, `directionSummary`, `countdownText`, `distanceText`, `walkingTimeText`) — yeni bir biçimlendirme yazmadan önce buraya bak.
+- `bottomNavVisibleProvider` yaprak açılışında false, kapanışta true (`finally`).
+- `ring_format.dart` yardımcıları (`distanceText`, `walkingTimeText`, `countdownText`, `lineLabel`) — yeni biçimlendirme yazmadan önce buraya bak.
+- Harita platform view'inin gecikmeli montajı (`_MapPlaceholder`) — "Haritada Gör" önizlemesi gerçek `GoogleMap` kullanırsa aynı kural geçerli.
