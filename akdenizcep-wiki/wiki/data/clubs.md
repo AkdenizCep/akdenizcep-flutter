@@ -45,7 +45,7 @@ Alt koleksiyon: **`clubs/{clubId}/members/{uid}`** — `uid`, `name`, `studentId
 | --- | --- | --- |
 | [[wiki/features/community]] | okur (liste + detay + üyeler), yazar (`followerCount`, profil alanları, `adminUids`, `members/*`) | `community_service.dart` |
 | [[wiki/features/profile]] | okur (takip edilen kulüpler) | `profile_service.dart:14` |
-| [[wiki/features/student_events]] | okur (`adminUid`/`adminUids` — "kimin adına" seçimi) | `event_feed_service.dart:getAdminClubs` |
+| [[wiki/features/events]] | okur (`adminUid`/`adminUids` — kullanıcının yönettiği kulüpler: "+" düğmesi ve topluluk seçimi) | `event_feed_service.dart:getAdminClubs` |
 
 ## Kısıtlar
 

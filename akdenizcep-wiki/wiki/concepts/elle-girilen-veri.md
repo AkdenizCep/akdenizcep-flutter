@@ -26,7 +26,7 @@ Bu ayrım, "neden bu koleksiyonun create izni yok" sorusunun cevabıdır.
 | [[wiki/data/announcements]] | Firestore | Ekip | `allow write: if false` |
 | [[wiki/data/clubs]] | Firestore | Ekip | `create`/`delete` kapalı, yalnızca `followerCount` güncellenebilir |
 
-Buna karşılık öğrencinin ürettiği veri — [[wiki/data/student-events]], [[wiki/data/board]], [[wiki/data/cafeteria-ratings]], [[wiki/data/feedback]] — Firestore'da ve yazma akışı uygulamada var.
+Buna karşılık öğrencinin ürettiği veri — [[wiki/data/board]], [[wiki/data/cafeteria-ratings]], [[wiki/data/feedback]] — Firestore'da ve yazma akışı uygulamada var.
 
 ## Tasarımın getirisi
 

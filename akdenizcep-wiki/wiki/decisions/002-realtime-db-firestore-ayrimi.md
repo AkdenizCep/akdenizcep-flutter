@@ -20,7 +20,7 @@ Proje iki Firebase veritabanını birden kullanıyor. Bu alışılmadık bir ter
 | Veritabanı | Ne tutar |
 | --- | --- |
 | **Realtime Database** | Üniversitenin elle girdiği, sık okunan, seyrek değişen veri: [[wiki/data/cafeteria-menu]], [[wiki/data/ring-schedule]], [[wiki/data/ring-stops]] |
-| **Firestore** | Kullanıcı verisi ve uygulama içinde üretilen her şey: [[wiki/data/users]], [[wiki/data/clubs]], [[wiki/data/student-events]], [[wiki/data/cafeteria-ratings]], [[wiki/data/board]], [[wiki/data/announcements]], [[wiki/data/feedback]] |
+| **Firestore** | Kullanıcı verisi ve uygulama içinde üretilen her şey: [[wiki/data/users]], [[wiki/data/clubs]], [[wiki/data/club-events]], [[wiki/data/cafeteria-ratings]], [[wiki/data/board]], [[wiki/data/announcements]], [[wiki/data/feedback]] |
 
 `DEVELOPMENT.md` bunu iki yasak olarak da yazmış: "Realtime DB yerine Firestore'u sık güncellenen veriler (ring, menü) için kullanma — maliyet artar" ve "Yorum veya etkinlik verisi için Realtime DB kullanma — bunlar Firestore'a aittir."
 

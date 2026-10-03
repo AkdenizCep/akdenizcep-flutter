@@ -39,16 +39,16 @@ Key points an agent might miss:
 
 Each feature under `lib/features/<name>/` follows: `models/`, `services/`, `providers/`, `pages/` (with `pages/components/` for page-specific widgets).
 
-Features: auth, board, cafeteria, community, home, map, ring, student_events.
+Features: auth, board, cafeteria, community, events, home, map, ring.
 
 ## Firebase
 
 - Project ID: `akdeniz-cep-36d3f`
 - Firestore + Auth + Realtime DB used. Firebase Storage is **not** used — images go to Cloudinary via `lib/shared/services/cloudinary_service.dart` (unsigned upload preset; config in `lib/shared/config/cloudinary_config.dart`).
 - Realtime DB holds cafeteria menus and ring schedules (manually entered data by the university — never used for comments/events, which belong in Firestore).
-- Firestore holds users, clubs, club-events, announcements, student-events, cafeteria_ratings.
+- Firestore holds users, clubs, club-events, announcements, cafeteria_ratings.
 - Auth: email+password only, restricted to `@ogr.akdeniz.edu.tr` domain. No Google Sign-In.
-- Club event creation is restricted to the club's `adminUid` via Firestore Security Rules. Student events (`student-events`) can be created by any logged-in student; edit/delete restricted to the `authorUid` match.
+- Events are club events only (`clubs/{clubId}/club-events`). Creation is restricted to the club's admins via Firestore Security Rules. The student-authored `student-events` feature was removed; there is no rule for that collection, so access is denied.
 - Cafeteria has **no meal-type split** (no lunch/dinner). `cafeteria_menu/{date}` in Realtime DB is a flat array; `cafeteria_ratings/{date}` in Firestore is keyed by the date itself. `DailyMenu.fromRtdb` still reads the pre-split `{lunch: [...], dinner: [...]}` shape and merges it into one list, so production data can migrate late.
 - Meal ratings use Firestore transactions for atomic `avgRating`/`ratingCount` updates — never written directly from the client. One rating per user per day enforced by checking for the existence of the `ratings/{uid}` subcollection doc before allowing a new one.
 - OBS page is a `WebView` — no native OBS integration. Campus map uses Google Maps with static markers.

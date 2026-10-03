@@ -25,7 +25,7 @@ Uygulama sekmeli bir alt navigasyona sahip. Sekmeler arası geçişte her sekmen
 | 0 | `/home` | [[wiki/features/home]] |
 | 1 | `/cafeteria` | [[wiki/features/cafeteria]] |
 | 2 | `/ring` | [[wiki/features/ring]] |
-| 3 | `/student-events` | [[wiki/features/student_events]] |
+| 3 | `/events` (eski `/student-events`, 2026-10-03'te yeniden adlandırıldı) | [[wiki/features/events]] |
 | 4 | `/map` | [[wiki/features/map]] |
 
 Her dala ayrı `GlobalKey<NavigatorState>` veriliyor — kod içindeki yorum sebebini yazmış: "birden fazla branch aynı yolu paylaşmasın".

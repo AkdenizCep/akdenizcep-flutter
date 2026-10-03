@@ -15,7 +15,7 @@ sources:
 
 ## Ne yapıyor
 
-Akdeniz Üniversitesi öğrencileri için mobil uygulama. Kampüse dağılmış servisleri tek yerde topluyor: yemekhane menüsü ve puanları, ring saatleri, kulüp ve öğrenci etkinlikleri, duyurular, ilan panosu, kampüs haritası.
+Akdeniz Üniversitesi öğrencileri için mobil uygulama. Kampüse dağılmış servisleri tek yerde topluyor: yemekhane menüsü ve puanları, ring saatleri, topluluk etkinlikleri, duyurular, ilan panosu, kampüs haritası.
 
 **Yığın:** Flutter · Firebase (Firestore, Auth, Realtime DB, Storage) · Riverpod · go_router
 **Firebase projesi:** `akdeniz-cep-36d3f`
@@ -32,7 +32,7 @@ Projenin bugünkü hâli büyük ölçüde üç seçimden çıkıyor:
 
 ## Bugünkü durum
 
-Dokuz feature: [[wiki/features/auth]] · [[wiki/features/home]] · [[wiki/features/cafeteria]] · [[wiki/features/ring]] · [[wiki/features/community]] · [[wiki/features/student_events]] · [[wiki/features/board]] · [[wiki/features/profile]] · [[wiki/features/map]]
+Dokuz feature: [[wiki/features/auth]] · [[wiki/features/home]] · [[wiki/features/cafeteria]] · [[wiki/features/ring]] · [[wiki/features/community]] · [[wiki/features/events]] · [[wiki/features/board]] · [[wiki/features/profile]] · [[wiki/features/map]]
 
 Beşi sekme, dördü ana sayfa altında ([[wiki/decisions/005-shell-route-navigasyon]]).
 
@@ -63,6 +63,5 @@ Bunlar wiki kurulurken kod, kurallar ve dökümanlar karşılaştırılınca ç�
 Bunlar wiki'nin cevaplayamadığı, kullanıcıdan gelmesi gereken bilgiler:
 
 - Kulüp yöneticisi arayüzü planlanıyor mu? [[wiki/decisions/007-kulup-etkinligi-adminuid]] kuralı yazılmış ama kullanılmıyor.
-- [[wiki/features/board]] ile [[wiki/features/student_events]] neden ayrı? İkisi de "öğrenci içerik üretir" akışı.
 - Kullanıcı adını değiştirdiğinde eski yorumlardaki `authorName` bayat kalıyor — kabul edilmiş bir bedel mi? Bkz. [[wiki/concepts/denormalizasyon]].
 - Hızlı erişim kartları hangi sırayla bağlanacak?

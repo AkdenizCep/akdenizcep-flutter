@@ -33,7 +33,7 @@ Rotası `/home/board` — sekme değil, ana sayfa altında alt rota. Bkz. [[wiki
 
 ## Kararlar
 
-- **Sadece oluştur/listele/sil.** Düzenleme yok; [[wiki/features/student_events]]'in aksine `update` akışı hiç yazılmamış.
+- **Sadece oluştur/listele/sil.** Düzenleme yok; `update` akışı hiç yazılmamış.
 - **`createdAt` azalan sıralama.** En yeni ilan üstte, sayfalama yok.
 
 ## En büyük sorun: sunucu tarafı yok
@@ -42,7 +42,7 @@ Rotası `/home/board` — sekme değil, ana sayfa altında alt rota. Bkz. [[wiki
 >
 > Ayrıntı ve olasılık analizi: [[wiki/data/board]].
 
-Uygulanacak kural [[wiki/features/student_events]] desenidir:
+Uygulanacak kural yazarlığa bağlı yetki desenidir. Bu desen eskiden `student-events` kuralındaydı (kaldırıldı, bkz. [[wiki/decisions/009-ogrenci-etkinliklerinin-kaldirilmasi]]); `lost_found_items` kuralında bugün de var:
 
 ```
 match /board/{itemId} {
@@ -57,5 +57,4 @@ match /board/{itemId} {
 ## Açık sorular
 
 - `category` alanının izinli değerleri hiçbir yerde tanımlı değil — ne enum, ne kural kısıtı.
-- Bu feature ile [[wiki/features/student_events]] arasındaki sınır belirsiz: ikisi de "öğrenci içerik üretir" akışı. Neden ayrı koleksiyonlar? Kaynak yok.
 - İlanların süresi/arşivi yok.

@@ -16,7 +16,7 @@ code_refs:
 
 ## Sorumluluk
 
-Kullanıcının kendi kesitini toplamak: bilgileri, takip ettiği kulüpler, oluşturduğu etkinlikler, puanladığı yemekler. Ayrıca şifre değiştirme, çıkış ve geri bildirim gönderme.
+Kullanıcının kendi kesitini toplamak: bilgileri, takip ettiği kulüpler, katıldığı etkinlikler, puanladığı yemekler. ("Oluşturduğum" bölümü öğrenci etkinlikleriyle birlikte kalktı, bkz. [[wiki/decisions/009-ogrenci-etkinliklerinin-kaldirilmasi]].) Ayrıca şifre değiştirme, çıkış ve geri bildirim gönderme.
 
 **Projedeki tek "toplayıcı" feature** — kendi koleksiyonu yok, başka feature'ların verisini kullanıcı ekseninde birleştiriyor.
 
@@ -30,7 +30,7 @@ Kullanıcının kendi kesitini toplamak: bilgileri, takip ettiği kulüpler, olu
 | --- | --- |
 | [[wiki/data/users]] | okur (dolaylı, `shared/providers/user_provider.dart`) |
 | [[wiki/data/clubs]] | okur (takip edilenler) |
-| [[wiki/data/student-events]] | okur (`authorUid` = kullanıcı) |
+| [[wiki/data/club-events]] | okur (paylaşılan etkinlik akışı üzerinden; "Katıldığım" = `attendeeIds` kullanıcıyı içeren etkinlikler) |
 | [[wiki/data/cafeteria-ratings]] | okur (`ratings/{uid}` alt dokümanları) |
 | [[wiki/data/feedback]] | yazar |
 
@@ -38,7 +38,7 @@ Kullanıcının kendi kesitini toplamak: bilgileri, takip ettiği kulüpler, olu
 
 ## Komşu feature'lar
 
-[[wiki/features/community]], [[wiki/features/student_events]], [[wiki/features/cafeteria]], [[wiki/features/auth]] — hepsinin verisini okuyor ama hiçbirinin servisini import etmiyor. Cross-feature import yasağına uyum, koleksiyonlara doğrudan gitmekle sağlanmış.
+[[wiki/features/community]], [[wiki/features/events]], [[wiki/features/cafeteria]], [[wiki/features/auth]] — hepsinin verisini okuyor ama hiçbirinin servisini import etmiyor. Cross-feature import yasağına uyum, koleksiyonlara doğrudan gitmekle sağlanmış.
 
 ## Kararlar
 

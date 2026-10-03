@@ -39,3 +39,5 @@ Uygulama içinde **yazan yok**. Kural yazmaya izin veriyor ama client'ta karşı
 Etkinliğin kulübün **altında** durması, "bu kulübün etkinlikleri" sorgusunu tek bir alt koleksiyon okumasına indiriyor. Karşılığında "tüm kulüplerin yaklaşan etkinlikleri" sorgusu collection-group indeksi gerektirir. [[wiki/features/home]] ana sayfada yaklaşan etkinlikleri gösterirken bu yüzden `club-events`'i değil [[wiki/data/student-events]]'i okuyor.
 
 > **Açık soru:** Ana sayfada kulüp etkinlikleri neden gösterilmiyor — bilinçli bir karar mı, yoksa collection-group sorgusundan kaçınmanın yan etkisi mi? Kaynak yok.
+
+> **Güncelleme (2026-10-03):** Yukarıdaki iki iddia artık geçerli değil. Ana sayfa etkinlikleri paylaşılan `eventFeedProvider` üzerinden, yani bu koleksiyonun `collectionGroup('club-events')` sorgusundan alıyor ve takip edilen topluluklara göre öneri üretiyor (`recommendedHomeEventsProvider`). `student-events` kaldırıldı: [[wiki/decisions/009-ogrenci-etkinliklerinin-kaldirilmasi]]. Etkinlikler artık yalnızca bu koleksiyonda. Uygulamada yazan arayüz de var: [[wiki/features/events]]. Çelişki bloklarını kendiliğimden silmiyorum; kapatmak için kullanıcı onayı gerekir.

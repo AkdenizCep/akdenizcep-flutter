@@ -47,6 +47,6 @@ Firestore · `board/{itemId}` — ilan panosu.
 
 ## Notlar
 
-Silme yetkisi yalnızca client'ta: `board_service.dart:45` dokümanı çekip `authorUid` karşılaştırıyor. Sunucu kuralı olmadığı için bu koruma hiç yok sayılabilir — kurallar eklendiğinde `student-events` deseninin (`resource.data.authorUid == request.auth.uid`) aynısı uygulanmalı. Bkz. [[wiki/data/student-events]], [[wiki/concepts/guvenlik-kurallari-ile-yetkilendirme]].
+Silme yetkisi yalnızca client'ta: `board_service.dart:45` dokümanı çekip `authorUid` karşılaştırıyor. Sunucu kuralı olmadığı için bu koruma hiç yok sayılabilir — kurallar eklendiğinde yazarlığa bağlı yetki deseni (`resource.data.authorUid == request.auth.uid`) uygulanmalı. Bu desen eskiden `student-events` kuralındaydı ([[wiki/decisions/009-ogrenci-etkinliklerinin-kaldirilmasi]] ile kaldırıldı), `lost_found_items` kuralında bugün de var. Bkz. [[wiki/concepts/guvenlik-kurallari-ile-yetkilendirme]].
 
 `category` alanının izinli değerleri hiçbir yerde tanımlı değil — ne kodda enum, ne kuralda kısıt.

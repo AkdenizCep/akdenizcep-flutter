@@ -59,6 +59,10 @@ Karar anında "kulüp başına tek yönetici" kısıtı bilinçliydi; bu artık 
 
 > Bu maddenin önceki hâli ("uygulamada kulüp etkinliği oluşturan hiçbir arayüz yok, kural ölü") artık **yanlış**: `lib/features/student_events/pages/create_event_page.dart`, kullanıcı bir kulübün başkanıysa/yönetici üyesiyse "kimin adına" seçiciyle kulüp etkinliği oluşturmayı destekliyor. Çelişki bu güncellemeyle çözüldü, ayrı bir sayfa gerekmedi.
 
+## Güncelleme (2026-10-03) — `student-events` kaldırıldı
+
+Karar tablosundaki ikinci satır (`student-events`, yazarlığa bağlı yetki) artık geçerli değil: öğrenci etkinlikleri kaldırıldı ve yetki modeli yalnızca kulüp yöneticiliğine indi. Bkz. [[wiki/decisions/009-ogrenci-etkinliklerinin-kaldirilmasi]]. Bu sayfanın yukarısı karar anındaki durumu kaydediyor ve bilerek değiştirilmedi. Ayrıca iki ayrıntı eskidi: oluşturma formu `lib/features/events/pages/create_event_page.dart` altına taşındı ve "kimin adına" seçicisi yerine topluluk seçicisi var (tek kulüp yönetenler seçici görmez, "Kendi adıma" seçeneği yok); "Ödenen" listesindeki ana sayfa gözlemi de güncel değil, bkz. [[wiki/data/club-events]].
+
 ## Kaynak
 
 `firestore.rules` → `isClubPresident`, `clubAdminUids`, `isClubAdmin`, `match /clubs/{clubId}`; `DEVELOPMENT.md` → "Önemli Notlar"; `lib/shared/services/event_feed_service.dart:getAdminClubs`.

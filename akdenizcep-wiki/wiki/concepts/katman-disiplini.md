@@ -39,11 +39,11 @@ Tarama sonucu: kural neredeyse tam tutulmuş. Dokuz feature'ın dokuzunda da Fir
 
 Cross-feature import yasağı, aynı veriyi okuyan feature'ları kendi modellerini yazmaya zorluyor:
 
-- `student-events` koleksiyonu üç modelle temsil ediliyor: `StudentEvent`, `HomeEvent`, `ProfileEventSummary`
+- Eskiden `student-events` koleksiyonu üç modelle temsil ediliyordu: `StudentEvent`, `HomeEvent`, `ProfileEventSummary`. Koleksiyon kaldırıldı ([[wiki/decisions/009-ogrenci-etkinliklerinin-kaldirilmasi]]); `StudentEvent` ve `HomeEvent` artık yok. Etkinlik verisi bugün `FeedEvent` (`lib/shared/`, home ve events ortak kullanıyor), `ClubEvent` (community) ve `ProfileEventSummary` (profile) ile temsil ediliyor.
 - [[wiki/features/profile]] beş veri yoluna dokunuyor ve her biri için kendi özet modelini taşıyor
 
-Bu, bağımlılıkları temiz tutuyor ama şema değişikliğinin etki alanını genişletiyor: `student-events`'e alan eklenirse üç dosya güncellenmeli.
+Bu, bağımlılıkları temiz tutuyor ama şema değişikliğinin etki alanını genişletiyor: `club-events`'e alan eklenirse etkinlik modellerinin hepsi güncellenmeli.
 
 ## İlgili sayfalar
 
-[[wiki/decisions/001-clean-architecture-reddi]] · [[wiki/features/profile]] · [[wiki/features/map]] · [[wiki/data/student-events]] · [[wiki/concepts/denormalizasyon]]
+[[wiki/decisions/001-clean-architecture-reddi]] · [[wiki/features/profile]] · [[wiki/features/map]] · [[wiki/data/club-events]] · [[wiki/concepts/denormalizasyon]]

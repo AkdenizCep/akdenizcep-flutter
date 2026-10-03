@@ -21,8 +21,6 @@ code_refs:
     sha: 0c42d94
   - path: lib/features/ring/services/ring_service.dart
     sha: a32558f
-  - path: lib/features/student_events/services/student_events_service.dart
-    sha: 0c42d94
   - path: lib/shared/providers/user_provider.dart
     sha: 089b8e8
 ---
@@ -55,6 +53,8 @@ Servis envanteri:
 | `student_events_service.dart` | Firestore | `student-events` |
 | `shared/storage_service.dart` | Storage | serbest yol |
 | `shared/location_service.dart` | — | cihaz konumu, Firebase yok |
+
+> **Güncelleme (2026-10-03):** Bu tablo 2026-07-28 taramasını kaydediyor. `student_events_service.dart` o tarihten sonra silindi; `home_service.dart` ve `profile_service.dart` artık `student-events` okumuyor (home yalnızca `announcements`). Bkz. [[wiki/decisions/009-ogrenci-etkinliklerinin-kaldirilmasi]]. Tablonun diğer satırları yeniden taranmadı.
 
 ## Öne çıkan bulgular
 

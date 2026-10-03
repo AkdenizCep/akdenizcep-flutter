@@ -29,7 +29,7 @@ Key points an agent might miss:
 
 Each feature under `lib/features/<name>/` follows: `models/`, `services/`, `providers/`, `pages/` (with `pages/components/` for page-specific widgets).
 
-Features: auth, board, cafeteria, community, home, map, ring, student_events.
+Features: auth, board, cafeteria, community, events, home, map, ring.
 
 ## Firebase
 

@@ -32,6 +32,8 @@ Neredeyse tüm okuma izinleri `isAkdenizStudent()`'a bağlı — yani wiki'deki 
 
 Kural verilen yollar: `users`, `clubs`, `clubs/{id}/club-events`, `announcements`, `student-events`, `feedback`, `cafeteria_ratings`, `cafeteria_ratings/{id}/ratings`.
 
+> **Güncelleme (2026-10-03):** `student-events` kural bloğu (ve `comments` alt koleksiyonu) silindi; koleksiyona erişim artık reddediliyor. Bkz. [[wiki/decisions/009-ogrenci-etkinliklerinin-kaldirilmasi]]. Listenin geri kalanı bu güncellemede yeniden taranmadı.
+
 ## Kritik bulgu: kuralsız koleksiyon
 
 `board` koleksiyonu için **hiçbir `match` bloğu yok**. Firestore'da eşleşmeyen yol varsayılan olarak reddedilir, yani bu kurallar deploy edildiğinde board feature'ı tamamen çalışmaz hale gelir. Ayrıntı: [[wiki/data/board]].

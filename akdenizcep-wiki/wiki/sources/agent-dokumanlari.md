@@ -34,6 +34,8 @@ code_refs:
 
 > **Çelişki (2026-07-28):** İkisi de feature listesini `auth, board, cafeteria, community, home, map, ring, student_events` olarak veriyor — 8 feature. Kodda dokuzuncu bir feature var: `lib/features/profile/`. Bkz. [[wiki/features/profile]].
 
+> **Güncelleme (2026-10-03):** Feature listesi her iki dosyada `student_events` yerine `events` olarak güncellendi (`profile` hâlâ listede yok, çelişki sürüyor). `CLAUDE.md`'deki `student-events` yetki kuralı da çıkarıldı: bkz. [[wiki/decisions/009-ogrenci-etkinliklerinin-kaldirilmasi]].
+
 > **Çelişki (2026-07-28):** `AGENTS.md` yemek rating'i için "Cloud Function" demiyor ama `DEVELOPMENT.md`'nin Firestore şema bölümünde `avgRating` alanının yanında "Cloud Function ile güncellenir" yorumu duruyor. Kodda Cloud Function yok — güncelleme client tarafında Firestore transaction ile yapılıyor. Bkz. [[wiki/data/cafeteria-ratings]], [[wiki/decisions/004-rating-transaction]].
 
 ## Bu kaynaktan türeyen sayfalar

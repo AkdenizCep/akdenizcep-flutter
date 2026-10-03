@@ -194,17 +194,11 @@ lib/
 │   │       ├── event_detail_page.dart
 │   │       └── components/
 │   │
-│   ├── student_events/
-│   │   ├── models/
-│   │   │   └── student_event.dart
-│   │   ├── services/
-│   │   │   └── student_events_service.dart
-│   │   ├── providers/
-│   │   │   └── student_events_provider.dart
-│   │   └── pages/
-│   │       ├── student_events_page.dart
-│   │       ├── create_event_page.dart
-│   │       ├── student_event_detail_page.dart
+│   ├── events/                       # topluluk etkinlikleri akışı + oluşturma/düzenleme
+│   │   └── pages/                    # veri katmanı lib/shared/ altında (event_feed_*)
+│   │       ├── events_page.dart
+│   │       ├── create_event_page.dart   # CreateEventPage + EditEventPage
+│   │       ├── event_location_picker_page.dart
 │   │       └── components/
 │   │
 │   ├── cafeteria/
@@ -310,16 +304,6 @@ announcements/{announcementId}
   imageUrl: string
   title: string
   context: string
-  createdAt: timestamp
-
-student-events/{seventId}
-  title: string
-  authorUid: string
-  date: timestamp
-  location: string
-  locationLatitude: number
-  locationLongitude: number
-  description: string
   createdAt: timestamp
 
 cafeteria_ratings/{date}                # döküman kimliği tarihin kendisi: "2026-08-04"
@@ -484,5 +468,5 @@ dependencies:
 - Kampüs haritası Google Maps üzerinde statik marker'larla gösterilir.
 - Yemekhane menüsü ve ring saatleri üniversite tarafından manuel olarak Realtime DB'ye girilir.
 - Kulüp etkinliği oluşturma yetkisi yalnızca `adminUid` eşleşen kullanıcılara Firestore Security Rules ile korunur.
-- Öğrenci etkinlikleri (`student-events`) tüm giriş yapmış öğrenciler tarafından oluşturulabilir; silme ve düzenleme yalnızca `authorUid` eşleşen kullanıcıya açıktır.
+- Etkinlikler yalnızca topluluk etkinlikleridir (`clubs/{clubId}/club-events`). Öğrenci etkinliği (`student-events`) özelliği kaldırıldı; koleksiyon için Firestore kuralı yoktur, yani erişim reddedilir. Bkz. `akdenizcep-wiki/wiki/decisions/009-ogrenci-etkinliklerinin-kaldirilmasi.md`.
 - Yemek rating'leri Firestore'da tutulur (`cafeteria_ratings`). Her öğrenci bir yemeğe günde yalnızca 1 kez oy verebilir; bu kural `ratings/{uid}` dökümanının varlığı kontrol edilerek `cafeteria_service.dart` içinde uygulanır. `avgRating` ve `ratingCount` Firestore transaction ile atomik güncellenir. Puanla birlikte isteğe bağlı bir yorum (`comment`) ve yazarın o anki adı (`authorName`, `AppUser.name`'den denormalize) kaydedilir; diğer öğrenciler bu yorumları yemek kartının altında görebilir.

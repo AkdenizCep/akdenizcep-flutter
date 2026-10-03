@@ -11,8 +11,6 @@ code_refs:
     sha: 0c42d94
   - path: lib/features/board/services/board_service.dart
     sha: ae378bb
-  - path: lib/features/student_events/services/student_events_service.dart
-    sha: 0c42d94
 ---
 
 # Güvenlik kurallarıyla yetkilendirme
@@ -27,7 +25,7 @@ Bu bakış, bu projede bir kod incelemesi yaparken sorulacak ilk soruyu belirler
 
 Üç farklı olgunluk seviyesi var ve ayrımları öğreticidir:
 
-**Doğru desen — [[wiki/data/student-events]].** Yetki hem client'ta (`student_events_service.dart:55,70` dokümanı çekip `authorUid` karşılaştırıyor) hem sunucuda (`resource.data.authorUid == request.auth.uid`) uygulanıyor. Client atlanırsa sunucu tutuyor.
+**Doğru desen — `student-events` (2026-10-03'te kaldırıldı, bkz. [[wiki/decisions/009-ogrenci-etkinliklerinin-kaldirilmasi]]).** Yetki hem client'ta (servis dokümanı çekip `authorUid` karşılaştırıyordu) hem sunucuda (`resource.data.authorUid == request.auth.uid`) uygulanıyordu. Client atlanırsa sunucu tutuyordu. Aynı sunucu deseni `lost_found_items` kuralında (`update`) bugün de var; o koleksiyonun client tarafı bu güncellemede yeniden incelenmedi.
 
 **Yarım desen — [[wiki/data/cafeteria-ratings]].** "Günde bir oy" kuralı yalnızca client'ta (`cafeteria_service.dart:114`). Sunucu `create` iznini `isOwner(uid)` ile veriyor; aynı uid ile ikinci yazma mevcut dokümanın üzerine geçer, engellenmez. Benzer şekilde `avgRating` alanı kural düzeyinde korunmuyor.
 
