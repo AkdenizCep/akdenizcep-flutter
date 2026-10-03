@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/providers/location_provider.dart';
+import '../models/departure_point.dart';
 import '../models/ring_departures.dart';
 import '../models/ring_schedule.dart';
 import '../models/ring_stop.dart';
@@ -43,9 +44,6 @@ enum RingView { schedule, map }
 
 final ringViewProvider = StateProvider<RingView>((_) => RingView.schedule);
 
-/// `null` = ilk hat. Gercek deger [activeLineProvider] ile cozulur.
-final selectedLineProvider = StateProvider<String?>((_) => null);
-
 final isReturnDirectionProvider = StateProvider<bool>((_) => false);
 
 final showWeekendProvider = StateProvider<bool>(
@@ -71,52 +69,27 @@ final availableLinesProvider = Provider<List<String>>((ref) {
   return codes;
 });
 
-/// Secili hat, secim yoksa ilk hat. Hat hic yoksa `null`.
-final activeLineProvider = Provider<String?>((ref) {
+/// Desteklenen hatların tarifelerinde bulunan yönler (`true` = dönüş).
+final _availableDirectionsProvider = Provider<Set<bool>>((ref) {
   final lines = ref.watch(availableLinesProvider);
-  if (lines.isEmpty) return null;
-
-  final selected = ref.watch(selectedLineProvider);
-  if (selected != null && lines.contains(selected)) return selected;
-  return lines.first;
-});
-
-/// Secili hattin iki yonu de. Yon degistirmenin mumkun olup olmadigini
-/// belirlemek icin kullanilir.
-final activeLineSchedulesProvider = Provider<List<RingSchedule>>((ref) {
-  final line = ref.watch(activeLineProvider);
-  if (line == null) return const [];
-
   final schedules =
       ref.watch(ringSchedulesProvider).valueOrNull ?? const <RingSchedule>[];
-  return schedules.where((s) => s.lineCode == line).toList();
+  return {
+    for (final schedule in schedules)
+      if (lines.contains(schedule.lineCode)) schedule.isReturn,
+  };
 });
 
-/// Hat + yon birlesimiyle secili tarife.
-final selectedScheduleProvider = Provider<RingSchedule?>((ref) {
-  final schedules = ref.watch(activeLineSchedulesProvider);
-  if (schedules.isEmpty) return null;
-
-  final isReturn = ref.watch(isReturnDirectionProvider);
-  for (final schedule in schedules) {
-    if (schedule.isReturn == isReturn) return schedule;
-  }
-  // Hat tek yonluyse eldeki tek tarifeye dus.
-  return schedules.first;
-});
-
-/// İstenen yön veride yoksa gerçekten gösterilen tarifenin yönüne düşer.
+/// İstenen yön hiçbir hatta yoksa veride olan yöne düşer.
 final effectiveReturnDirectionProvider = Provider<bool>((ref) {
-  final schedule = ref.watch(selectedScheduleProvider);
-  return schedule?.isReturn ?? ref.watch(isReturnDirectionProvider);
+  final wanted = ref.watch(isReturnDirectionProvider);
+  final directions = ref.watch(_availableDirectionsProvider);
+  if (directions.isEmpty || directions.contains(wanted)) return wanted;
+  return !wanted;
 });
 
 final canSwitchDirectionProvider = Provider<bool>((ref) {
-  final directions = ref
-      .watch(activeLineSchedulesProvider)
-      .map((schedule) => schedule.isReturn)
-      .toSet();
-  return directions.length > 1;
+  return ref.watch(_availableDirectionsProvider).length > 1;
 });
 
 /// Canli geri sayimi besleyen saniyelik nabiz.
@@ -129,16 +102,76 @@ final nowProvider = Provider<DateTime>((ref) {
   return ref.watch(tickerProvider).valueOrNull ?? DateTime.now();
 });
 
-/// Secili tarifenin hesaplanmis kalkis bilgisi — hero kartin tek kaynagi.
-final departuresProvider = Provider<RingDepartures>((ref) {
-  final schedule = ref.watch(selectedScheduleProvider);
-  if (schedule == null) return RingDepartures.empty;
+/// Secili yondeki her hattin hesaplanmis kalkis bilgisi — hero kartin tek
+/// kaynagi. O yonde tarifesi olmayan hat atlanir.
+final lineDeparturesProvider = Provider<List<LineDepartures>>((ref) {
+  final lines = ref.watch(availableLinesProvider);
+  final schedules =
+      ref.watch(ringSchedulesProvider).valueOrNull ?? const <RingSchedule>[];
+  final isReturn = ref.watch(effectiveReturnDirectionProvider);
+  final showWeekend = ref.watch(showWeekendProvider);
+  final now = ref.watch(nowProvider);
 
-  return RingDepartures.from(
-    weekdayTimes: schedule.weekday,
-    weekendTimes: schedule.weekend,
-    showWeekend: ref.watch(showWeekendProvider),
-    now: ref.watch(nowProvider),
+  final result = <LineDepartures>[];
+  for (final line in lines) {
+    final schedule = schedules
+        .where((s) => s.lineCode == line && s.isReturn == isReturn)
+        .firstOrNull;
+    if (schedule == null) continue;
+
+    result.add(
+      LineDepartures(
+        lineCode: line,
+        departures: RingDepartures.from(
+          weekdayTimes: schedule.weekday,
+          weekendTimes: schedule.weekend,
+          showWeekend: showWeekend,
+          now: now,
+        ),
+      ),
+    );
+  }
+  return result;
+});
+
+/// Tarifelerin kalkis noktasina gore gruplanmis hali (Adli Tıp, Meltem
+/// Kapısı). Guzergah paketi gelene kadar bos.
+final departurePointsProvider = Provider<List<DeparturePoint>>((ref) {
+  final schedules =
+      ref.watch(ringSchedulesProvider).valueOrNull ?? const <RingSchedule>[];
+  final routes = ref.watch(routeShapesProvider).valueOrNull;
+  if (routes == null) return const [];
+
+  return DeparturePoints.group(
+    schedules: schedules,
+    routes: routes,
+    lineCodes: ref.watch(availableLinesProvider),
+  );
+});
+
+// --- Tum tarife yapragi (9c) -------------------------------------------------
+
+/// Yapraktaki secili kalkis noktasi adi. `null` = ilk nokta. Yaprak kapaninca
+/// sifirlanir.
+final timetablePointProvider = StateProvider.autoDispose<String?>((_) => null);
+
+/// Yapraktaki gun tipi. Varsayilan bugunun gun tipidir; ana ekranin
+/// [showWeekendProvider]'ina dokunmaz.
+final timetableWeekendProvider = StateProvider.autoDispose<bool>(
+  (ref) => RingDepartures.isWeekendDay(ref.read(nowProvider)),
+);
+
+/// Yapraktaki cozulmus kalkis noktasi; secim gecersizse ilk nokta.
+final timetableActivePointProvider = Provider.autoDispose<DeparturePoint?>((
+  ref,
+) {
+  final points = ref.watch(departurePointsProvider);
+  if (points.isEmpty) return null;
+
+  final selected = ref.watch(timetablePointProvider);
+  return points.firstWhere(
+    (p) => p.name == selected,
+    orElse: () => points.first,
   );
 });
 
@@ -219,6 +252,19 @@ final stopDeparturesProvider = Provider.family<List<StopDeparture>, String>((
     now: ref.watch(nowProvider),
   );
 });
+
+/// Bir duraktan gecen tarifelerin bugunku en erken kalkisi ve hatti.
+/// `null` = bugun sefer kalmadi (ya da duraktan tarife gecmiyor).
+final stopSoonestDepartureProvider =
+    Provider.family<({String lineCode, Duration until})?, String>((
+      ref,
+      stopId,
+    ) {
+      return StopDepartures.soonest(
+        schedules: _schedulesThrough(ref, stopId),
+        now: ref.watch(nowProvider),
+      );
+    });
 
 /// Bugun sefer kalmadiginda gosterilecek "yarin ilk kalkis" satirlari.
 final stopTomorrowFirstsProvider = Provider.family<List<StopDeparture>, String>(
@@ -307,21 +353,26 @@ final routeShapesProvider = FutureProvider<RouteShapeBundle>((ref) {
   return ref.watch(routeShapesServiceProvider).load();
 });
 
-/// Ana ulaşım ve tam tarife ekranlarında seçili hat + yönün güzergâhı.
+/// Ana ulaşım kartının başlığı için seçili yöndeki güzergâh. Hatlar aynı
+/// noktalar arasında çalıştığı için ilk bulunan hattın güzergâhı yeterlidir.
 final activeScheduleRouteShapeProvider = Provider.family<RouteShape?, bool>((
   ref,
   isReturn,
 ) {
   final bundle = ref.watch(routeShapesProvider).valueOrNull;
-  final line = ref.watch(activeLineProvider);
-  if (bundle == null || line == null) return null;
+  if (bundle == null) return null;
 
   final wanted = directionIdFor(isReturn);
-  final matches = bundle.routes.where(
-    (shape) =>
-        lineCodeOf(shape.shortName) == line && shape.directionId == wanted,
-  );
-  return matches.isEmpty ? null : matches.first;
+  for (final line in ref.watch(availableLinesProvider)) {
+    final match = bundle.routes
+        .where(
+          (shape) =>
+              lineCodeOf(shape.shortName) == line && shape.directionId == wanted,
+        )
+        .firstOrNull;
+    if (match != null) return match;
+  }
+  return null;
 });
 
 /// Haritada cizilen hat. `null` = veri henuz gelmedi; ilk hat secilir.

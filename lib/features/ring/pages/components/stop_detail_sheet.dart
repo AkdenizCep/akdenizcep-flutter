@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/stop_departures.dart';
 import '../../providers/ring_provider.dart';
+import 'bus_stop_icon.dart';
 import 'favorite_star_button.dart';
 import 'ring_format.dart';
 
@@ -46,11 +47,7 @@ class StopDetailSheet extends ConsumerWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.place_rounded,
-                    size: 24,
-                    color: colorScheme.primary,
-                  ),
+                  StopBusIcon(stop: nearby.stop, size: 28),
                   const SizedBox(width: 11),
                   Expanded(
                     child: Column(

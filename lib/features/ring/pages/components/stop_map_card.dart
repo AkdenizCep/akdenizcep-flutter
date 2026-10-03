@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/ring_provider.dart';
+import 'bus_stop_icon.dart';
 import 'favorite_star_button.dart';
 import 'ring_format.dart';
 
@@ -58,23 +59,7 @@ class StopMapCard extends ConsumerWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? colorScheme.primary
-                      : colorScheme.primaryContainer.withValues(alpha: 0.6),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(
-                  Icons.location_on_rounded,
-                  size: 21,
-                  color: isSelected
-                      ? colorScheme.onPrimary
-                      : colorScheme.primary,
-                ),
-              ),
+              StopBusIcon(stop: nearby.stop, size: 40),
               const SizedBox(width: 11),
               Expanded(
                 child: Column(

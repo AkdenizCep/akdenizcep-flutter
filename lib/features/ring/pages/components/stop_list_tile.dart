@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../providers/ring_provider.dart';
+import 'bus_stop_icon.dart';
 import 'ring_format.dart';
 
 class StopListTile extends StatelessWidget {
@@ -33,19 +34,7 @@ class StopListTile extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer.withValues(alpha: 0.45),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.place_rounded,
-                  color: colorScheme.primary,
-                  size: 20,
-                ),
-              ),
+              StopBusIcon(stop: nearby.stop, size: 40),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(

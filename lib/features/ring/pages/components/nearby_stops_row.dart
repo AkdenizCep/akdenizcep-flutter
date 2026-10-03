@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/ring_departures.dart';
-import '../../models/stop_departures.dart';
 import '../../providers/ring_provider.dart';
+import 'bus_stop_icon.dart';
+import 'line_badge.dart';
 import 'open_stop_detail.dart';
 import 'open_stops_page.dart';
 import 'ring_format.dart';
@@ -15,8 +15,13 @@ import 'ring_format.dart';
 ///
 /// ÖNEMLİ: Karttaki geri sayım, hattın **kalkış noktasından** ayrılmasına kalan
 /// süredir; otobüsün bu durağa ulaşma süresi değildir.
+///
+/// Sayfa yatay kenarı (20) bu bileşene aittir: şerit ekran kenarlarına kadar
+/// taşar, bu yüzden üst sayfa yatay padding vermemelidir.
 class NearbyStopsRow extends ConsumerWidget {
   const NearbyStopsRow({super.key});
+
+  static const _edge = 20.0;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,9 +36,8 @@ class NearbyStopsRow extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2),
+          padding: const EdgeInsets.fromLTRB(_edge, 10, _edge - 4, 6),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
                 child: Text(
@@ -42,7 +46,7 @@ class NearbyStopsRow extends ConsumerWidget {
                     color: colorScheme.onSurface,
                     fontSize: 11.5,
                     fontWeight: FontWeight.w900,
-                    letterSpacing: 1.04,
+                    letterSpacing: 11.5 * 0.09,
                   ),
                 ),
               ),
@@ -76,18 +80,17 @@ class NearbyStopsRow extends ConsumerWidget {
             ],
           ),
         ),
-        const SizedBox(height: 10),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          clipBehavior: Clip.none,
-          // Kartlarin icerigi (mesafe satiri, hat rozetleri) durak durak
-          // degistigi icin yukseklikleri de degisir; [IntrinsicHeight] hepsini
-          // en uzun kartin boyuna esitler.
+          padding: const EdgeInsets.symmetric(horizontal: _edge),
+          // Kartların içeriği (mesafe satırı, hat rozetleri) durak durak
+          // değiştiği için yükseklikleri de değişir; [IntrinsicHeight] hepsini
+          // en uzun kartın boyuna eşitler.
           //
-          // `CrossAxisAlignment.stretch` tek basina calismaz: seridin dikey
-          // kisiti sinirsizdir (dikey kaydirma icinde) ve stretch sonsuz
-          // yukseklik dayatir. Bu, layout'u patlatip bolumun tamamen
-          // gorunmez olmasina yol aciyordu.
+          // `CrossAxisAlignment.stretch` tek başına çalışmaz: şeridin dikey
+          // kısıtı sınırsızdır (dikey kaydırma içinde) ve stretch sonsuz
+          // yükseklik dayatır; bu, bölümün tamamen görünmez olmasına yol
+          // açıyordu.
           child: IntrinsicHeight(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -124,9 +127,9 @@ class _NearbyStopCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
-
-    final departures = ref.watch(stopDeparturesProvider(nearby.stop.id));
-    final lineNames = nearby.stop.lineNames;
+    final lines = ref.watch(availableLinesProvider);
+    final soonest = ref.watch(stopSoonestDepartureProvider(nearby.stop.id));
+    final distance = nearby.distanceMeters;
 
     return Material(
       color: colorScheme.surface,
@@ -135,34 +138,23 @@ class _NearbyStopCard extends ConsumerWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          // Hat + yon bilgisini geri sayimla birlikte okunabilir gostermek
-          // icin 176px yetersiz kaliyor. Yatay seritte 196px, ikinci karttan
-          // bir parca gostermeye devam ederken metni kucultme ihtiyacini
-          // ortadan kaldirir.
-          width: 196,
-          padding: const EdgeInsets.all(14),
+          width: 170,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: isNearest
                   ? colorScheme.primary
-                  : colorScheme.outlineVariant.withValues(alpha: 0.6),
+                  : colorScheme.outlineVariant,
             ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
             children: [
               Row(
                 children: [
-                  Icon(
-                    Icons.location_on_rounded,
-                    size: 18,
-                    color: isNearest
-                        ? colorScheme.primary
-                        : colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                  ),
-                  const SizedBox(width: 7),
+                  StopBusIcon(stop: nearby.stop, size: 20),
+                  const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       nearby.stop.name,
@@ -177,289 +169,166 @@ class _NearbyStopCard extends ConsumerWidget {
                   ),
                 ],
               ),
-              if (nearby.distanceMeters != null) ...[
-                const SizedBox(height: 5),
+              if (distance != null) ...[
+                const SizedBox(height: 3),
                 Text(
-                  '${distanceText(nearby.distanceMeters!)} · '
-                  '${walkingTimeText(nearby.distanceMeters!)}',
+                  '${distanceText(distance)} · ${walkingTimeText(distance)}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: colorScheme.onSurfaceVariant,
-                    fontSize: 11.5,
+                    fontSize: 11,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
               const SizedBox(height: 10),
-              _DepartureSummary(
-                stopId: nearby.stop.id,
-                departures: departures,
-                lineNames: lineNames,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Karttaki siradaki sefer ozeti.
-///
-/// Hat + yon geri sayimla ayni bilgi grubundadir; alttaki rozetlerin birinden
-/// hangisinin geri sayima ait oldugunu kullanici tahmin etmek zorunda kalmaz.
-/// Saatin duraga varis degil, ilk duraktan kalkis saati oldugu acikca yazilir.
-class _DepartureSummary extends ConsumerWidget {
-  final String stopId;
-  final List<StopDeparture> departures;
-  final List<String> lineNames;
-
-  const _DepartureSummary({
-    required this.stopId,
-    required this.departures,
-    required this.lineNames,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    final tomorrow = departures.isEmpty
-        ? ref.watch(stopTomorrowFirstsProvider(stopId))
-        : const <StopDeparture>[];
-    final departure = departures.isNotEmpty
-        ? departures.first
-        : tomorrow.isNotEmpty
-        ? tomorrow.first
-        : null;
-
-    if (departure == null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Sefer bulunamadı',
-            style: TextStyle(
-              color: colorScheme.onSurface,
-              fontSize: 14,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          if (lineNames.isNotEmpty) ...[
-            const SizedBox(height: 9),
-            _OtherLines(lines: lineNames, showLabel: false),
-          ],
-        ],
-      );
-    }
-
-    final activeLine = lineLabel(departure.lineCode);
-    final otherLines = lineNames.where((line) => line != activeLine).toList();
-    final isCurrentDayType =
-        ref.watch(showWeekendProvider) ==
-        RingDepartures.isWeekendDay(ref.watch(nowProvider));
-    final isTomorrow = departures.isEmpty && isCurrentDayType;
-    final isSchedulePreview = departures.isEmpty && !isCurrentDayType;
-
-    return Semantics(
-      container: true,
-      label: isTomorrow
-          ? 'Sıradaki hat $activeLine, ${departure.direction}. '
-                'Yarın ilk duraktan ${departure.time} kalkışı.'
-          : isSchedulePreview
-          ? 'Sıradaki hat $activeLine, ${departure.direction}. '
-                'Görüntülenen tarifede ilk duraktan ${departure.time} kalkışı.'
-          : 'Sıradaki hat $activeLine, ${departure.direction}. '
-                'İlk duraktan ${departure.time}, '
-                '${_countdownSemantics(departure.until)}.',
-      child: ExcludeSemantics(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                _LineBadge(label: activeLine, isActive: true),
-                const SizedBox(width: 7),
-                Expanded(
-                  child: Text(
-                    departure.direction,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: colorScheme.onSurface,
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w800,
-                    ),
+              if (soonest != null)
+                Row(
+                  children: [
+                    Expanded(child: _Countdown(until: soonest.until)),
+                    const SizedBox(width: 6),
+                    LineBadge(lineCode: soonest.lineCode, lines: lines),
+                  ],
+                )
+              else
+                Text(
+                  nearby.schedules.isEmpty ? 'Sefer yok' : 'Bugün bitti',
+                  style: TextStyle(
+                    color: colorScheme.onSurface,
+                    fontSize: 15,
+                    height: 1.65,
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 7),
-            if (isTomorrow)
-              Text(
-                'Yarın ${departure.time}',
-                style: TextStyle(
-                  color: colorScheme.primary,
-                  fontSize: 15,
-                  height: 1.2,
-                  fontWeight: FontWeight.w900,
-                ),
-              )
-            else if (isSchedulePreview)
-              Text(
-                'İlk kalkış ${departure.time}',
-                style: TextStyle(
-                  color: colorScheme.primary,
-                  fontSize: 15,
-                  height: 1.2,
-                  fontWeight: FontWeight.w900,
-                ),
-              )
-            else
-              _CountdownValue(until: departure.until),
-            const SizedBox(height: 3),
-            Text(
-              isTomorrow || isSchedulePreview
-                  ? 'İlk duraktan kalkış'
-                  : 'İlk duraktan ${departure.time}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: colorScheme.onSurfaceVariant,
-                fontSize: 10.5,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            if (otherLines.isNotEmpty) ...[
-              const SizedBox(height: 9),
-              _OtherLines(lines: otherLines),
+              const Spacer(),
+              _StopLines(lineNames: nearby.stop.lineNames),
             ],
-          ],
+          ),
         ),
       ),
     );
   }
-
-  String _countdownSemantics(Duration until) {
-    if (until.inMinutes > 0) return '${until.inMinutes} dakika sonra';
-    return '${until.inSeconds.clamp(0, 59)} saniye sonra';
-  }
 }
 
-class _CountdownValue extends StatelessWidget {
+/// "28 dk sonra" — sayı büyük, birim küçük. Bir saati aşan süreler
+/// ("15 sa 32 dk sonra") dev rakam düzenine sığmaz; tek satırlık metne düşer.
+class _Countdown extends StatelessWidget {
   final Duration until;
 
-  const _CountdownValue({required this.until});
+  const _Countdown({required this.until});
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final parts = countdownParts(until);
 
-    // Bir saati asan sureler "1 sa 5 dk" gibi uzun bir metne donusur; kompakt
-    // kartta dev rakam duzeni tasar. O durumda tek satirlik kucuk metne dusulur.
+    final Widget child;
     if (parts.unit == 'sonra') {
-      return Text(
+      child = Text(
         '${parts.value} sonra',
         maxLines: 1,
-        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           color: colorScheme.primary,
           fontSize: 15,
-          height: 1.2,
           fontWeight: FontWeight.w900,
         ),
       );
-    }
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      textBaseline: TextBaseline.alphabetic,
-      children: [
-        Text(
-          parts.value,
-          style: TextStyle(
-            color: colorScheme.primary,
-            fontSize: 22,
-            height: 1,
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-        const SizedBox(width: 6),
-        Text(
-          '${parts.unit == 'dakika' ? 'dk' : 'sn'} sonra',
-          style: TextStyle(
-            color: colorScheme.onSurfaceVariant,
-            fontSize: 11.5,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _OtherLines extends StatelessWidget {
-  final List<String> lines;
-  final bool showLabel;
-
-  const _OtherLines({required this.lines, this.showLabel = true});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Row(
-      children: [
-        if (showLabel) ...[
+    } else {
+      child = Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
           Text(
-            lines.length == 1 ? 'Diğer hat' : 'Diğer hatlar',
+            parts.value,
             style: TextStyle(
-              color: colorScheme.onSurfaceVariant,
-              fontSize: 9.5,
-              fontWeight: FontWeight.w700,
+              color: colorScheme.primary,
+              fontSize: 28,
+              height: 1.1,
+              letterSpacing: -0.56,
+              fontWeight: FontWeight.w900,
             ),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 4),
+          Text(
+            '${parts.unit == 'dakika' ? 'dk' : 'sn'} sonra',
+            style: TextStyle(
+              color: colorScheme.onSurface,
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
         ],
-        for (var index = 0; index < lines.length; index++) ...[
-          if (index > 0) const SizedBox(width: 4),
-          _LineBadge(label: lines[index], isActive: false),
-        ],
-      ],
+      );
+    }
+
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerLeft,
+      child: child,
     );
   }
 }
 
-class _LineBadge extends StatelessWidget {
-  final String label;
-  final bool isActive;
+/// "HATLAR" + duraktan geçen tüm hatların küçük rozetleri.
+class _StopLines extends StatelessWidget {
+  final List<String> lineNames;
 
-  const _LineBadge({required this.label, required this.isActive});
+  const _StopLines({required this.lineNames});
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    if (lineNames.isEmpty) return const SizedBox.shrink();
 
     return Container(
-      height: 22,
-      alignment: Alignment.center,
-      padding: const EdgeInsets.symmetric(horizontal: 7),
+      margin: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 9),
       decoration: BoxDecoration(
-        color: isActive ? colorScheme.primary : colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(7),
+        border: Border(
+          top: BorderSide(
+            color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+          ),
+        ),
       ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: isActive
-              ? colorScheme.onPrimary
-              : colorScheme.onSurfaceVariant,
-          fontSize: 10,
-          fontWeight: FontWeight.w900,
+      // 170 px'de iki rozet ~2 px tasar; sigmazsa kucultulur, kirpilmaz.
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.centerLeft,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'HATLAR',
+              style: TextStyle(
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                fontSize: 10,
+                letterSpacing: 10 * 0.06,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            for (final name in lineNames) ...[
+              const SizedBox(width: 5),
+              Container(
+                height: 20,
+                alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(horizontal: 7),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainer,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  name,
+                  style: TextStyle(
+                    color: colorScheme.onSurfaceVariant,
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );

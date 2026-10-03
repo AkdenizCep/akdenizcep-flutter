@@ -146,6 +146,7 @@ class _RingStopsPageState extends ConsumerState<RingStopsPage> {
               focusTick: _focusStopTick,
               initialFocusStopId: widget.initialStopId,
               onStopTap: _selectFromMap,
+              onStopInfoTap: (stopId) => openStopDetail(context, ref, stopId),
             ),
           ),
 

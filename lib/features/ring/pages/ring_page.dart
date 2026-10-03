@@ -13,9 +13,9 @@ import 'components/favorite_stops_sheet.dart';
 import 'components/nearby_stops_row.dart';
 import 'components/next_departure_card.dart';
 import 'components/open_stop_detail.dart';
+import 'components/ring_actions_row.dart';
 import 'components/ring_empty_state.dart';
 import 'components/ring_format.dart';
-import 'components/ring_grid_actions.dart';
 import 'components/ring_search_bar.dart';
 import 'components/stop_list_tile.dart';
 
@@ -32,8 +32,8 @@ class RingPage extends ConsumerWidget {
         bottom: false,
         child: schedulesAsync.when(
           data: (schedules) {
-            final activeLine = ref.watch(activeLineProvider);
-            if (schedules.isEmpty || activeLine == null) {
+            final lines = ref.watch(availableLinesProvider);
+            if (schedules.isEmpty || lines.isEmpty) {
               return const RingEmptyState();
             }
             return const _RingContent();
@@ -70,9 +70,7 @@ class _RingContentState extends ConsumerState<_RingContent> {
 
   @override
   Widget build(BuildContext context) {
-    final activeLine = ref.watch(activeLineProvider);
-    final availableLines = ref.watch(availableLinesProvider);
-    final departures = ref.watch(departuresProvider);
+    final lines = ref.watch(lineDeparturesProvider);
     final isReturn = ref.watch(effectiveReturnDirectionProvider);
     final activeShape = ref.watch(activeScheduleRouteShapeProvider(isReturn));
 
@@ -84,11 +82,8 @@ class _RingContentState extends ConsumerState<_RingContent> {
         : '?';
 
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(
-        0,
-        0,
-        0,
-        130 + MediaQuery.of(context).padding.bottom,
+      padding: EdgeInsets.only(
+        bottom: 130 + MediaQuery.of(context).padding.bottom,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,27 +106,17 @@ class _RingContentState extends ConsumerState<_RingContent> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 4),
-                // 2. Hero kart — hat seçimi, sıradaki kalkış, sefer şeridi
-                if (activeLine != null)
-                  NextDepartureCard(
-                    departures: departures,
-                    activeLine: activeLine,
-                    availableLines: availableLines,
-                    directionSummary: directionSummary(
-                      activeShape,
-                      isReturn: isReturn,
-                    ),
-                    originName: routeOrigin(activeShape),
-                    canSwitchDirection: canSwitchDirection,
-                    onLineChanged: (line) {
+                // 2. Hero kart — yön ve her hattın kaydırılabilir saat şeridi
+                NextDepartureCard(
+                  lines: lines,
+                  originName: routeOrigin(activeShape),
+                  destinationName: routeDestination(activeShape),
+                  fallbackTitle: directionLabel(isReturn),
+                  canSwitchDirection: canSwitchDirection,
+                  onSwitchDirection: () =>
                       ref.read(isReturnDirectionProvider.notifier).state =
-                          isReturn;
-                      ref.read(selectedLineProvider.notifier).state = line;
-                    },
-                    onSwitchDirection: () =>
-                        ref.read(isReturnDirectionProvider.notifier).state =
-                            !isReturn,
-                  ),
+                          !isReturn,
+                ),
 
                 const SizedBox(height: 12),
 
@@ -151,21 +136,24 @@ class _RingContentState extends ConsumerState<_RingContent> {
                   ],
                 ),
 
-                const SizedBox(height: 22),
-
-                // 4. Arama sonuçları veya yakındaki duraklar
-                if (_query.trim().isEmpty)
-                  const NearbyStopsRow()
-                else
+                // 4. Arama sonuçları
+                if (_query.trim().isNotEmpty) ...[
+                  const SizedBox(height: 22),
                   _SearchResults(query: _query),
-
-                const SizedBox(height: 20),
-
-                // 5. Alt ızgara: "Tüm Tarife" ve "Haritada Gör"
-                const RingGridActions(),
+                ],
               ],
             ),
           ),
+
+          // 5. Yakındaki duraklar (arama sırasında gizli). Kendi yatay
+          // dolgusunu uyguladığı için yukarıdaki Padding'in dışında durur.
+          if (_query.trim().isEmpty) ...[
+            const SizedBox(height: 12),
+            const NearbyStopsRow(),
+          ],
+
+          // 6. Haritada Gör + Tüm Tarife
+          const RingActionsRow(),
         ],
       ),
     );

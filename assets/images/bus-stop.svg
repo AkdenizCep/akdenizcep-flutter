@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Tek renkli: ikon `currentColor` ile boyanir (hat rengi). Zemin ayni
+       rengin %12 tonu, cerceve ve "D" tam renk. flutter_svg <text> cizmedigi
+       icin "D" harfi path olarak cizilmistir. -->
+  <rect
+    x="8"
+    y="8"
+    width="84"
+    height="84"
+    rx="22"
+    ry="22"
+    fill="currentColor"
+    fill-opacity="0.12"
+    stroke="currentColor"
+    stroke-width="9"
+    stroke-linejoin="round"
+  />
+  <path
+    fill="currentColor"
+    fill-rule="evenodd"
+    d="M33 28h15c12.5 0 20 8 20 19.5S60.5 67 48 67H33Z M43.5 36.5v22H48c6.5 0 10-4.5 10-11s-3.5-11-10-11Z"
+  />
+</svg>

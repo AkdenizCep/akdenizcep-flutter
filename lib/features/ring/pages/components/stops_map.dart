@@ -6,6 +6,8 @@ import '../../../../shared/providers/location_provider.dart';
 import '../../models/ring_stop.dart';
 import '../../models/route_shape.dart';
 import '../../providers/ring_provider.dart';
+import 'bus_stop_icon.dart';
+import 'bus_stop_pin.dart';
 import 'route_map_animation_plan.dart';
 
 /// Duraklarin haritasi. Konum izni yoksa kampus merkezine odaklanir ve mavi
@@ -35,6 +37,10 @@ class StopsMap extends ConsumerStatefulWidget {
   /// Bir guzergah cizgisine dokunuldugunda.
   final ValueChanged<RouteShape>? onRouteTap;
 
+  /// Pinin ustundeki ad baloncuguna dokunuldugunda. Verilmezse baloncuk de
+  /// [onStopTap] gibi davranir.
+  final ValueChanged<String>? onStopInfoTap;
+
   /// Her artisinda kamera kullanicinin konumuna doner. Sayac, "ayni komutu
   /// tekrar ver" diyebilmek icin — konum degismedigi halde butona basildiginda
   /// da kamera geri gelmelidir.
@@ -55,6 +61,7 @@ class StopsMap extends ConsumerStatefulWidget {
     required this.onStopTap,
     this.routes = const [],
     this.onRouteTap,
+    this.onStopInfoTap,
     this.mapType = MapType.normal,
     this.recenterTick = 0,
     this.focusStopId,
@@ -70,16 +77,14 @@ class _StopsMapState extends ConsumerState<StopsMap>
     with SingleTickerProviderStateMixin {
   static const _campusCenter = LatLng(36.8969, 30.6364);
 
-  /// Durak pini. Maps'in damla bicimli varsayilan pini yerine otobus
-  /// simgesi tasiyan bu gorsel kullanilir: haritada durak ile baska bir
-  /// isaret bakisla ayrilir.
-  static const _pinAsset = 'assets/images/ring_stop_pin.png';
-
-  /// Mantiksal piksel genisligi; yukseklik gorselin en-boy oraniyla turetilir.
-  /// Secili durak sadece **daha buyuk** cizilir — kart seridiyle hangi pinin
-  /// eslestigi yine bakisla anlasilir.
-  static const _pinWidth = 34.0;
-  static const _selectedPinWidth = 46.0;
+  /// Durak pini: uygulamanin durak ikonu ("D" levhasi, `bus-stop.svg`) hat
+  /// renginde cizilir. Maps'in damla bicimli varsayilan pini yerine bu
+  /// kullanilir: haritada durak ile baska bir isaret bakisla ayrilir.
+  ///
+  /// Mantiksal piksel kenari. Secili durak sadece **daha buyuk** cizilir —
+  /// kart seridiyle hangi pinin eslestigi yine bakisla anlasilir.
+  static const _pinSize = 20.0;
+  static const _selectedPinSize = 28.0;
 
   GoogleMapController? _controller;
 
@@ -89,10 +94,17 @@ class _StopsMapState extends ConsumerState<StopsMap>
   /// Harita cizmeye hazir mi — [GoogleMap.onMapCreated] tetiklenince `true`.
   final _isReady = ValueNotifier(false);
 
-  /// Cozulmus pin gorselleri. Asset asenkron yuklendigi icin hazir olana dek
-  /// `null` kalir ve Maps'in varsayilan pini kullanilir — duraklar bir kare
-  /// bile kaybolmaz.
-  final _pins = ValueNotifier<_StopPins?>(null);
+  /// Cozulmus pin gorselleri; anahtar = (hat rengi, zemin rengi, secili mi).
+  /// Gorsel SVG'den asenkron uretildigi icin hazir olana dek Maps'in varsayilan
+  /// pini kullanilir — duraklar bir kare bile kaybolmaz. Renk ya da tema
+  /// degisince yeni anahtar istenir.
+  final _pins = ValueNotifier<Map<_PinKey, BitmapDescriptor>>(const {});
+
+  /// Uretimi baslatilmis anahtarlar — ayni pin iki kez uretilmesin.
+  final _requestedPins = <_PinKey>{};
+
+  /// Cihazin piksel orani; pinler bu orana gore keskin uretilir.
+  double _pixelRatio = 1;
 
   /// Native harita katmanina gonderilen animasyon kareleri 36 adimla
   /// sinirlidir. Bu, cizgiyi akici tutarken her ekran yenilemesinde platform
@@ -102,7 +114,6 @@ class _StopsMapState extends ConsumerState<StopsMap>
   RouteMapAnimationPlan? _routeAnimationPlan;
   int _lastAnimationStep = -1;
 
-  bool _pinsRequested = false;
   bool _initialFocusApplied = false;
 
   @override
@@ -172,32 +183,54 @@ class _StopsMapState extends ConsumerState<StopsMap>
     animation.addStatusListener(onStatus);
   }
 
-  /// Gorseli cihazin piksel oranina gore cozmek icin [BuildContext] gerekir;
-  /// bu yuzden [initState] degil burasi. Bir kez calisir.
+  /// Piksel orani [BuildContext] ister; bu yuzden [initState] degil burasi.
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _loadPins();
+    _pixelRatio = MediaQuery.devicePixelRatioOf(context);
   }
 
-  Future<void> _loadPins() async {
-    if (_pinsRequested) return;
-    _pinsRequested = true;
-
-    final configuration = createLocalImageConfiguration(context);
-    final normal = await BitmapDescriptor.asset(
-      configuration,
-      _pinAsset,
-      width: _pinWidth,
+  /// Hazir pini dondurur; yoksa uretimini baslatir ve `null` dondurur.
+  ///
+  /// Build icinden cagrilir ama yalnizca asenkron is baslatir — state'i
+  /// build sirasinda degistirmez. Gorsel hazir olunca [_pins] guncellenir ve
+  /// harita yeniden cizilir.
+  BitmapDescriptor? _pinFor(
+    Map<_PinKey, BitmapDescriptor> ready,
+    Color color,
+    Color backing, {
+    required bool selected,
+  }) {
+    final key = (
+      color: color.toARGB32(),
+      backing: backing.toARGB32(),
+      selected: selected,
     );
-    final selected = await BitmapDescriptor.asset(
-      configuration,
-      _pinAsset,
-      width: _selectedPinWidth,
-    );
+    final bitmap = ready[key];
+    if (bitmap != null || !_requestedPins.add(key)) return bitmap;
 
-    if (!mounted) return;
-    _pins.value = _StopPins(normal: normal, selected: selected);
+    busStopPinBitmap(
+      color: color,
+      backing: backing,
+      size: selected ? _selectedPinSize : _pinSize,
+      pixelRatio: _pixelRatio,
+    ).then(
+      (bitmap) {
+        if (!mounted) return;
+        _pins.value = {..._pins.value, key: bitmap};
+      },
+      onError: (Object error, StackTrace stackTrace) {
+        FlutterError.reportError(
+          FlutterErrorDetails(
+            exception: error,
+            stack: stackTrace,
+            library: 'stops_map',
+            context: ErrorDescription('while rasterizing a bus stop pin'),
+          ),
+        );
+      },
+    );
+    return null;
   }
 
   @override
@@ -311,6 +344,36 @@ class _StopsMapState extends ConsumerState<StopsMap>
     );
   }
 
+  /// Bir durak icin harita isareti. Pin, aktif hattin rengindedir; gorsel
+  /// henuz uretilmediyse Maps'in varsayilan damla pini gecici olarak kullanilir.
+  Marker _marker(
+    RingStop stop,
+    Map<_PinKey, BitmapDescriptor> pins,
+    ColorScheme colorScheme,
+    List<String> lines,
+    String? activeLine, {
+    required bool selected,
+  }) {
+    final pin = _pinFor(
+      pins,
+      busStopPinColor(colorScheme, lines, stop, activeLine: activeLine),
+      colorScheme.surface,
+      selected: selected,
+    );
+
+    return stopMarker(
+      stop: stop,
+      icon: pin ?? BitmapDescriptor.defaultMarker,
+      // Levha duragin tam uzerine oturur; varsayilan damla pinin ucu ise
+      // alttadir.
+      anchor: pin == null ? const Offset(0.5, 1) : const Offset(0.5, 0.5),
+      onTap: () => widget.onStopTap(stop.id),
+      onInfoTap: widget.onStopInfoTap == null
+          ? null
+          : () => widget.onStopInfoTap!(stop.id),
+    );
+  }
+
   /// "#RRGGBB" -> [Color]. Bicim bozuksa temanin birincil rengine duser.
   Color _routeColor(String hex) {
     final value = int.tryParse(hex.replaceFirst('#', ''), radix: 16);
@@ -333,6 +396,9 @@ class _StopsMapState extends ConsumerState<StopsMap>
   Widget build(BuildContext context) {
     final position = ref.watch(userPositionProvider);
     final selectedId = ref.watch(selectedStopProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+    final lines = ref.watch(availableLinesProvider);
+    final activeLine = ref.watch(activeRouteLineProvider);
 
     // Konum sonradan gelirse kamerayi kullaniciya tasi.
     ref.listen(userPositionProvider, (previous, next) {
@@ -361,7 +427,7 @@ class _StopsMapState extends ConsumerState<StopsMap>
         return Stack(
           fit: StackFit.expand,
           children: [
-            ValueListenableBuilder<_StopPins?>(
+            ValueListenableBuilder<Map<_PinKey, BitmapDescriptor>>(
               valueListenable: _pins,
               builder: (context, pins, child) => ValueListenableBuilder<double>(
                 valueListenable: _routeProgress,
@@ -391,25 +457,13 @@ class _StopsMapState extends ConsumerState<StopsMap>
                     markers: {
                       for (final stop in widget.stops)
                         if (!animatingRoute || visibleStopIds.contains(stop.id))
-                          Marker(
-                            markerId: MarkerId(stop.id),
-                            position: LatLng(stop.lat, stop.lng),
-                            // Secili durak buyuk cizilir; kart seridiyle hangi pinin
-                            // eslestigi bakisla anlasilir. Pin rengi hatta gore
-                            // degismez — toggle ayni anda tek hat gosterdigi icin
-                            // renk zaten ayirt edici bir bilgi tasimiyor, cizgi
-                            // hattin rengini veriyor.
-                            icon: pins == null
-                                ? BitmapDescriptor.defaultMarker
-                                : (stop.id == selectedId
-                                      ? pins.selected
-                                      : pins.normal),
-                            infoWindow: InfoWindow(
-                              title: stop.name,
-                              snippet: stop.lineNames.join(' · '),
-                              onTap: () => widget.onStopTap(stop.id),
-                            ),
-                            onTap: () => widget.onStopTap(stop.id),
+                          _marker(
+                            stop,
+                            pins,
+                            colorScheme,
+                            lines,
+                            activeLine,
+                            selected: stop.id == selectedId,
                           ),
                     },
                     polylines: {
@@ -462,13 +516,37 @@ class _StopsMapState extends ConsumerState<StopsMap>
   }
 }
 
-/// Cozulmus durak pini gorselleri — normal ve secili.
-class _StopPins {
-  final BitmapDescriptor normal;
-  final BitmapDescriptor selected;
-
-  const _StopPins({required this.normal, required this.selected});
+/// Bir durak icin harita isareti.
+///
+/// Pine dokunmak [onTap]'i (durak secimi), pinin ustundeki ad baloncuguna
+/// dokunmak [onInfoTap]'i cagirir. [onInfoTap] verilmezse baloncuk da
+/// [onTap]'e duser — yani eski davranis korunur.
+@visibleForTesting
+Marker stopMarker({
+  required RingStop stop,
+  required BitmapDescriptor icon,
+  required VoidCallback onTap,
+  VoidCallback? onInfoTap,
+  Offset anchor = const Offset(0.5, 1),
+}) {
+  return Marker(
+    markerId: MarkerId(stop.id),
+    position: LatLng(stop.lat, stop.lng),
+    icon: icon,
+    anchor: anchor,
+    infoWindow: InfoWindow(
+      title: stop.name,
+      snippet: stop.lineNames.join(' · '),
+      onTap: onInfoTap ?? onTap,
+    ),
+    onTap: onTap,
+  );
 }
+
+/// Uretilmis bir pinin kimligi: boyandigi renk, altindaki zemin ve boyutu
+/// (secili durak daha buyuk). Renkler ARGB tam sayisi — kayit anahtari
+/// olarak karsilastirilabilsin diye.
+typedef _PinKey = ({int color, int backing, bool selected});
 
 /// Harita yuklenene kadar duran yer tutucu. Sayfanin geri kalani — durak
 /// kartlari, mesafeler — bu sirada tam calisir; bekleyen tek sey haritadir.

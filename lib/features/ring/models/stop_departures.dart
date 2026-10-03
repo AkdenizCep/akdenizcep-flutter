@@ -12,7 +12,7 @@ class StopDeparture {
   /// "au102" — gosterim icin [lineLabel]'dan gecirilir.
   final String lineCode;
 
-  /// "durak_3 yönü" — [directionSummary] ciktisi.
+  /// "Meltem Kapısı yönü" — guzergahin `label`'indan okunur.
   final String direction;
 
   /// Kalkis saati ("HH:mm").
@@ -48,6 +48,33 @@ abstract final class StopDepartures {
     final parts = match.first.label.split('·');
     final tail = parts.length > 1 ? parts.last.trim() : '';
     return tail.isEmpty ? (schedule.isReturn ? 'Dönüş' : 'Gidiş') : tail;
+  }
+
+  /// Tarifeler arasinda bugunun en erken kalkisi; bugun sefer kalmadiysa
+  /// `null`. Gun tipi her zaman [now]'un gun tipidir.
+  static ({String lineCode, Duration until})? soonest({
+    required List<RingSchedule> schedules,
+    required DateTime now,
+  }) {
+    ({String lineCode, Duration until})? best;
+
+    for (final schedule in schedules) {
+      final until = RingDepartures.from(
+        weekdayTimes: schedule.weekday,
+        weekendTimes: schedule.weekend,
+        showWeekend: RingDepartures.isWeekendDay(now),
+        now: now,
+      ).untilNext;
+      if (until == null) continue;
+
+      if (best == null ||
+          until < best.until ||
+          (until == best.until &&
+              schedule.lineCode.compareTo(best.lineCode) < 0)) {
+        best = (lineCode: schedule.lineCode, until: until);
+      }
+    }
+    return best;
   }
 
   /// Bugun kalan kalkislar, zamana gore sirali.

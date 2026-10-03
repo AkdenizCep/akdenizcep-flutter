@@ -1,34 +1,38 @@
 import 'package:flutter/material.dart';
 
 import '../../models/ring_departures.dart';
+import 'departure_strip.dart';
 import 'ring_format.dart';
+import 'route_swap_title.dart';
 
-/// Sayfanın ana hero kartı: sıradaki kalkış zamanı, hat seçimi, yön değiştirme
-/// ve alt şeritte önceki / sonraki / son sefer.
+/// Sayfanın ana hero kartı: seçili yön ve o yöndeki her hattın kalkış saatleri.
+///
+/// Her hat kendi satırında yatay kaydırılabilen bir saat şeridi taşır; sıradaki
+/// kalkış büyük ve ortada durur.
 ///
 /// ÖNEMLİ: Buradaki her saat hattın **kalkış noktasından** ayrılma zamanıdır;
 /// herhangi bir durağa varış zamanı değildir.
 class NextDepartureCard extends StatelessWidget {
-  final RingDepartures departures;
-  final String activeLine;
-  final List<String> availableLines;
-  final String directionSummary;
+  /// Seçili yöndeki hatlar, gösterim sırasıyla.
+  final List<LineDepartures> lines;
 
-  /// Seçili tarifenin kalkış durağı. Durak verisi girilmemişse `null`.
+  /// Kalkış ve varış noktaları. İkisi de biliniyorsa "Adli Tıp → Meltem
+  /// Kapısı" yazılır; biri eksikse [fallbackTitle] kullanılır.
   final String? originName;
+  final String? destinationName;
+
+  /// Güzergâh adı bilinmediğinde başlık ("Gidiş" / "Dönüş").
+  final String fallbackTitle;
   final bool canSwitchDirection;
-  final ValueChanged<String> onLineChanged;
   final VoidCallback onSwitchDirection;
 
   const NextDepartureCard({
     super.key,
-    required this.departures,
-    required this.activeLine,
-    required this.availableLines,
-    required this.directionSummary,
+    required this.lines,
     required this.originName,
+    required this.destinationName,
+    required this.fallbackTitle,
     required this.canSwitchDirection,
-    required this.onLineChanged,
     required this.onSwitchDirection,
   });
 
@@ -38,9 +42,10 @@ class NextDepartureCard extends StatelessWidget {
 
     return Container(
       clipBehavior: Clip.antiAlias,
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 8),
       decoration: BoxDecoration(
         color: colorScheme.primary,
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
             color: colorScheme.primary.withValues(alpha: 0.32),
@@ -49,293 +54,239 @@ class NextDepartureCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Arka plan filigran otobüs ikonu
-          Positioned(
-            right: -24,
-            bottom: -24,
-            child: Icon(
-              Icons.directions_bus_filled_rounded,
-              size: 150,
-              color: Colors.white.withValues(alpha: 0.12),
-            ),
+          _Header(
+            originName: originName,
+            destinationName: destinationName,
+            fallbackTitle: fallbackTitle,
+            canSwitchDirection: canSwitchDirection,
+            onSwitchDirection: onSwitchDirection,
           ),
-          Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // 1. Üst satır: hat pill'leri + yön değiştirme
-                Row(
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            for (final line in availableLines.isEmpty
-                                ? [activeLine]
-                                : availableLines) ...[
-                              _LinePill(
-                                label: lineLabel(line),
-                                isSelected: line == activeLine,
-                                onTap: () => onLineChanged(line),
-                              ),
-                              const SizedBox(width: 8),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
-                    if (canSwitchDirection)
-                      Material(
-                        color: Colors.white.withValues(alpha: 0.22),
-                        shape: const CircleBorder(),
-                        child: InkWell(
-                          customBorder: const CircleBorder(),
-                          onTap: onSwitchDirection,
-                          child: const SizedBox(
-                            width: 36,
-                            height: 36,
-                            child: Icon(
-                              Icons.swap_horiz_rounded,
-                              color: Colors.white,
-                              size: 19,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                // 2. Orta satır: kalkış saati ve yön açıklaması
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      _displayTime,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 40,
-                        height: 1.0,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 3),
-                        child: Text(
-                          directionSummary,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.92),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            height: 1.2,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 9),
-
-                // 3. Durum satırı: kalkış noktası + kalan süre
-                Row(
-                  children: [
-                    Icon(
-                      Icons.schedule_rounded,
-                      color: Colors.white.withValues(alpha: 0.85),
-                      size: 17,
-                    ),
-                    const SizedBox(width: 7),
-                    Expanded(
-                      child: Text(
-                        _statusSubtitle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.88),
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                // 4. Alt şerit: önceki / sonraki / son sefer
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.only(top: 14),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.22),
-                      ),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _StripCell(
-                          label: _leadingLabel,
-                          value: _leadingValue,
-                          isMuted: departures.isToday,
-                        ),
-                      ),
-                      Expanded(
-                        child: _StripCell(
-                          label: 'SONRAKİ',
-                          value: _followingValue,
-                        ),
-                      ),
-                      Expanded(
-                        child: _StripCell(
-                          label: 'SON SEFER',
-                          value: departures.times.isEmpty
-                              ? null
-                              : departures.times.last,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+          const SizedBox(height: 14),
+          for (var i = 0; i < lines.length; i++) ...[
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: Colors.white.withValues(alpha: 0.22),
             ),
-          ),
+            _LineRow(
+              line: lines[i],
+              chipColors: i == 0 ? _ChipColors.light : _ChipColors.dark,
+            ),
+          ],
         ],
       ),
     );
   }
-
-  String get _displayTime {
-    if (departures.nextTime != null) return departures.nextTime!;
-    if (departures.times.isNotEmpty) return departures.times.first;
-    return '—';
-  }
-
-  /// Tarife görüntülenirken "önceki" diye bir şey yok — o hücre günün ilk
-  /// kalkışını gösterir.
-  String get _leadingLabel => departures.isToday ? 'ÖNCEKİ' : 'İLK SEFER';
-
-  String? get _leadingValue {
-    if (departures.isToday) return departures.previousTime;
-    return departures.times.isEmpty ? null : departures.times.first;
-  }
-
-  /// Hero'daki büyük saat sıradaki kalkış; bu hücre ondan **sonraki** kalkış.
-  String? get _followingValue {
-    if (!departures.isToday) {
-      return departures.times.length > 1 ? departures.times[1] : null;
-    }
-    return departures.upcoming.length > 1 ? departures.upcoming[1] : null;
-  }
-
-  String get _statusSubtitle {
-    if (!departures.isToday) return 'Tarife görüntülüyorsun';
-
-    final origin = originName;
-    final prefix = origin == null ? 'Kalkış' : 'Kalkış: $origin';
-
-    final until = departures.untilNext;
-    if (until != null) {
-      final minutes = until.inMinutes;
-      if (minutes <= 0) return '$prefix · kalkmak üzere';
-      return '$prefix · ${countdownText(until)} kaldı';
-    }
-
-    final tomorrow = departures.tomorrowFirstTime;
-    if (tomorrow != null) {
-      return 'Bugün bitti · yarın ilk kalkış $tomorrow';
-    }
-    return departures.times.isEmpty
-        ? 'Bu gün için sefer saati girilmemiş'
-        : '$prefix · bugün için başka kalkış yok';
-  }
 }
 
-/// Alt şeritteki tek hücre. Değer yoksa satır gizlenmez, "—" yazılır.
-class _StripCell extends StatelessWidget {
-  final String label;
-  final String? value;
+class _Header extends StatelessWidget {
+  final String? originName;
+  final String? destinationName;
+  final String fallbackTitle;
+  final bool canSwitchDirection;
+  final VoidCallback onSwitchDirection;
 
-  /// Geçmiş kalkış olduğu için soluk gösterilir.
-  final bool isMuted;
-
-  const _StripCell({required this.label, this.value, this.isMuted = false});
+  const _Header({
+    required this.originName,
+    required this.destinationName,
+    required this.fallbackTitle,
+    required this.canSwitchDirection,
+    required this.onSwitchDirection,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+    const titleStyle = TextStyle(
+      color: Colors.white,
+      fontSize: 18,
+      height: 1.2,
+      fontWeight: FontWeight.w800,
+    );
+
+    final origin = originName;
+    final destination = destinationName;
+
+    return Row(
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.70),
-            fontSize: 9.5,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.76,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'YÖN',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.85),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.8,
+                ),
+              ),
+              const SizedBox(height: 3),
+              if (origin != null && destination != null)
+                // Yön değişince iki ad birbirinin yerine kayar.
+                RouteSwapTitle(
+                  origin: origin,
+                  destination: destination,
+                  style: titleStyle,
+                )
+              else
+                Text(fallbackTitle, style: titleStyle),
+            ],
           ),
         ),
-        const SizedBox(height: 3),
-        Text(
-          value ?? '—',
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: isMuted ? 0.65 : 1),
-            fontSize: 15,
-            fontWeight: FontWeight.w900,
-          ),
-        ),
+        if (canSwitchDirection) ...[
+          const SizedBox(width: 12),
+          _SwitchButton(onTap: onSwitchDirection),
+        ],
       ],
     );
   }
 }
 
-class _LinePill extends StatelessWidget {
-  final String label;
-  final bool isSelected;
+/// Yönü değiştiren beyaz hap buton.
+///
+/// Basınca oklar kendi etrafında bir tam tur atar. Dönüş "kaç tur atıldı"
+/// sayacına bağlıdır: her basış hedefi bir tur ilerletir, bu yüzden art arda
+/// basışta ikon başa sıçramaz, bulunduğu açıdan bir tur daha döner.
+class _SwitchButton extends StatefulWidget {
   final VoidCallback onTap;
 
-  const _LinePill({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
+  const _SwitchButton({required this.onTap});
+
+  @override
+  State<_SwitchButton> createState() => _SwitchButtonState();
+}
+
+class _SwitchButtonState extends State<_SwitchButton> {
+  static const _spinDuration = Duration(milliseconds: 450);
+
+  final _turns = ValueNotifier(0);
+
+  void _onTap() {
+    // Yön değişimi animasyonu beklemez; ikon yalnızca geri bildirimdir.
+    _turns.value++;
+    widget.onTap();
+  }
+
+  @override
+  void dispose() {
+    _turns.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).colorScheme.primary;
+    final primary = Theme.of(context).colorScheme.primary;
+    // Sistem animasyonları kapatıldıysa ikon beklemeden son konuma geçer.
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
 
     return Material(
-      color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.22),
-      borderRadius: BorderRadius.circular(16),
+      color: Colors.white,
+      shape: const StadiumBorder(),
       child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          height: 32,
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? primaryColor : Colors.white,
-              fontSize: 12.5,
-              fontWeight: FontWeight.w900,
-            ),
+        customBorder: const StadiumBorder(),
+        onTap: _onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Sürekli dönen parça kendi katmanında olmalı: sınır yoksa her
+              // karede en yakın üst katmanın tamamı (kart, gölgesi, saat
+              // şeritleri) yeniden kaydedilir. Sınır dönüşümün **dışında**
+              // durur; içinde olsaydı dönüşüm yine üst katmanı kirletirdi.
+              RepaintBoundary(
+                child: ValueListenableBuilder<int>(
+                  valueListenable: _turns,
+                  builder: (context, turns, child) => AnimatedRotation(
+                    turns: turns.toDouble(),
+                    duration: reduceMotion ? Duration.zero : _spinDuration,
+                    curve: Curves.easeInOutCubic,
+                    child: child,
+                  ),
+                  child: Icon(
+                    Icons.swap_horiz_rounded,
+                    color: primary,
+                    size: 19,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 7),
+              Text(
+                'Değiştir',
+                style: TextStyle(
+                  color: primary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Kart mavi olduğu için ilk hat beyaz, ikincisi koyu rozet alır.
+enum _ChipColors {
+  light(fill: Colors.white, text: null),
+  dark(fill: Color(0xFF171A22), text: Colors.white);
+
+  final Color fill;
+
+  /// `null` ise kartın ana rengi kullanılır.
+  final Color? text;
+
+  const _ChipColors({required this.fill, required this.text});
+}
+
+class _LineRow extends StatelessWidget {
+  final LineDepartures line;
+  final _ChipColors chipColors;
+
+  const _LineRow({required this.line, required this.chipColors});
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
+
+    return SizedBox(
+      height: 62,
+      child: Row(
+        children: [
+          Container(
+            height: 30,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: chipColors.fill,
+              borderRadius: BorderRadius.circular(9),
+            ),
+            child: Text(
+              lineLabel(line.lineCode),
+              maxLines: 1,
+              style: TextStyle(
+                color: chipColors.text ?? primary,
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          const SizedBox(width: 6),
+          // Şerit satırın kalanını doldurur; kenarlarda kırpılması tasarım gereği.
+          Expanded(
+            child: DepartureStrip(
+              // Hat değişince kaydırma konumu başka satıra sızmasın.
+              key: ValueKey(line.lineCode),
+              departures: line.departures,
+            ),
+          ),
+        ],
       ),
     );
   }

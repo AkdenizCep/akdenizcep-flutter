@@ -131,3 +131,12 @@ class RingDepartures {
     );
   }
 }
+
+/// Bir hattin secili yondeki kalkislari — ana kartin tek satiri.
+class LineDepartures {
+  /// "au102" gibi hat kodu ([RingSchedule.lineCode] bicimi).
+  final String lineCode;
+  final RingDepartures departures;
+
+  const LineDepartures({required this.lineCode, required this.departures});
+}

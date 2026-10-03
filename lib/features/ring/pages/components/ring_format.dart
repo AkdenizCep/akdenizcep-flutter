@@ -1,6 +1,6 @@
+import '../../models/departure_point.dart';
 import '../../models/ring_stop.dart';
 import '../../models/route_shape.dart';
-import '../../models/turkish_text.dart';
 
 /// Ring arayuzunun metin bicimlendirmeleri. Yalnizca sunum katmani —
 /// hicbir hesaplama yapmaz.
@@ -12,18 +12,6 @@ String lineLabel(String lineCode) {
 }
 
 String directionLabel(bool isReturn) => isReturn ? 'Dönüş' : 'Gidiş';
-
-/// Hattin varis yonunu kisa anlatan etiket: "Meltem Kapısı yönü".
-///
-/// Kaynak `au_hatlar.json`'daki `label` ("AÜ102 · Meltem Kapısı yönü"); hat
-/// kodu zaten ayri gosterildigi icin yalnizca yon parcasi alinir.
-///
-/// Eskiden bu metin `RingSchedule.stops` dizisinin ilk/son duragindan
-/// turetiliyordu; o dizi uretimde hicbir hatta girilmedigi icin arayuz hep
-/// "Gidiş"/"Dönüş"e dusuyordu.
-String directionSummary(RouteShape? shape, {required bool isReturn}) {
-  return labelTail(shape?.label) ?? directionLabel(isReturn);
-}
 
 /// "AÜ102 · Meltem Kapısı yönü" -> "Meltem Kapısı yönü".
 String? labelTail(String? label) {
@@ -53,20 +41,13 @@ String? stopSideNote(RingStop stop) {
   return tails.length == 1 ? tails.first : null;
 }
 
-/// Hattin **kalkis noktasi**: "Adli Tıp".
-///
-/// `headsign` ("ADLİ TIP → MELTEM KAPISI") ilk parcasindan okunur. Durak
-/// listesinden okunamaz: AU102_0 ve AU103_0 icin `stopSequence` 2'den basliyor,
-/// yani gercek kalkis duragi kampus disinda kaldigi icin veri setinde yok.
-String? routeOrigin(RouteShape? shape) {
-  if (shape == null) return null;
+/// Hattin **kalkis noktasi**: "Adli Tıp". Turetme kurali
+/// [DeparturePoints.nameOf]'te.
+String? routeOrigin(RouteShape? shape) => DeparturePoints.nameOf(shape);
 
-  final parts = shape.headsign.split('→');
-  if (parts.isEmpty) return null;
-
-  final origin = parts.first.trim();
-  return origin.isEmpty ? null : turkishTitleCase(origin);
-}
+/// Hattin **varis noktasi**: "Meltem Kapısı".
+String? routeDestination(RouteShape? shape) =>
+    DeparturePoints.destinationOf(shape);
 
 /// Geri sayimi buyuk deger + kucuk birim olarak ikiye ayirir.
 ({String value, String unit}) countdownParts(Duration duration) {
@@ -106,5 +87,4 @@ String walkingTimeText(double meters) {
 String dayTypeLabel(bool showWeekend) =>
     showWeekend ? 'Hafta Sonu' : 'Hafta İçi';
 
-String shortDayTypeLabel(bool showWeekend) =>
-    showWeekend ? 'H.Sonu' : 'H.İçi';
+String shortDayTypeLabel(bool showWeekend) => showWeekend ? 'H.Sonu' : 'H.İçi';

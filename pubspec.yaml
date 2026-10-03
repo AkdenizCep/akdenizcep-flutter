@@ -57,6 +57,7 @@ dependencies:
   pointer_interceptor: ^0.10.1+2
   qr_flutter: ^4.1.0
   mobile_scanner: ^6.0.2
+  flutter_svg: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -82,7 +83,8 @@ flutter:
 
   assets:
     - assets/routes/
-    - assets/images/ring_stop_pin.png
+    - assets/images/bus-stop.svg
+    - assets/images/ring_map_preview.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
