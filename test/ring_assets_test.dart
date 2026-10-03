@@ -21,6 +21,17 @@ void main() {
     expect(bundle.stops.first.servedBy, isNotEmpty);
   });
 
+  test('rektorluk duragi arayuzde "Rektörlük" olarak gorunur', () async {
+    final bundle = await StopsService().load();
+    final matches = bundle.stops.where((stop) => stop.id == '14111');
+
+    expect(matches, hasLength(1));
+    // Ham ad GTFS'teki gibi kalir (favoriler/arama bozulmasin); yalnizca
+    // gorunen ad elle duzeltilmistir.
+    expect(matches.single.rawName, 'AKDENİZ ÜNİVERSİTESİ REKTÖRLÜĞÜ');
+    expect(matches.single.name, 'Rektörlük');
+  });
+
   test('hat cizgileri asseti kayitli ve okunabilir', () async {
     final bundle = await RouteShapesService().load();
 
