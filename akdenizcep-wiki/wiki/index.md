@@ -1,7 +1,7 @@
 ---
 title: Dizin
 type: index
-updated: 2026-08-24
+updated: 2026-10-03
 status: current
 ---
 
@@ -16,11 +16,11 @@ Başlangıç noktası: [[wiki/overview]] — projenin sentezi ve bugünkü durum
 | Sayfa                            | Özet                                                                                              |
 | -------------------------------- | ------------------------------------------------------------------------------------------------- |
 | [[wiki/features/auth]]           | Kayıt, giriş, e-posta doğrulama. Domain kısıtının uygulandığı yer.                                |
-| [[wiki/features/home]]           | Hem sekme kabuğu hem ana sayfa içeriği. Hızlı erişim kartları henüz bağlı değil.                  |
+| [[wiki/features/home]]           | Hem sekme kabuğu hem ana sayfa içeriği. Hızlı erişim 3x2 ızgarası kullanıcıya özel, cihazda saklanır. |
 | [[wiki/features/cafeteria]]      | Menü, puanlama, yorum ve yorum oylaması. İki veritabanına birden dokunan tek feature.             |
 | [[wiki/features/ring]]           | Ring saatleri, duraklar ve hat çizgileri. Durak verisi asset'e taşındı; arayüz artık dolu.        |
 | [[wiki/features/community]]      | Kulüpler, kulüp etkinlikleri, takip et/bırak.                                                     |
-| [[wiki/features/student_events]] | Öğrencilerin kendi etkinlikleri. Yetki yazarlığa bağlı.                                           |
+| [[wiki/features/events]]         | Etkinlikler sekmesi: topluluk etkinlikleri akışı, oluşturma ve düzenleme formu. Eski `student_events`. |
 | [[wiki/features/board]]          | İlan panosu. Güvenlik kuralı yok — en kritik açık.                                                |
 | [[wiki/features/profile]]        | Kullanıcı kesiti. Beş veri yoluna dokunuyor; hiçbir dökümanda geçmiyor.                           |
 | [[wiki/features/map]]            | Statik marker'lı kampüs haritası. Firebase'e dokunmayan tek feature.                              |
@@ -34,7 +34,7 @@ Başlangıç noktası: [[wiki/overview]] — projenin sentezi ve bugünkü durum
 | [[wiki/data/users]] | Kullanıcı profili. Üç feature yazıyor. |
 | [[wiki/data/clubs]] | Kulüpler. Yalnızca `followerCount` güncellenebilir. |
 | [[wiki/data/club-events]] | Kulüp etkinlikleri, `clubs` altında alt koleksiyon. Uygulamada yazan yok. |
-| [[wiki/data/student-events]] | Öğrenci etkinlikleri. Üç feature'ın paylaştığı koleksiyon. |
+| [[wiki/data/student-events]] | **Kaldırıldı** (2026-10-03). Eski öğrenci etkinlikleri; sayfa yalnızca linkler kırılmasın diye duruyor. |
 | [[wiki/data/announcements]] | Duyurular. Salt okunur, Console'dan girilir. |
 | [[wiki/data/cafeteria-ratings]] | Yemek puanları ve yorumlar. `avgRating` sunucuda korunmasız. |
 | [[wiki/data/board]] | İlan panosu. **Güvenlik kuralı yok.** |
@@ -75,6 +75,7 @@ Başlangıç noktası: [[wiki/overview]] — projenin sentezi ve bugünkü durum
 | [[wiki/decisions/006-durak-bazli-saat-yok]] | Tahmin üretmeme ilkesi. |
 | [[wiki/decisions/007-kulup-etkinligi-adminuid]] | Kulüp yetkisi vs yazar yetkisi. Kural bugün ölü. |
 | [[wiki/decisions/008-durak-topolojisi-asset]] | Durak topolojisi asset'e taşındı, saatler veritabanında kaldı. |
+| [[wiki/decisions/009-ogrenci-etkinliklerinin-kaldirilmasi]] | Öğrenci etkinlikleri kaldırıldı; yalnızca topluluk etkinlikleri kaldı. |
 
 ## Kaynaklar
 

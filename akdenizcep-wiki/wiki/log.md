@@ -1,7 +1,7 @@
 ---
 title: Günlük
 type: log
-updated: 2026-08-24
+updated: 2026-10-03
 status: current
 ---
 
@@ -9,6 +9,49 @@ status: current
 
 Kronolojik, append-only. En yeni üstte. Girdi biçimi sabittir:
 `grep '^## \[' log.md | head -5` son beş girdiyi verir.
+
+## [2026-10-03] ingest | Öğrenci etkinlikleri kaldırıldı
+
+Kullanıcı öğrencilerin etkinlik oluşturmasını kaldırdı; yalnızca topluluk etkinlikleri kalıyor.
+`lib/features/student_events/` `events` olarak yeniden adlandırıldı (sekmeyi ve kulüp etkinliği
+oluşturma/düzenleme formunu barındırdığı için silinmedi), `student-events` kuralı ve iki indeksi
+silindi, admin panelinden dinleyici ve moderasyon sekmesi çıkarıldı. Mevcut veri yedeksiz silinecek;
+silme ve deploy bu girdi yazılırken yapılmamıştı. Yeni: [[wiki/decisions/009-ogrenci-etkinliklerinin-kaldirilmasi]],
+[[wiki/features/events]]. `student_events` ve `student-events` sayfaları linkler kırılmasın diye
+"kaldırıldı" notlu yönlendirmeye çevrildi. Değişiklik commit'li olmadığından yeni sayfalar `code_refs`'e
+sha'sız. Çözülmeyen: [[wiki/features/home]] ve [[wiki/data/club-events]] içindeki eski çelişki
+blokları güncelleme notuyla işaretlendi, silinmedi. Dokunulan sayfalar: [[wiki/index]],
+[[wiki/overview]], [[wiki/features/home]], [[wiki/features/profile]], [[wiki/features/board]],
+[[wiki/data/clubs]], [[wiki/data/club-events]], [[wiki/concepts/katman-disiplini]],
+[[wiki/concepts/guvenlik-kurallari-ile-yetkilendirme]], [[wiki/concepts/elle-girilen-veri]],
+[[wiki/decisions/002-realtime-db-firestore-ayrimi]], [[wiki/decisions/005-shell-route-navigasyon]],
+[[wiki/decisions/007-kulup-etkinligi-adminuid]], [[wiki/sources/kod-tabani]],
+[[wiki/sources/firestore-rules]], [[wiki/sources/agent-dokumanlari]].
+
+## [2026-10-03] ingest | Karşılama eski hale döndürüldü
+
+Kullanıcı deniz ufku karşılamasından vazgeçip eski "Merhaba, <isim> 👋" + "Kampüste bugün neler var?"
+bloğunu istedi; `home_page.dart` eski bloğa döndü. Ufuk bileşenleri, akademik takvimin `lib/shared/`
+altına taşınması ve `termProgress` kodda kaldı ama ana sayfaya bağlı değil; silinip silinmeyeceği açık
+soru. Dokunulan sayfalar: [[wiki/features/home]].
+
+## [2026-10-03] ingest | Ana sayfa karşılama alanı (deniz ufku)
+
+Ana sayfaya, logo ve avatarın altına küçük bir karşılama alanı eklendi: saate göre selam, yarıyıl
+haftası ve sağda güneşin/ayın saate göre yer değiştirdiği kodla çizilmiş bir ufuk. Hafta hesabı için
+akademik takvimin modeli ve servisi `lib/features/campus/` altından `lib/shared/` altına taşındı
+(Home, Kampüs'ü import edemez). Gün doğumu/batımı Antalya için ayın 15'lerinde hesaplanmış, aradaki
+günler ara değerlenen bir tablo. Görsel hâl cihazda doğrulanmadı. Yeni ve taşınan dosyalar commit'li
+olmadığından `code_refs`'e sha'sız. Dokunulan sayfalar: [[wiki/features/home]].
+
+## [2026-10-03] ingest | Özelleştirilebilir hızlı erişim ızgarası
+
+Ana sayfadaki sabit 4 kartlık hızlı erişim, kullanıcının düzenleyebildiği 3x2 ızgaraya dönüştü
+(10 öğelik katalog, varsayılan 6: eski dört kart + Chatbot + Mediko). Seçim cihaz yerelinde
+(SharedPreferences `home_quick_actions`) tutuluyor; Firebase şeması değişmedi. Chatbot ve Mediko
+iki yeni `WebPortalPage` rotası. `home.md` işaretlendi `stale`: sayfadaki "kartlar çalışmıyor"
+çelişki bloğu kodla artık örtüşmüyor, silinmedi, kullanıcı onayı bekliyor. Yeni dosyalar henüz
+commit'lenmediği için `code_refs`'e sha ile eklenmedi. Dokunulan sayfalar: [[wiki/features/home]].
 
 ## [2026-08-24] ingest | au_duraklar.json + au_hatlar.json (ANTOBÜS GTFS)
 
