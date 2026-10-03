@@ -1,4 +1,4 @@
-import 'package:akdenizcep/features/student_events/pages/components/event_location_title_field.dart';
+import 'package:akdenizcep/features/events/pages/components/event_location_title_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

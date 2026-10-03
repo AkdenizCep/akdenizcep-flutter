@@ -1,5 +1,4 @@
 import 'package:akdenizcep/features/community/models/club_event.dart';
-import 'package:akdenizcep/features/student_events/models/student_event.dart';
 import 'package:akdenizcep/shared/models/feed_event.dart';
 import 'package:akdenizcep/shared/utils/event_map_links.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,7 +11,6 @@ void main() {
     test('FeedEvent keeps coordinates through JSON and copyWith', () {
       final event = FeedEvent.fromJson({
         'id': 'event-1',
-        'source': 'club',
         'clubId': 'club-1',
         'title': 'Tanışma Etkinliği',
         'date': eventDate,
@@ -60,18 +58,7 @@ void main() {
       expect(event.hasMappableLocation, true);
     });
 
-    test('StudentEvent and ClubEvent serialize selected coordinates', () {
-      final studentEvent = StudentEvent(
-        id: 'student-1',
-        title: 'Öğrenci Etkinliği',
-        authorUid: 'user-1',
-        date: eventDate,
-        location: 'Kütüphane Önü',
-        locationLatitude: 36.893,
-        locationLongitude: 30.649,
-        description: '',
-        createdAt: createdAt,
-      );
+    test('ClubEvent serializes selected coordinates', () {
       final clubEvent = ClubEvent(
         id: 'club-event-1',
         title: 'Kulüp Etkinliği',
@@ -84,8 +71,6 @@ void main() {
         createdAt: createdAt,
       );
 
-      expect(studentEvent.toJson()['locationLatitude'], 36.893);
-      expect(studentEvent.copyWith(title: 'Yeni').locationLongitude, 30.649);
       expect(clubEvent.toJson()['locationLongitude'], 30.647);
       expect(clubEvent.copyWith(title: 'Yeni').locationLatitude, 36.891);
     });

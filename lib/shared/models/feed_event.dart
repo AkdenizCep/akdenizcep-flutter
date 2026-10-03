@@ -1,45 +1,29 @@
-/// Etkinliğin hangi koleksiyondan geldiğini belirtir.
-enum EventSource { club, student }
-
-/// Bir etkinliğin hangi dokümanda durduğunu tarif eden adres.
+/// Bir kulüp etkinliğinin hangi dokümanda durduğunu tarif eden adres
+/// (`clubs/{clubId}/club-events/{eventId}`).
 ///
 /// `StreamProvider.family` anahtarı olarak kullanıldığı için `==`/`hashCode`
 /// override edilmiştir; aksi halde her build yeni bir stream açardı.
 class EventRef {
-  final EventSource source;
-
-  /// Yalnızca [EventSource.club] için dolu.
-  final String? clubId;
+  final String clubId;
   final String eventId;
 
-  const EventRef({required this.source, required this.eventId, this.clubId});
-
-  const EventRef.student(this.eventId)
-    : source = EventSource.student,
-      clubId = null;
-
-  const EventRef.club({required this.clubId, required this.eventId})
-    : source = EventSource.club;
+  const EventRef({required this.clubId, required this.eventId});
 
   @override
   bool operator ==(Object other) =>
-      other is EventRef &&
-      other.source == source &&
-      other.clubId == clubId &&
-      other.eventId == eventId;
+      other is EventRef && other.clubId == clubId && other.eventId == eventId;
 
   @override
-  int get hashCode => Object.hash(source, clubId, eventId);
+  int get hashCode => Object.hash(clubId, eventId);
 }
 
-/// Kulüp ve öğrenci etkinliklerinin akışta birleşmiş hâli.
+/// Akıştaki bir topluluk etkinliği.
 ///
-/// Feature modellerini (ClubEvent / StudentEvent) sarmalamaz — cross-feature
-/// import yasağı nedeniyle doğrudan Firestore verisinden üretilir.
+/// Feature modellerini (ClubEvent) sarmalamaz — cross-feature import yasağı
+/// nedeniyle doğrudan Firestore verisinden üretilir.
 class FeedEvent {
   final String id;
-  final EventSource source;
-  final String? clubId;
+  final String clubId;
   final String title;
   final DateTime date;
   final String location;
@@ -59,7 +43,7 @@ class FeedEvent {
 
   const FeedEvent({
     required this.id,
-    required this.source,
+    required this.clubId,
     required this.title,
     required this.date,
     required this.location,
@@ -67,7 +51,6 @@ class FeedEvent {
     required this.createdAt,
     this.locationLatitude,
     this.locationLongitude,
-    this.clubId,
     this.imageUrl = '',
     this.category = '',
     this.authorUid = '',
@@ -79,10 +62,7 @@ class FeedEvent {
     this.qrAttendance = false,
   });
 
-  EventRef get ref => EventRef(source: source, clubId: clubId, eventId: id);
-
-  bool get isClubEvent =>
-      source == EventSource.club || (clubId != null && clubId!.isNotEmpty);
+  EventRef get ref => EventRef(clubId: clubId, eventId: id);
 
   bool isJoinedBy(String? uid) =>
       uid != null && uid.isNotEmpty && attendeeIds.contains(uid);
@@ -98,16 +78,11 @@ class FeedEvent {
       capacity == null ? null : (capacity! - attendeeCount).clamp(0, capacity!);
 
   factory FeedEvent.fromJson(Map<String, dynamic> json) {
-    final rawSource = json['source'] as String?;
-    final clubId = json['clubId'] as String?;
-    final isClub = rawSource == 'club' || (clubId != null && clubId.isNotEmpty);
-    final source = isClub ? EventSource.club : EventSource.student;
     final attendeeIds = List<String>.from(json['attendeeIds'] ?? const []);
 
     return FeedEvent(
       id: json['id'] as String? ?? '',
-      source: source,
-      clubId: json['clubId'] as String?,
+      clubId: json['clubId'] as String? ?? '',
       title: json['title'] as String? ?? '',
       date: _toDate(json['date']),
       location: json['location'] as String? ?? '',
@@ -129,7 +104,6 @@ class FeedEvent {
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'source': source == EventSource.club ? 'club' : 'student',
     'clubId': clubId,
     'title': title,
     'date': date,
@@ -151,7 +125,6 @@ class FeedEvent {
 
   FeedEvent copyWith({
     String? id,
-    EventSource? source,
     String? clubId,
     String? title,
     DateTime? date,
@@ -171,7 +144,6 @@ class FeedEvent {
     DateTime? createdAt,
   }) => FeedEvent(
     id: id ?? this.id,
-    source: source ?? this.source,
     clubId: clubId ?? this.clubId,
     title: title ?? this.title,
     date: date ?? this.date,

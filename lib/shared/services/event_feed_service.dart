@@ -6,7 +6,7 @@ import '../models/club_option.dart';
 import '../models/event_comment.dart';
 import '../models/feed_event.dart';
 
-/// Kulüp ve öğrenci etkinliklerini tek akışta birleştiren servis.
+/// Topluluk etkinliklerini tek akışta sunan servis.
 ///
 /// Kulüp etkinlikleri `clubs/{clubId}/club-events` alt koleksiyonunda durduğu
 /// için tümünü tek sorguda okumak `collectionGroup` gerektirir; kulüp adı/logosu
@@ -14,26 +14,17 @@ import '../models/feed_event.dart';
 class EventFeedService {
   final _db = FirebaseFirestore.instance;
 
-  static const _studentCollection = 'student-events';
   static const _clubEventsCollection = 'club-events';
 
   DocumentReference<Map<String, dynamic>> _docRef(EventRef ref) {
-    if (ref.source == EventSource.club) {
-      return _db
-          .collection('clubs')
-          .doc(ref.clubId)
-          .collection(_clubEventsCollection)
-          .doc(ref.eventId);
-    }
-    return _db.collection(_studentCollection).doc(ref.eventId);
+    return _db
+        .collection('clubs')
+        .doc(ref.clubId)
+        .collection(_clubEventsCollection)
+        .doc(ref.eventId);
   }
 
   Stream<List<FeedEvent>> getFeed() {
-    final studentEvents = _db
-        .collection(_studentCollection)
-        .where('moderationStatus', isEqualTo: 'visible')
-        .orderBy('date', descending: true)
-        .snapshots();
     final clubEvents = _db
         .collectionGroup(_clubEventsCollection)
         .where('moderationStatus', isEqualTo: 'visible')
@@ -41,17 +32,12 @@ class EventFeedService {
         .snapshots();
     final clubs = _db.collection('clubs').snapshots();
 
-    return _combineLatest3(clubs, clubEvents, studentEvents, (
-      clubsSnap,
-      clubEventsSnap,
-      studentEventsSnap,
-    ) {
+    return _combineLatest2(clubs, clubEvents, (clubsSnap, clubEventsSnap) {
       final clubsById = {for (final doc in clubsSnap.docs) doc.id: doc.data()};
 
-      final events = <FeedEvent>[
-        ...clubEventsSnap.docs.map((doc) => _clubEventFrom(doc, clubsById)),
-        ...studentEventsSnap.docs.map(_studentEventFrom),
-      ];
+      final events = clubEventsSnap.docs
+          .map((doc) => _clubEventFrom(doc, clubsById))
+          .toList();
       events.sort((a, b) => b.date.compareTo(a.date));
       return events;
     });
@@ -69,10 +55,6 @@ class EventFeedService {
   }
 
   Stream<FeedEvent> getEvent(EventRef ref) {
-    if (ref.source == EventSource.student) {
-      return _docRef(ref).snapshots().map(_studentEventFrom);
-    }
-
     final clubDoc = _db.collection('clubs').doc(ref.clubId).snapshots();
     return _combineLatest2(clubDoc, _docRef(ref).snapshots(), (
       clubSnap,
@@ -280,15 +262,6 @@ class EventFeedService {
     }
   }
 
-  FeedEvent _studentEventFrom(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final data = Map<String, dynamic>.from(doc.data() ?? const {});
-    data['id'] = doc.id;
-    data['source'] = 'student';
-    final authorName = data['authorName'] as String? ?? '';
-    data['authorName'] = authorName.isEmpty ? 'Öğrenci' : authorName;
-    return FeedEvent.fromJson(data);
-  }
-
   FeedEvent _clubEventFrom(
     DocumentSnapshot<Map<String, dynamic>> doc,
     Map<String, Map<String, dynamic>> clubsById,
@@ -297,7 +270,6 @@ class EventFeedService {
     final club = clubsById[clubId];
     final data = Map<String, dynamic>.from(doc.data() ?? const {});
     data['id'] = doc.id;
-    data['source'] = 'club';
     data['clubId'] = clubId;
     data['authorName'] = club?['name'] as String? ?? 'Topluluk';
     data['authorLogoUrl'] = club?['logoUrl'] as String? ?? '';
@@ -314,33 +286,17 @@ Stream<R> _combineLatest2<A, B, R>(
   Stream<B> b,
   R Function(A, B) combine,
 ) {
-  return _combineLatest3<A, B, void, R>(
-    a,
-    b,
-    Stream<void>.value(null),
-    (x, y, _) => combine(x, y),
-  );
-}
-
-Stream<R> _combineLatest3<A, B, C, R>(
-  Stream<A> a,
-  Stream<B> b,
-  Stream<C> c,
-  R Function(A, B, C) combine,
-) {
   late StreamController<R> controller;
   final subscriptions = <StreamSubscription<dynamic>>[];
 
   late A latestA;
   late B latestB;
-  late C latestC;
   var hasA = false;
   var hasB = false;
-  var hasC = false;
 
   void emit() {
-    if (hasA && hasB && hasC) {
-      controller.add(combine(latestA, latestB, latestC));
+    if (hasA && hasB) {
+      controller.add(combine(latestA, latestB));
     }
   }
 
@@ -358,13 +314,6 @@ Stream<R> _combineLatest3<A, B, C, R>(
           b.listen((value) {
             latestB = value;
             hasB = true;
-            emit();
-          }, onError: controller.addError),
-        )
-        ..add(
-          c.listen((value) {
-            latestC = value;
-            hasC = true;
             emit();
           }, onError: controller.addError),
         );

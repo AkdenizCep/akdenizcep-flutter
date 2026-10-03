@@ -65,9 +65,7 @@ List<FeedEvent> selectRecommendedHomeEvents({
 
   for (final event in events) {
     final clubId = event.clubId;
-    if (!event.isClubEvent || clubId == null || event.date.isBefore(now)) {
-      continue;
-    }
+    if (clubId.isEmpty || event.date.isBefore(now)) continue;
 
     final eventKey = '$clubId/${event.id}';
     if (!seen.add(eventKey)) continue;

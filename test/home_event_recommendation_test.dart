@@ -40,7 +40,6 @@ void main() {
           'followed-tech',
           now.subtract(const Duration(minutes: 1)),
         ),
-        _studentEvent('student', now.add(const Duration(hours: 3))),
       ];
 
       final result = selectRecommendedHomeEvents(
@@ -107,18 +106,7 @@ void main() {
 
 FeedEvent _clubEvent(String id, String clubId, DateTime date) => FeedEvent(
   id: id,
-  source: EventSource.club,
   clubId: clubId,
-  title: id,
-  date: date,
-  location: 'Kampüs',
-  description: '',
-  createdAt: date,
-);
-
-FeedEvent _studentEvent(String id, DateTime date) => FeedEvent(
-  id: id,
-  source: EventSource.student,
   title: id,
   date: date,
   location: 'Kampüs',

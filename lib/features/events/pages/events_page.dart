@@ -10,16 +10,19 @@ import '../../../shared/utils/error_message.dart';
 import '../../../shared/utils/event_category.dart';
 import 'components/category_strip.dart';
 import 'components/event_feed_card.dart';
+import 'components/discover_communities_button.dart';
 import 'components/feed_header.dart';
-import 'components/source_filter_row.dart';
 
-/// Ekran 2a — kulüp ve öğrenci etkinliklerinin tek akışı.
-class StudentEventsPage extends ConsumerWidget {
-  const StudentEventsPage({super.key});
+/// Ekran 2a — topluluk etkinliklerinin tek akışı.
+class EventsPage extends ConsumerWidget {
+  const EventsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final feed = ref.watch(filteredFeedProvider);
+    // Etkinliği yalnızca bir topluluğu yöneten kullanıcı oluşturabilir.
+    final canCreate =
+        ref.watch(adminClubsProvider).valueOrNull?.isNotEmpty ?? false;
     final selectedCategory = EventCategory.stripItems.firstWhere(
       (item) => item.id == ref.watch(selectedCategoryProvider),
       orElse: () => EventCategory.all,
@@ -33,11 +36,23 @@ class StudentEventsPage extends ConsumerWidget {
             slivers: [
               SliverToBoxAdapter(
                 child: FeedHeader(
-                  onCreate: () => context.go('/student-events/create'),
+                  onCreate: canCreate
+                      ? () => context.go('/events/create')
+                      : null,
                 ),
               ),
               const SliverToBoxAdapter(child: CategoryStrip()),
-              const SliverToBoxAdapter(child: SourceFilterRow()),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: DiscoverCommunitiesButton(
+                      onTap: () => context.push('/community'),
+                    ),
+                  ),
+                ),
+              ),
               SliverToBoxAdapter(
                 child: _ResultRow(
                   categoryLabel: selectedCategory.id == EventCategory.all.id
@@ -63,9 +78,8 @@ class StudentEventsPage extends ConsumerWidget {
                       return EventFeedCard(
                         event: event,
                         onTap: () => context.push(_detailRoute(event.ref)),
-                        onAuthorTap: event.isClubEvent
-                            ? () => context.push('/club/${event.clubId}')
-                            : null,
+                        onAuthorTap: () =>
+                            context.push('/club/${event.clubId}'),
                       );
                     },
                   ),
@@ -79,9 +93,8 @@ class StudentEventsPage extends ConsumerWidget {
     );
   }
 
-  String _detailRoute(EventRef ref) => ref.clubId != null
-      ? '/club/${ref.clubId}/event/${ref.eventId}'
-      : '/event/${ref.eventId}';
+  String _detailRoute(EventRef ref) =>
+      '/club/${ref.clubId}/event/${ref.eventId}';
 }
 
 class _ResultRow extends StatelessWidget {

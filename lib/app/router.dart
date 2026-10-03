@@ -22,6 +22,9 @@ import '../features/community/pages/community_page.dart';
 import '../features/community/pages/event_attendance_list_page.dart';
 import '../features/community/pages/event_attendance_scan_page.dart';
 import '../features/community/pages/event_detail_page.dart';
+import '../features/events/pages/create_event_page.dart';
+import '../features/events/pages/event_location_picker_page.dart';
+import '../features/events/pages/events_page.dart';
 import '../features/home/pages/announcement_detail_page.dart';
 import '../features/home/pages/announcement_image_viewer_page.dart';
 import '../features/home/pages/announcements_page.dart';
@@ -37,10 +40,6 @@ import '../features/profile/pages/account_info_page.dart';
 import '../features/profile/pages/profile_list_page.dart';
 import '../features/ring/pages/ring_page.dart';
 import '../features/ring/pages/ring_stops_page.dart';
-import '../features/student_events/pages/create_event_page.dart';
-import '../features/student_events/pages/event_location_picker_page.dart';
-import '../features/student_events/pages/student_event_detail_page.dart';
-import '../features/student_events/pages/student_events_page.dart';
 import '../features/web_portal/pages/web_portal_page.dart';
 import '../shared/components/loading_overlay.dart';
 import '../shared/components/error_view.dart';
@@ -131,7 +130,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: 'image',
                 parentNavigatorKey: _rootNavigatorKey,
                 builder: (context, state) => EventImageViewerPage(
-                  eventRef: EventRef.club(
+                  eventRef: EventRef(
                     clubId: state.pathParameters['clubId']!,
                     eventId: state.pathParameters['eventId']!,
                   ),
@@ -141,7 +140,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: 'edit',
                 parentNavigatorKey: _rootNavigatorKey,
                 builder: (context, state) => EditEventPage(
-                  eventRef: EventRef.club(
+                  eventRef: EventRef(
                     clubId: state.pathParameters['clubId']!,
                     eventId: state.pathParameters['eventId']!,
                   ),
@@ -170,28 +169,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             parentNavigatorKey: _rootNavigatorKey,
             builder: (context, state) =>
                 ClubSettingsPage(clubId: state.pathParameters['clubId']!),
-          ),
-        ],
-      ),
-      GoRoute(
-        path: '/event/:eventId',
-        parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) =>
-            StudentEventDetailPage(eventId: state.pathParameters['eventId']!),
-        routes: [
-          GoRoute(
-            path: 'image',
-            parentNavigatorKey: _rootNavigatorKey,
-            builder: (context, state) => EventImageViewerPage(
-              eventRef: EventRef.student(state.pathParameters['eventId']!),
-            ),
-          ),
-          GoRoute(
-            path: 'edit',
-            parentNavigatorKey: _rootNavigatorKey,
-            builder: (context, state) => EditEventPage(
-              eventRef: EventRef.student(state.pathParameters['eventId']!),
-            ),
           ),
         ],
       ),
@@ -229,11 +206,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: 'joined-events',
             builder: (context, state) =>
                 const ProfileListPage(kind: ProfileListKind.joined),
-          ),
-          GoRoute(
-            path: 'created-events',
-            builder: (context, state) =>
-                const ProfileListPage(kind: ProfileListKind.created),
           ),
           GoRoute(
             path: 'photo-editor',
@@ -345,8 +317,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             navigatorKey: _shellEventsKey,
             routes: [
               GoRoute(
-                path: '/student-events',
-                builder: (context, state) => const StudentEventsPage(),
+                path: '/events',
+                builder: (context, state) => const EventsPage(),
                 routes: [
                   GoRoute(
                     path: 'create',

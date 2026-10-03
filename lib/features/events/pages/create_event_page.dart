@@ -19,13 +19,14 @@ import '../../../shared/providers/user_provider.dart';
 import '../../../shared/services/cloudinary_service.dart';
 import '../../../shared/utils/error_message.dart';
 import '../../../shared/utils/event_category.dart';
-import '../providers/student_events_provider.dart';
 import 'event_location_picker_page.dart';
 
 class EditEventPage extends ConsumerWidget {
   final EventRef eventRef;
 
   const EditEventPage({super.key, required this.eventRef});
+  
+  
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,7 +43,9 @@ class EditEventPage extends ConsumerWidget {
   }
 }
 
-/// Ekran 1f — etkinlik oluşturma.
+/// Ekran 1f — topluluk etkinliği oluşturma ve düzenleme.
+///
+/// Oluşturma yalnızca en az bir topluluğu yöneten kullanıcılar içindir.
 class CreateEventPage extends ConsumerStatefulWidget {
   final FeedEvent? initialEvent;
 
@@ -72,8 +75,18 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
   bool _submitting = false;
 
   bool get _isEditing => widget.initialEvent != null;
-  bool get _isClubEvent =>
-      widget.initialEvent?.isClubEvent == true || _selectedClub != null;
+
+  /// Etkinliğin oluşturulacağı topluluk: seçim yapılmadıysa (ya da seçilen
+  /// topluluk artık yönetilenler arasında değilse) ilk yönetilen topluluk.
+  /// Düzenlemede topluluk değişmez, bu yüzden null döner.
+  ClubOption? _resolveClub(List<ClubOption> adminClubs) {
+    if (_isEditing || adminClubs.isEmpty) return null;
+    final selected = _selectedClub;
+    if (selected != null && adminClubs.any((club) => club.id == selected.id)) {
+      return selected;
+    }
+    return adminClubs.first;
+  }
 
   @override
   void initState() {
@@ -110,8 +123,9 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
     super.dispose();
   }
 
-  bool get _canSubmit =>
+  bool _canSubmit(ClubOption? club) =>
       !_submitting &&
+      (_isEditing || club != null) &&
       _titleController.text.trim().isNotEmpty &&
       _selectedLocation != null &&
       _date != null &&
@@ -170,7 +184,7 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
 
   Future<void> _pickLocation() async {
     final selection = await context.push<EventLocationSelection>(
-      '/student-events/create/location',
+      '/events/create/location',
     );
     if (selection != null && mounted) {
       setState(() => _selectedLocation = selection);
@@ -179,7 +193,12 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
 
   Future<void> _submit() async {
     final user = ref.read(currentUserProvider).valueOrNull;
-    if (user == null || !_canSubmit) return;
+    final club = _isEditing
+        ? null
+        : _resolveClub(
+            ref.read(adminClubsProvider).valueOrNull ?? const <ClubOption>[],
+          );
+    if (user == null || !_canSubmit(club)) return;
 
     setState(() => _submitting = true);
     try {
@@ -194,43 +213,34 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
       final capacity = _hasQuota
           ? int.tryParse(_quotaController.text.trim())
           : null;
-      final club = _selectedClub;
       final location = _selectedLocation!;
-
-      final data = <String, dynamic>{
-        'title': _titleController.text.trim(),
-        'date': _eventDateTime,
-        'location': location.title,
-        'locationLatitude': location.latitude,
-        'locationLongitude': location.longitude,
-        'description': _descriptionController.text.trim(),
-        'category': _categoryId,
-        'imageUrl': imageUrl,
-        'capacity': capacity,
-        if (_isClubEvent) 'qrAttendance': _qrAttendance,
-      };
 
       if (_isEditing) {
         final event = widget.initialEvent!;
-        if (event.isClubEvent) {
-          await ref
-              .read(eventFeedServiceProvider)
-              .updateClubEvent(
-                clubId: event.clubId!,
-                eventId: event.id,
-                adminUid: user.id,
-                data: data,
-              );
-        } else {
-          await ref
-              .read(studentEventsServiceProvider)
-              .updateEvent(eventId: event.id, authorUid: user.id, data: data);
-        }
-      } else if (club != null) {
+        await ref
+            .read(eventFeedServiceProvider)
+            .updateClubEvent(
+              clubId: event.clubId,
+              eventId: event.id,
+              adminUid: user.id,
+              data: <String, dynamic>{
+                'title': _titleController.text.trim(),
+                'date': _eventDateTime,
+                'location': location.title,
+                'locationLatitude': location.latitude,
+                'locationLongitude': location.longitude,
+                'description': _descriptionController.text.trim(),
+                'category': _categoryId,
+                'imageUrl': imageUrl,
+                'capacity': capacity,
+                'qrAttendance': _qrAttendance,
+              },
+            );
+      } else {
         await ref
             .read(eventFeedServiceProvider)
             .createClubEvent(
-              clubId: club.id,
+              clubId: club!.id,
               adminUid: user.id,
               title: _titleController.text.trim(),
               date: _eventDateTime,
@@ -242,22 +252,6 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
               imageUrl: imageUrl,
               capacity: capacity,
               qrAttendance: _qrAttendance,
-            );
-      } else {
-        await ref
-            .read(studentEventsServiceProvider)
-            .createEvent(
-              authorUid: user.id,
-              authorName: user.name,
-              title: _titleController.text.trim(),
-              date: _eventDateTime,
-              location: location.title,
-              locationLatitude: location.latitude,
-              locationLongitude: location.longitude,
-              description: _descriptionController.text.trim(),
-              category: _categoryId,
-              imageUrl: imageUrl,
-              capacity: capacity,
             );
       }
 
@@ -280,9 +274,36 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final adminClubs = _isEditing
-        ? const <ClubOption>[]
-        : ref.watch(adminClubsProvider).valueOrNull ?? const <ClubOption>[];
+    // Düzenlemede topluluk değişmez; yönetilen kulüpler hiç okunmaz.
+    final adminClubsAsync = _isEditing ? null : ref.watch(adminClubsProvider);
+    final adminClubs = adminClubsAsync?.valueOrNull ?? const <ClubOption>[];
+
+    if (adminClubsAsync != null) {
+      if (!adminClubsAsync.hasValue) {
+        final error = adminClubsAsync.error;
+        return Scaffold(
+          body: error != null
+              ? SafeArea(child: ErrorView(message: errorMessage(error)))
+              : const LoadingOverlay(),
+        );
+      }
+      if (adminClubs.isEmpty) {
+        return Scaffold(
+          body: SafeArea(
+            child: Column(
+              children: [
+                _TopBar(
+                  title: 'Etkinlik Oluştur',
+                  onClose: () => context.pop(),
+                ),
+                const Expanded(child: _NoClubAdminView()),
+              ],
+            ),
+          ),
+        );
+      }
+    }
+    final club = _resolveClub(adminClubs);
 
     return Scaffold(
       body: SafeArea(
@@ -301,16 +322,14 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (adminClubs.isNotEmpty) ...[
-                          const _SectionLabel('KİMİN ADINA'),
+                        if (adminClubs.length > 1) ...[
+                          const _SectionLabel('TOPLULUK'),
                           const SizedBox(height: 10),
-                          _AuthorModeRow(
+                          _ClubSelectorRow(
                             clubs: adminClubs,
-                            selectedClub: _selectedClub,
-                            onChanged: (club) => setState(() {
-                              _selectedClub = club;
-                              if (club == null) _qrAttendance = false;
-                            }),
+                            selectedClub: club,
+                            onChanged: (selected) =>
+                                setState(() => _selectedClub = selected),
                           ),
                           const SizedBox(height: 22),
                         ],
@@ -418,14 +437,12 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
                           onChanged: (value) =>
                               setState(() => _hasQuota = value),
                         ),
-                        if (_isClubEvent) ...[
-                          const SizedBox(height: 14),
-                          _QrAttendanceCard(
-                            enabled: _qrAttendance,
-                            onChanged: (value) =>
-                                setState(() => _qrAttendance = value),
-                          ),
-                        ],
+                        const SizedBox(height: 14),
+                        _QrAttendanceCard(
+                          enabled: _qrAttendance,
+                          onChanged: (value) =>
+                              setState(() => _qrAttendance = value),
+                        ),
                       ],
                     ),
                   ),
@@ -437,7 +454,7 @@ class _CreateEventPageState extends ConsumerState<CreateEventPage>
               right: 0,
               bottom: 0,
               child: _SubmitBar(
-                enabled: _canSubmit,
+                enabled: _canSubmit(club),
                 submitting: _submitting,
                 editing: _isEditing,
                 onPressed: _submit,
@@ -598,12 +615,14 @@ class _LocationPickerField extends StatelessWidget {
   }
 }
 
-class _AuthorModeRow extends StatelessWidget {
+/// Birden fazla topluluğu yöneten kullanıcının etkinliği hangi topluluk adına
+/// açacağını seçtiği satır.
+class _ClubSelectorRow extends StatelessWidget {
   final List<ClubOption> clubs;
   final ClubOption? selectedClub;
-  final ValueChanged<ClubOption?> onChanged;
+  final ValueChanged<ClubOption> onChanged;
 
-  const _AuthorModeRow({
+  const _ClubSelectorRow({
     required this.clubs,
     required this.selectedClub,
     required this.onChanged,
@@ -613,18 +632,10 @@ class _AuthorModeRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(
-          child: _AuthorModeOption(
-            icon: Icons.person_rounded,
-            label: 'Kendi adıma',
-            selected: selectedClub == null,
-            onTap: () => onChanged(null),
-          ),
-        ),
-        for (final club in clubs) ...[
-          const SizedBox(width: 10),
+        for (final (index, club) in clubs.indexed) ...[
+          if (index > 0) const SizedBox(width: 10),
           Expanded(
-            child: _AuthorModeOption(
+            child: _ClubSelectorOption(
               icon: Icons.groups_2_rounded,
               label: club.name,
               selected: selectedClub?.id == club.id,
@@ -637,13 +648,58 @@ class _AuthorModeRow extends StatelessWidget {
   }
 }
 
-class _AuthorModeOption extends StatelessWidget {
+/// Oluşturma ekranına etkinlik açma yetkisi olmayan kullanıcı ulaştığında
+/// gösterilir. Yetkiyi asıl olarak Firestore kuralları (kulübün `adminUid`
+/// alanı) zorlar.
+class _NoClubAdminView extends StatelessWidget {
+  const _NoClubAdminView();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircleAvatar(
+            radius: 34,
+            backgroundColor: colorScheme.primaryContainer,
+            child: Icon(
+              Icons.groups_2_rounded,
+              color: colorScheme.primary,
+              size: 34,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Etkinlik oluşturamazsın.',
+            textAlign: TextAlign.center,
+            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Etkinlik oluşturmak için bir topluluğun yöneticisi olmalısın.',
+            textAlign: TextAlign.center,
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ClubSelectorOption extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool selected;
   final VoidCallback onTap;
 
-  const _AuthorModeOption({
+  const _ClubSelectorOption({
     required this.icon,
     required this.label,
     required this.selected,

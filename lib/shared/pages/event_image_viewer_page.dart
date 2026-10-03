@@ -8,7 +8,7 @@ import '../providers/event_feed_provider.dart';
 import '../utils/error_message.dart';
 
 String eventImageHeroTag(EventRef ref) =>
-    'event-image-${ref.source.name}-${ref.clubId ?? 'student'}-${ref.eventId}';
+    'event-image-${ref.clubId}-${ref.eventId}';
 
 class EventImageViewerPage extends ConsumerWidget {
   final EventRef eventRef;

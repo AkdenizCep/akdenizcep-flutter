@@ -10,7 +10,7 @@ void main() {
       var opened = false;
       final event = FeedEvent(
         id: 'event-1',
-        source: EventSource.club,
+        clubId: 'club-1',
         title: 'Etkinlik',
         date: DateTime(2026, 9, 10),
         location: 'Mühendislik Fakültesi',
@@ -46,7 +46,7 @@ void main() {
   ) async {
     final event = FeedEvent(
       id: 'legacy',
-      source: EventSource.student,
+      clubId: 'club-1',
       title: 'Eski Etkinlik',
       date: DateTime(2026, 9, 10),
       location: 'Olbia A Salonu',

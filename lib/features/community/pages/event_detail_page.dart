@@ -22,7 +22,7 @@ class EventDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final eventRef = EventRef.club(clubId: clubId, eventId: eventId);
+    final eventRef = EventRef(clubId: clubId, eventId: eventId);
     final event = ref.watch(eventDetailProvider(eventRef)).valueOrNull;
     final club = ref.watch(clubDetailProvider(clubId)).valueOrNull;
     final user = ref.watch(currentUserProvider).valueOrNull;

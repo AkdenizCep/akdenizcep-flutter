@@ -53,7 +53,7 @@ class LostFoundPage extends ConsumerWidget {
       ),
       // Uygulamanın yüzen alt navigasyon çubuğu ekranın en altına biniyor;
       // varsayılan FAB konumu onun arkasında kalıp görünmez olurdu (bkz.
-      // student_events_page.dart'taki aynı çözüm). Çubuğa daha yakın dursun
+      // events_page.dart'taki aynı çözüm). Çubuğa daha yakın dursun
       // diye boşluk giderek azaltıldı. Sabit 3 tuşlu sistem navigasyonu olan
       // telefonlarda ekstra pay veriyoruz, yoksa buton o çubuğun arkasında
       // kalır.

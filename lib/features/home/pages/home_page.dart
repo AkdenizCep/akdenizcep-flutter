@@ -506,7 +506,7 @@ class HomeContentPage extends ConsumerWidget {
                       ),
                     ),
                     TextButton(
-                      onPressed: () => context.go('/student-events'),
+                      onPressed: () => context.go('/events'),
                       child: const Text('Tümünü Gör'),
                     ),
                   ],
@@ -541,11 +541,9 @@ class HomeContentPage extends ConsumerWidget {
                         final event = events[index];
                         return EventCard(
                           event: event,
-                          onTap: event.clubId == null
-                              ? null
-                              : () => context.push(
-                                  '/club/${event.clubId}/event/${event.id}',
-                                ),
+                          onTap: () => context.push(
+                            '/club/${event.clubId}/event/${event.id}',
+                          ),
                         );
                       },
                     ),

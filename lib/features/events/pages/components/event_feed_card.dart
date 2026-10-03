@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../shared/components/attendee_avatars.dart';
 import '../../../../shared/components/event_visual.dart';
+import '../../../../shared/components/join_button.dart';
 import '../../../../shared/components/progress_snackbar.dart';
 import '../../../../shared/models/feed_event.dart';
 import '../../../../shared/providers/event_feed_provider.dart';
@@ -214,9 +215,7 @@ class _AuthorRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final subtitle = event.isClubEvent
-        ? 'Topluluk · ${relativeTime(event.createdAt)}'
-        : 'Öğrenci paylaşımı · ${relativeTime(event.createdAt)}';
+    final subtitle = 'Topluluk · ${relativeTime(event.createdAt)}';
 
     return GestureDetector(
       onTap: onTap,
@@ -263,18 +262,18 @@ class _AuthorRow extends StatelessWidget {
   }
 }
 
-class _AuthorAvatar extends ConsumerWidget {
+class _AuthorAvatar extends StatelessWidget {
   final FeedEvent event;
   final EventCategory category;
 
   const _AuthorAvatar({required this.event, required this.category});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final radius = BorderRadius.circular(15);
 
-    if (event.isClubEvent && event.authorLogoUrl.isNotEmpty) {
+    if (event.authorLogoUrl.isNotEmpty) {
       return ClipRRect(
         borderRadius: radius,
         child: CachedNetworkImage(
@@ -286,51 +285,15 @@ class _AuthorAvatar extends ConsumerWidget {
       );
     }
 
-    if (event.isClubEvent) {
-      return Container(
-        width: 46,
-        height: 46,
-        decoration: BoxDecoration(
-          color: category.color.withValues(alpha: 0.14),
-          borderRadius: radius,
-          border: Border.all(color: colorScheme.outlineVariant),
-        ),
-        child: Icon(category.icon, size: 24, color: category.color),
-      );
-    }
-
-    final fallback = Container(
+    return Container(
       width: 46,
       height: 46,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(color: category.color, borderRadius: radius),
-      child: Text(
-        event.authorName.isEmpty
-            ? '?'
-            : event.authorName.substring(0, 1).toUpperCase(),
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.w900,
-        ),
+      decoration: BoxDecoration(
+        color: category.color.withValues(alpha: 0.14),
+        borderRadius: radius,
+        border: Border.all(color: colorScheme.outlineVariant),
       ),
-    );
-
-    final photoUrl =
-        ref.watch(userProfileProvider(event.authorUid)).valueOrNull?.photoUrl ??
-        '';
-    if (photoUrl.isEmpty) return fallback;
-
-    return ClipRRect(
-      borderRadius: radius,
-      child: CachedNetworkImage(
-        imageUrl: photoUrl,
-        width: 46,
-        height: 46,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => fallback,
-        errorWidget: (context, url, error) => fallback,
-      ),
+      child: Icon(category.icon, size: 24, color: category.color),
     );
   }
 }
@@ -367,7 +330,7 @@ class _CardFooter extends ConsumerWidget {
           ),
         ),
         const SizedBox(width: 12),
-        _JoinButton(
+        JoinButton(
           joined: joined,
           enabled: user != null && (joined || !event.isFull),
           onPressed: () async {
@@ -375,64 +338,19 @@ class _CardFooter extends ConsumerWidget {
             try {
               await join.toggle(event: event, uid: user.id);
             } catch (e) {
-              if (!context.mounted) return;
-              showProgressSnackBar(
-                context,
-                message: errorMessage(e),
-                icon: Icons.error_outline_rounded,
-                accentColor: colorScheme.error,
-              );
+              if (context.mounted) {
+                showProgressSnackBar(
+                  context,
+                  message: errorMessage(e),
+                  icon: Icons.error_outline_rounded,
+                  accentColor: colorScheme.error,
+                );
+              }
+              rethrow;
             }
           },
         ),
       ],
-    );
-  }
-}
-
-class _JoinButton extends StatelessWidget {
-  final bool joined;
-  final bool enabled;
-  final VoidCallback onPressed;
-
-  const _JoinButton({
-    required this.joined,
-    required this.enabled,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Material(
-      color: joined ? colorScheme.primaryContainer : colorScheme.primary,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: enabled ? onPressed : null,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          height: 44,
-          padding: const EdgeInsets.symmetric(horizontal: 22),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: joined
-                ? Border.all(color: colorScheme.primary, width: 1.5)
-                : null,
-          ),
-          child: Text(
-            joined ? 'Katılıyorsun' : 'Katıl',
-            style: textTheme.labelLarge?.copyWith(
-              color: joined
-                  ? colorScheme.onPrimaryContainer
-                  : colorScheme.onPrimary,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

@@ -14,10 +14,10 @@ void main() {
   testWidgets('etkinlik detayı fiyat ve kayıt metinlerini göstermez', (
     tester,
   ) async {
-    const eventRef = EventRef.student('event-1');
+    const eventRef = EventRef(clubId: 'club-1', eventId: 'event-1');
     final event = FeedEvent(
       id: eventRef.eventId,
-      source: EventSource.student,
+      clubId: eventRef.clubId,
       title: 'Kampüs Etkinliği',
       date: DateTime(2026, 9, 10, 18),
       location: 'Olbia A Salonu',
@@ -64,10 +64,10 @@ void main() {
   testWidgets('etkinlik kapağı detay alanını cover ile doldurur', (
     tester,
   ) async {
-    const eventRef = EventRef.student('event-with-cover');
+    const eventRef = EventRef(clubId: 'club-1', eventId: 'event-with-cover');
     final event = FeedEvent(
       id: eventRef.eventId,
-      source: EventSource.student,
+      clubId: eventRef.clubId,
       title: 'Fotoğraflı Etkinlik',
       date: DateTime(2026, 9, 10, 18),
       location: 'Olbia A Salonu',

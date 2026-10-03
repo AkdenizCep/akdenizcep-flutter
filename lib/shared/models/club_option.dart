@@ -1,4 +1,4 @@
-/// Etkinlik oluşturma formundaki "kimin adına" seçeneği için kulüp özeti.
+/// Etkinlik oluşturma formundaki topluluk seçimi için kulüp özeti.
 ///
 /// Kulübün tamamını (community feature'ının `Club` modeli) taşımaz; form yalnız
 /// id ve ad ile çalışır.

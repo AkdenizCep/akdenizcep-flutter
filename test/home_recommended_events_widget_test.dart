@@ -77,7 +77,6 @@ final _user = AppUser(
 
 final _recommendedEvent = FeedEvent(
   id: 'event-1',
-  source: EventSource.club,
   clubId: 'club-1',
   title: 'Önerilen Teknoloji Buluşması',
   date: DateTime(2026, 9, 10, 18),

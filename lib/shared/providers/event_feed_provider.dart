@@ -7,9 +7,6 @@ import '../services/event_feed_service.dart';
 import '../utils/event_category.dart';
 import 'user_provider.dart';
 
-/// 2a akışındaki kaynak filtresi.
-enum EventSourceFilter { club, student }
-
 final eventFeedServiceProvider = Provider((_) => EventFeedService());
 
 final eventFeedProvider = StreamProvider<List<FeedEvent>>((ref) {
@@ -87,28 +84,16 @@ final selectedCategoryProvider = StateProvider<String>(
   (_) => EventCategory.all.id,
 );
 
-final selectedSourceProvider = StateProvider<EventSourceFilter>(
-  (_) => EventSourceFilter.club,
-);
-
 final feedSearchQueryProvider = StateProvider<String>((_) => '');
 
-/// Kategori × kaynak × arama — üçü AND ile birleşir.
+/// Kategori × arama — ikisi AND ile birleşir.
 final filteredFeedProvider = Provider<AsyncValue<List<FeedEvent>>>((ref) {
   final feed = ref.watch(eventFeedProvider);
   final categoryId = ref.watch(selectedCategoryProvider);
-  final sourceFilter = ref.watch(selectedSourceProvider);
   final query = ref.watch(feedSearchQueryProvider).trim().toLowerCase();
 
   return feed.whenData((events) {
     return events.where((event) {
-      if (sourceFilter == EventSourceFilter.club && !event.isClubEvent) {
-        return false;
-      }
-      if (sourceFilter == EventSourceFilter.student && event.isClubEvent) {
-        return false;
-      }
-
       if (categoryId != EventCategory.all.id) {
         final resolved = EventCategory.resolve(
           event.category,

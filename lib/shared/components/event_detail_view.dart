@@ -19,28 +19,26 @@ import 'attendee_avatars.dart';
 import 'error_view.dart';
 import 'event_location_preview.dart';
 import 'event_visual.dart';
+import 'join_button.dart';
 import 'loading_overlay.dart';
 import 'progress_snackbar.dart';
 
-/// Ekran 1d — kulüp ve öğrenci etkinliklerinin ortak detay gövdesi.
+/// Ekran 1d — topluluk etkinliği detay gövdesi.
 ///
 /// Kulüp kartı dışarıdan enjekte edilir: kulüp verisi ve takip aksiyonu
 /// community feature'ına ait olduğu için bu widget onu bilmez.
 class EventDetailView extends ConsumerStatefulWidget {
   final EventRef eventRef;
 
-  /// Kulüp etkinliklerinde gösterilen kulüp kartı. Öğrenci etkinliklerinde null.
+  /// Etkinliği düzenleyen topluluğun kartı.
   final Widget? clubCard;
 
   /// Yalnızca QR kaydı açık kulüp etkinliklerinde, kulüp yöneticisi/üyesi
   /// için dolu gelir — QR tarayıcıya götüren giriş kartı.
   final Widget? attendanceCard;
 
-  /// Yalnızca etkinliğin sahibi için dolu gelir.
+  /// Yalnızca topluluk yöneticisi için dolu gelir.
   final VoidCallback? onEdit;
-
-  /// Yalnızca etkinliğin sahibi için dolu gelir.
-  final Future<void> Function()? onDelete;
 
   const EventDetailView({
     super.key,
@@ -48,7 +46,6 @@ class EventDetailView extends ConsumerStatefulWidget {
     this.clubCard,
     this.attendanceCard,
     this.onEdit,
-    this.onDelete,
   });
 
   @override
@@ -101,15 +98,12 @@ class _EventDetailViewState extends ConsumerState<EventDetailView>
                 onOpenImage: event.imageUrl.isEmpty
                     ? null
                     : () => context.push(
-                        event.isClubEvent
-                            ? '/club/${event.clubId}/event/${event.id}/image'
-                            : '/event/${event.id}/image',
+                        '/club/${event.clubId}/event/${event.id}/image',
                       ),
                 isSaved: user?.savedEventIds.contains(event.id) ?? false,
                 onToggleSaved: user == null
                     ? null
                     : () => _toggleSaved(user.id, event.id),
-                onDelete: widget.onDelete,
               ),
               Transform.translate(
                 offset: const Offset(0, -26),
@@ -291,7 +285,6 @@ class _Hero extends StatelessWidget {
   final bool isSaved;
   final VoidCallback? onOpenImage;
   final VoidCallback? onToggleSaved;
-  final Future<void> Function()? onDelete;
 
   const _Hero({
     required this.event,
@@ -299,7 +292,6 @@ class _Hero extends StatelessWidget {
     required this.isSaved,
     required this.onOpenImage,
     required this.onToggleSaved,
-    required this.onDelete,
   });
 
   @override
@@ -356,14 +348,6 @@ class _Hero extends StatelessWidget {
                     tooltip: isSaved ? 'Kaydedilenlerden çıkar' : 'Kaydet',
                     onPressed: onToggleSaved!,
                   ),
-                if (onDelete != null) ...[
-                  const SizedBox(width: 10),
-                  _CircleControl(
-                    icon: Icons.delete_outline_rounded,
-                    tooltip: 'Etkinliği sil',
-                    onPressed: () => _confirmDelete(context),
-                  ),
-                ],
               ],
             ),
           ),
@@ -378,28 +362,6 @@ class _Hero extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Future<void> _confirmDelete(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Etkinliği Sil'),
-        content: const Text('Bu etkinliği silmek istediğinize emin misiniz?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('İptal'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Sil'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) await onDelete!();
   }
 }
 
@@ -1010,64 +972,28 @@ class _BottomCtaBar extends ConsumerWidget {
       child: Row(
         children: [
           Expanded(
-            child: Material(
-              color: joined
-                  ? colorScheme.primaryContainer
-                  : colorScheme.primary,
-              borderRadius: BorderRadius.circular(16),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(16),
-                onTap: enabled
-                    ? () async {
-                        try {
-                          await join.toggle(event: event, uid: user.id);
-                        } catch (e) {
-                          if (!context.mounted) return;
-                          showProgressSnackBar(
-                            context,
-                            message: errorMessage(e),
-                            icon: Icons.error_outline_rounded,
-                            accentColor: colorScheme.error,
-                          );
-                        }
-                      }
-                    : null,
-                child: Container(
-                  height: 56,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    border: joined
-                        ? Border.all(color: colorScheme.primary, width: 1.5)
-                        : null,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        joined
-                            ? Icons.check_circle_rounded
-                            : Icons.add_circle_rounded,
-                        size: 20,
-                        color: joined
-                            ? colorScheme.onPrimaryContainer
-                            : colorScheme.onPrimary,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        joined ? 'Katılıyorsun' : 'Katıl',
-                        style: textTheme.titleMedium?.copyWith(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: joined
-                              ? colorScheme.onPrimaryContainer
-                              : colorScheme.onPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            child: JoinButton(
+              joined: joined,
+              enabled: enabled,
+              height: 56,
+              showLeadingIcon: true,
+              labelStyle: textTheme.titleMedium?.copyWith(fontSize: 16),
+              onPressed: () async {
+                if (user == null) return;
+                try {
+                  await join.toggle(event: event, uid: user.id);
+                } catch (e) {
+                  if (context.mounted) {
+                    showProgressSnackBar(
+                      context,
+                      message: errorMessage(e),
+                      icon: Icons.error_outline_rounded,
+                      accentColor: colorScheme.error,
+                    );
+                  }
+                  rethrow;
+                }
+              },
             ),
           ),
         ],

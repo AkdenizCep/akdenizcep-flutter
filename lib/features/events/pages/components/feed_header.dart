@@ -8,9 +8,10 @@ import '../../../../shared/providers/user_provider.dart';
 
 /// Sayfa başlığı: standart [AppTopBar] + altında açılıp kapanan arama alanı.
 class FeedHeader extends ConsumerStatefulWidget {
-  final VoidCallback onCreate;
+  /// Null ise "+" aksiyonu çizilmez (kullanıcı hiçbir topluluğu yönetmiyor).
+  final VoidCallback? onCreate;
 
-  const FeedHeader({super.key, required this.onCreate});
+  const FeedHeader({super.key, this.onCreate});
 
   @override
   ConsumerState<FeedHeader> createState() => _FeedHeaderState();
@@ -57,11 +58,12 @@ class _FeedHeaderState extends ConsumerState<FeedHeader> {
           tooltip: _searchOpen ? 'Aramayı kapat' : 'Ara',
           onTap: _toggleSearch,
         ),
-        AppTopBarAction.filled(
-          icon: Icons.add_rounded,
-          tooltip: 'Etkinlik oluştur',
-          onTap: widget.onCreate,
-        ),
+        if (widget.onCreate != null)
+          AppTopBarAction.filled(
+            icon: Icons.add_rounded,
+            tooltip: 'Etkinlik oluştur',
+            onTap: widget.onCreate!,
+          ),
         AppTopBarAction.avatar(
           initial: userInitial,
           imageUrl: user?.photoUrl,

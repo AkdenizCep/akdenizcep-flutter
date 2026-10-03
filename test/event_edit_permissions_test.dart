@@ -2,8 +2,8 @@ import 'package:akdenizcep/features/auth/models/app_user.dart';
 import 'package:akdenizcep/features/community/models/club.dart';
 import 'package:akdenizcep/features/community/pages/event_detail_page.dart';
 import 'package:akdenizcep/features/community/providers/community_provider.dart';
-import 'package:akdenizcep/features/student_events/pages/create_event_page.dart';
-import 'package:akdenizcep/features/student_events/pages/student_event_detail_page.dart';
+import 'package:akdenizcep/features/events/pages/create_event_page.dart';
+import 'package:akdenizcep/shared/models/club_option.dart';
 import 'package:akdenizcep/shared/models/feed_event.dart';
 import 'package:akdenizcep/shared/providers/event_feed_provider.dart';
 import 'package:akdenizcep/shared/providers/user_provider.dart';
@@ -15,65 +15,12 @@ import 'package:intl/date_symbol_data_local.dart';
 void main() {
   setUpAll(() => initializeDateFormatting('tr'));
 
-  testWidgets('kişisel etkinliğin yazarı düzenleme seçeneğini görür', (
-    tester,
-  ) async {
-    const eventRef = EventRef.student('event-1');
-    final event = FeedEvent(
-      id: eventRef.eventId,
-      source: EventSource.student,
-      title: 'Kampüs Buluşması',
-      date: DateTime(2026, 10, 10, 18),
-      location: 'Olbia A Salonu',
-      description: 'Etkinlik açıklaması',
-      authorUid: 'owner-1',
-      createdAt: DateTime(2026, 9),
-    );
-    final user = AppUser(
-      id: 'owner-1',
-      name: 'Etkinlik Sahibi',
-      email: 'owner@ogr.akdeniz.edu.tr',
-      studentId: '202600001',
-      followedClubs: const [],
-      createdAt: DateTime(2026, 9),
-    );
-
-    final container = ProviderContainer(
-      overrides: [
-        eventDetailProvider(
-          eventRef,
-        ).overrideWith((ref) => Stream.value(event)),
-        eventCommentsProvider(
-          eventRef,
-        ).overrideWith((ref) => Stream.value(const [])),
-        currentUserProvider.overrideWith((ref) => Stream.value(user)),
-      ],
-    );
-    addTearDown(container.dispose);
-
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: const MaterialApp(
-          home: StudentEventDetailPage(eventId: 'event-1'),
-        ),
-      ),
-    );
-    await tester.pump();
-
-    expect(find.text('Etkinliği Düzenle'), findsOneWidget);
-
-    await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
-    await tester.pump();
-  });
-
   testWidgets('topluluk yöneticisi etkinliği düzenleme seçeneğini görür', (
     tester,
   ) async {
-    const eventRef = EventRef.club(clubId: 'club-1', eventId: 'event-2');
+    const eventRef = EventRef(clubId: 'club-1', eventId: 'event-2');
     final event = FeedEvent(
       id: eventRef.eventId,
-      source: EventSource.club,
       clubId: eventRef.clubId,
       title: 'Topluluk Etkinliği',
       date: DateTime(2026, 10, 11, 19),
@@ -129,13 +76,13 @@ void main() {
     await tester.pump();
   });
 
-  testWidgets('kişisel etkinlik düzenleme formu mevcut verilerle açılır', (
+  testWidgets('topluluk etkinliği düzenleme formu mevcut verilerle açılır', (
     tester,
   ) async {
-    const eventRef = EventRef.student('event-1');
+    const eventRef = EventRef(clubId: 'club-1', eventId: 'event-1');
     final event = FeedEvent(
       id: eventRef.eventId,
-      source: EventSource.student,
+      clubId: eventRef.clubId,
       title: 'Kampüs Buluşması',
       date: DateTime(2026, 10, 10, 18, 30),
       location: 'Olbia A Salonu',
@@ -177,5 +124,98 @@ void main() {
     expect(find.text('Etkinliği Düzenle'), findsOneWidget);
     expect(find.widgetWithText(TextField, 'Kampüs Buluşması'), findsOneWidget);
     expect(find.text('Olbia A Salonu'), findsOneWidget);
+  });
+
+  testWidgets('topluluk yöneticisi olmayan kullanıcı oluşturma formunu görmez', (
+    tester,
+  ) async {
+    final user = AppUser(
+      id: 'student-1',
+      name: 'Öğrenci',
+      email: 'student@ogr.akdeniz.edu.tr',
+      studentId: '202600003',
+      followedClubs: const [],
+      createdAt: DateTime(2026, 9),
+    );
+    final container = ProviderContainer(
+      overrides: [
+        adminClubsProvider.overrideWith(
+          (ref) => Stream.value(const <ClubOption>[]),
+        ),
+        currentUserProvider.overrideWith((ref) => Stream.value(user)),
+      ],
+    );
+    addTearDown(container.dispose);
+    await container.read(adminClubsProvider.future);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(home: CreateEventPage()),
+      ),
+    );
+    await tester.pump();
+
+    expect(
+      find.text('Etkinlik oluşturmak için bir topluluğun yöneticisi olmalısın.'),
+      findsOneWidget,
+    );
+    expect(find.text('Etkinliği Paylaş'), findsNothing);
+  });
+
+  testWidgets('tek topluluk yöneten kullanıcı seçici olmadan form görür', (
+    tester,
+  ) async {
+    final container = ProviderContainer(
+      overrides: [
+        adminClubsProvider.overrideWith(
+          (ref) => Stream.value(const [
+            ClubOption(id: 'club-1', name: 'Yazılım Topluluğu', category: ''),
+          ]),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+    await container.read(adminClubsProvider.future);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(home: CreateEventPage()),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('Etkinliği Paylaş'), findsOneWidget);
+    expect(find.text('TOPLULUK'), findsNothing);
+  });
+
+  testWidgets('birden fazla topluluk yöneten kullanıcı topluluk seçebilir', (
+    tester,
+  ) async {
+    final container = ProviderContainer(
+      overrides: [
+        adminClubsProvider.overrideWith(
+          (ref) => Stream.value(const [
+            ClubOption(id: 'club-1', name: 'Yazılım Topluluğu', category: ''),
+            ClubOption(id: 'club-2', name: 'Müzik Topluluğu', category: ''),
+          ]),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+    await container.read(adminClubsProvider.future);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(home: CreateEventPage()),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('TOPLULUK'), findsOneWidget);
+    expect(find.text('Yazılım Topluluğu'), findsOneWidget);
+    expect(find.text('Müzik Topluluğu'), findsOneWidget);
   });
 }
