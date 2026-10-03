@@ -53,12 +53,56 @@ class AcademicCalendarService {
   /// Verilen ana bakılırsa hangi yarıyılın gösterilmesi mantıklı — Bahar
   /// dönemi başlamadan önce Güz, başladıktan sonra Bahar.
   AcademicTerm currentTerm(DateTime now) {
-    final springStart = _milestones
-        .firstWhere((m) => m.title == 'Derslerin Başlaması')
-        .spring!
-        .start;
+    final springStart = _rangeOf(_lessonsStart, AcademicTerm.spring).start;
     return now.isBefore(springStart) ? AcademicTerm.fall : AcademicTerm.spring;
   }
+
+  /// Bugünün yarıyıl içindeki konumu: ders haftası (1'den başlar), final ya da
+  /// bütünleme sınavları. Dönem arası ve yaz gibi hiçbirine denk gelmeyen
+  /// günlerde `null` döner.
+  TermProgress? termProgress(DateTime now) {
+    final today = DateTime(now.year, now.month, now.day);
+
+    for (final term in AcademicTerm.values) {
+      final lessonsFrom = _rangeOf(_lessonsStart, term).start;
+      final lessonsTo = _rangeOf(_lessonsEnd, term).start;
+      if (isDateWithinRange(today, lessonsFrom, lessonsTo)) {
+        return TermProgress(
+          term: term,
+          phase: TermPhase.lessons,
+          week: _daysBetween(lessonsFrom, today) ~/ 7 + 1,
+        );
+      }
+      if (_rangeOf(_finals, term).containsDay(today)) {
+        return TermProgress(term: term, phase: TermPhase.finals);
+      }
+      if (_rangeOf(_makeupExams, term).containsDay(today)) {
+        return TermProgress(term: term, phase: TermPhase.makeup);
+      }
+    }
+    return null;
+  }
+
+  AcademicDateRange _rangeOf(String title, AcademicTerm term) {
+    final milestone = _milestones.firstWhere((m) => m.title == title);
+    return (term == AcademicTerm.fall ? milestone.fall : milestone.spring)!;
+  }
+
+  /// Saat ve yaz saati kaymasından etkilenmemek için UTC günleri arasında
+  /// hesaplanır.
+  int _daysBetween(DateTime from, DateTime to) {
+    return DateTime.utc(
+      to.year,
+      to.month,
+      to.day,
+    ).difference(DateTime.utc(from.year, from.month, from.day)).inDays;
+  }
+
+  static const _lessonsStart = 'Derslerin Başlaması';
+  static const _lessonsEnd = 'Derslerin Sona Ermesi';
+  static const _finals = 'Yarıyıl Sonu Sınavları';
+  static const _makeupExams =
+      'Yıl/Yarıyıl Sonu İkinci Sınavı (Bütünleme) Tarihleri';
 
   static final List<AcademicMilestone> _milestones = [
     AcademicMilestone(
@@ -73,25 +117,13 @@ class AcademicCalendarService {
     ),
     AcademicMilestone(
       title: 'Katkı Payı / Öğrenim Ücretleri Yatırma ve Kayıt Yenileme Süresi',
-      fall: AcademicDateRange(
-        DateTime(2026, 9, 7),
-        DateTime(2026, 9, 11),
-      ),
-      spring: AcademicDateRange(
-        DateTime(2027, 1, 25),
-        DateTime(2027, 1, 29),
-      ),
+      fall: AcademicDateRange(DateTime(2026, 9, 7), DateTime(2026, 9, 11)),
+      spring: AcademicDateRange(DateTime(2027, 1, 25), DateTime(2027, 1, 29)),
     ),
     AcademicMilestone(
       title: 'Danışman Onayı',
-      fall: AcademicDateRange(
-        DateTime(2026, 9, 7),
-        DateTime(2026, 9, 13),
-      ),
-      spring: AcademicDateRange(
-        DateTime(2027, 1, 25),
-        DateTime(2027, 1, 31),
-      ),
+      fall: AcademicDateRange(DateTime(2026, 9, 7), DateTime(2026, 9, 13)),
+      spring: AcademicDateRange(DateTime(2027, 1, 25), DateTime(2027, 1, 31)),
     ),
     AcademicMilestone(
       title: 'Öğrenime Ara İzni Başvurusu İçin Son Gün',
@@ -99,20 +131,14 @@ class AcademicCalendarService {
       spring: AcademicDateRange(DateTime(2027, 1, 29)),
     ),
     AcademicMilestone(
-      title: 'Derslerin Başlaması',
+      title: _lessonsStart,
       fall: AcademicDateRange(DateTime(2026, 9, 14)),
       spring: AcademicDateRange(DateTime(2027, 2, 1)),
     ),
     AcademicMilestone(
       title: 'Sosyal Transkript Etkinlik Başvuru Tarihleri',
-      fall: AcademicDateRange(
-        DateTime(2026, 9, 14),
-        DateTime(2026, 12, 20),
-      ),
-      spring: AcademicDateRange(
-        DateTime(2027, 2, 1),
-        DateTime(2027, 5, 14),
-      ),
+      fall: AcademicDateRange(DateTime(2026, 9, 14), DateTime(2026, 12, 20)),
+      spring: AcademicDateRange(DateTime(2027, 2, 1), DateTime(2027, 5, 14)),
     ),
     AcademicMilestone(
       title:
@@ -126,25 +152,13 @@ class AcademicCalendarService {
       title:
           'Ders Bırakma ve Ders Ekleme Süresi (Ekle-Çıkar) / '
           'Mazeretli Ders Kaydı',
-      fall: AcademicDateRange(
-        DateTime(2026, 9, 15),
-        DateTime(2026, 9, 18),
-      ),
-      spring: AcademicDateRange(
-        DateTime(2027, 2, 2),
-        DateTime(2027, 2, 5),
-      ),
+      fall: AcademicDateRange(DateTime(2026, 9, 15), DateTime(2026, 9, 18)),
+      spring: AcademicDateRange(DateTime(2027, 2, 2), DateTime(2027, 2, 5)),
     ),
     AcademicMilestone(
       title: 'Ders Bırakma ve Ders Ekleme (Ekle-Çıkar) Danışman Onayı',
-      fall: AcademicDateRange(
-        DateTime(2026, 9, 15),
-        DateTime(2026, 9, 20),
-      ),
-      spring: AcademicDateRange(
-        DateTime(2027, 2, 2),
-        DateTime(2027, 2, 7),
-      ),
+      fall: AcademicDateRange(DateTime(2026, 9, 15), DateTime(2026, 9, 20)),
+      spring: AcademicDateRange(DateTime(2027, 2, 2), DateTime(2027, 2, 7)),
     ),
     AcademicMilestone(
       title: 'Dersten Çekilmenin Son Günü',
@@ -159,20 +173,14 @@ class AcademicCalendarService {
       spring: AcademicDateRange(DateTime(2027, 5, 14)),
     ),
     AcademicMilestone(
-      title: 'Derslerin Sona Ermesi',
+      title: _lessonsEnd,
       fall: AcademicDateRange(DateTime(2026, 12, 20)),
       spring: AcademicDateRange(DateTime(2027, 5, 14)),
     ),
     AcademicMilestone(
-      title: 'Yarıyıl Sonu Sınavları',
-      fall: AcademicDateRange(
-        DateTime(2026, 12, 21),
-        DateTime(2026, 12, 31),
-      ),
-      spring: AcademicDateRange(
-        DateTime(2027, 5, 24),
-        DateTime(2027, 6, 4),
-      ),
+      title: _finals,
+      fall: AcademicDateRange(DateTime(2026, 12, 21), DateTime(2026, 12, 31)),
+      spring: AcademicDateRange(DateTime(2027, 5, 24), DateTime(2027, 6, 4)),
     ),
     AcademicMilestone(
       title:
@@ -183,25 +191,13 @@ class AcademicCalendarService {
     ),
     AcademicMilestone(
       title: 'Yıl/Yarıyıl Sonu İkinci Sınavı (Bütünleme) Başvuru Tarihleri',
-      fall: AcademicDateRange(
-        DateTime(2027, 1, 2),
-        DateTime(2027, 1, 9),
-      ),
-      spring: AcademicDateRange(
-        DateTime(2027, 6, 5),
-        DateTime(2027, 6, 12),
-      ),
+      fall: AcademicDateRange(DateTime(2027, 1, 2), DateTime(2027, 1, 9)),
+      spring: AcademicDateRange(DateTime(2027, 6, 5), DateTime(2027, 6, 12)),
     ),
     AcademicMilestone(
-      title: 'Yıl/Yarıyıl Sonu İkinci Sınavı (Bütünleme) Tarihleri',
-      fall: AcademicDateRange(
-        DateTime(2027, 1, 11),
-        DateTime(2027, 1, 15),
-      ),
-      spring: AcademicDateRange(
-        DateTime(2027, 6, 14),
-        DateTime(2027, 6, 18),
-      ),
+      title: _makeupExams,
+      fall: AcademicDateRange(DateTime(2027, 1, 11), DateTime(2027, 1, 15)),
+      spring: AcademicDateRange(DateTime(2027, 6, 14), DateTime(2027, 6, 18)),
     ),
     AcademicMilestone(
       title:
@@ -244,10 +240,7 @@ class AcademicCalendarService {
       date: DateTime(2027, 4, 23),
       title: 'Ulusal Egemenlik ve Çocuk Bayramı',
     ),
-    PublicHoliday(
-      date: DateTime(2027, 5, 1),
-      title: 'Emek ve Dayanışma Günü',
-    ),
+    PublicHoliday(date: DateTime(2027, 5, 1), title: 'Emek ve Dayanışma Günü'),
     PublicHoliday(
       date: DateTime(2027, 5, 15),
       title: 'Kurban Bayramı Arefesi',

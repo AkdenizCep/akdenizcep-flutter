@@ -1,11 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/academic_calendar.dart';
-import '../services/academic_calendar_service.dart';
-
-final academicCalendarServiceProvider = Provider(
-  (_) => AcademicCalendarService(),
-);
+import '../../../shared/models/academic_calendar.dart';
+import '../../../shared/providers/academic_calendar_provider.dart';
 
 final academicMilestonesProvider = Provider<List<AcademicMilestone>>((ref) {
   return ref.watch(academicCalendarServiceProvider).milestones;

@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-import '../../models/academic_calendar.dart';
+import '../../../../shared/models/academic_calendar.dart';
 
 /// "7-11 Eylül 2026" / "14 Eylül - 20 Aralık 2026" / "1 Şubat 2027" gibi
 /// biçimlendirir. [range] `null` ise "—" döner (bu takvimde hiçbir satırda

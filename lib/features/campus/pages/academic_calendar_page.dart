@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/academic_calendar.dart';
+import '../../../shared/models/academic_calendar.dart';
 import '../providers/academic_calendar_provider.dart';
 import 'components/academic_calendar_format.dart';
 import 'components/campus_service_group.dart';

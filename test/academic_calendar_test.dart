@@ -1,6 +1,6 @@
-import 'package:akdenizcep/features/campus/models/academic_calendar.dart';
 import 'package:akdenizcep/features/campus/pages/components/academic_calendar_format.dart';
-import 'package:akdenizcep/features/campus/services/academic_calendar_service.dart';
+import 'package:akdenizcep/shared/models/academic_calendar.dart';
+import 'package:akdenizcep/shared/services/academic_calendar_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -95,6 +95,72 @@ void main() {
     });
   });
 
+  group('AcademicCalendarService.termProgress', () {
+    void expectLessons(DateTime day, AcademicTerm term, int week) {
+      final progress = service.termProgress(day);
+      expect(progress, isNotNull, reason: '$day');
+      expect(progress!.term, term, reason: '$day');
+      expect(progress.phase, TermPhase.lessons, reason: '$day');
+      expect(progress.week, week, reason: '$day');
+    }
+
+    test('derslerin başladığı gün 1. hafta', () {
+      expectLessons(DateTime(2026, 9, 14), AcademicTerm.fall, 1);
+    });
+
+    test('haftalar pazartesi değil başlangıç gününden itibaren sayılır', () {
+      expectLessons(DateTime(2026, 9, 20), AcademicTerm.fall, 1);
+      expectLessons(DateTime(2026, 9, 21), AcademicTerm.fall, 2);
+      expectLessons(DateTime(2026, 10, 3), AcademicTerm.fall, 3);
+    });
+
+    test('saat bileşeni haftayı etkilemez', () {
+      expectLessons(DateTime(2026, 10, 3, 23, 59), AcademicTerm.fall, 3);
+    });
+
+    test('güz yarıyılının son ders günü hâlâ ders evresi', () {
+      expectLessons(DateTime(2026, 12, 20), AcademicTerm.fall, 14);
+    });
+
+    test('final sınavları', () {
+      final progress = service.termProgress(DateTime(2026, 12, 25));
+      expect(progress!.term, AcademicTerm.fall);
+      expect(progress.phase, TermPhase.finals);
+      expect(progress.week, isNull);
+    });
+
+    test('bütünleme sınavları', () {
+      final progress = service.termProgress(DateTime(2027, 1, 12));
+      expect(progress!.term, AcademicTerm.fall);
+      expect(progress.phase, TermPhase.makeup);
+    });
+
+    test('bahar yarıyılı kendi başlangıcından sayılır', () {
+      expectLessons(DateTime(2027, 2, 3), AcademicTerm.spring, 1);
+    });
+
+    test('dönem arası ve yazda null döner', () {
+      expect(service.termProgress(DateTime(2026, 8, 28)), isNull);
+      expect(service.termProgress(DateTime(2027, 1, 5)), isNull);
+      expect(service.termProgress(DateTime(2027, 7, 1)), isNull);
+    });
+
+    test('etiket evreye göre yazılır', () {
+      expect(
+        service.termProgress(DateTime(2026, 10, 3))!.label,
+        'Güz Yarıyılı, 3. hafta',
+      );
+      expect(
+        service.termProgress(DateTime(2026, 12, 25))!.label,
+        'Güz Yarıyılı, final sınavları',
+      );
+      expect(
+        service.termProgress(DateTime(2027, 6, 15))!.label,
+        'Bahar Yarıyılı, bütünleme sınavları',
+      );
+    });
+  });
+
   group('AcademicCalendarService.upcomingEvents', () {
     test('geçmiş tarihler listeye girmez', () {
       final events = service.upcomingEvents(DateTime(2027, 8, 31));
@@ -112,13 +178,16 @@ void main() {
       expect(events.first.date, DateTime(2026, 9, 14));
     });
 
-    test('tatiller ve akademik tarihler tek zaman çizelgesinde karışık sıralanır', () {
-      final events = service.upcomingEvents(DateTime(2026, 10, 1));
-      final firstHolidayIndex = events.indexWhere((e) => e.isHoliday);
-      expect(firstHolidayIndex, greaterThan(0));
-      expect(events[firstHolidayIndex].title, 'Cumhuriyet Bayramı');
-      expect(events[firstHolidayIndex].date, DateTime(2026, 10, 28));
-    });
+    test(
+      'tatiller ve akademik tarihler tek zaman çizelgesinde karışık sıralanır',
+      () {
+        final events = service.upcomingEvents(DateTime(2026, 10, 1));
+        final firstHolidayIndex = events.indexWhere((e) => e.isHoliday);
+        expect(firstHolidayIndex, greaterThan(0));
+        expect(events[firstHolidayIndex].title, 'Cumhuriyet Bayramı');
+        expect(events[firstHolidayIndex].date, DateTime(2026, 10, 28));
+      },
+    );
 
     group('devam eden aralıklar (bir sürecin ortasındayken)', () {
       // 9 Eylül 2026: "Katkı Payı Yatırma" (7-11 Eylül) ve "Danışman Onayı"
@@ -160,10 +229,7 @@ void main() {
         );
 
         expect(derslerinBaslamasi.isRange, isFalse);
-        expect(
-          derslerinBaslamasi.isOngoingOn(DateTime(2026, 9, 14)),
-          isFalse,
-        );
+        expect(derslerinBaslamasi.isOngoingOn(DateTime(2026, 9, 14)), isFalse);
       });
     });
   });

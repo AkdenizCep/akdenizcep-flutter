@@ -20,6 +20,27 @@ extension AcademicTermLabel on AcademicTerm {
   };
 }
 
+/// Yarıyılın içinde bugünün hangi evrede olduğu.
+enum TermPhase { lessons, finals, makeup }
+
+/// Bugünün yarıyıl içindeki konumu: hangi yarıyıl, hangi evre ve ders
+/// evresindeyse kaçıncı hafta. Dönem arası ve yaz için üretilmez.
+class TermProgress {
+  final AcademicTerm term;
+  final TermPhase phase;
+
+  /// Yalnızca [TermPhase.lessons] evresinde dolu (1'den başlar).
+  final int? week;
+
+  const TermProgress({required this.term, required this.phase, this.week});
+
+  String get label => switch (phase) {
+    TermPhase.lessons => '${term.label}, $week. hafta',
+    TermPhase.finals => '${term.label}, final sınavları',
+    TermPhase.makeup => '${term.label}, bütünleme sınavları',
+  };
+}
+
 bool _isSameDay(DateTime a, DateTime b) =>
     a.year == b.year && a.month == b.month && a.day == b.day;
 
@@ -28,9 +49,7 @@ bool _isSameDay(DateTime a, DateTime b) =>
 bool isDateWithinRange(DateTime day, DateTime start, [DateTime? end]) {
   final target = DateTime(day.year, day.month, day.day);
   final from = DateTime(start.year, start.month, start.day);
-  final to = end == null
-      ? from
-      : DateTime(end.year, end.month, end.day);
+  final to = end == null ? from : DateTime(end.year, end.month, end.day);
   return !target.isBefore(from) && !target.isAfter(to);
 }
 
@@ -101,5 +120,6 @@ class AcademicEvent {
 
   bool get isRange => end != null && !_isSameDay(date, end!);
 
-  bool isOngoingOn(DateTime day) => isRange && isDateWithinRange(day, date, end);
+  bool isOngoingOn(DateTime day) =>
+      isRange && isDateWithinRange(day, date, end);
 }
