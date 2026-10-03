@@ -56,6 +56,7 @@ Future<void> _pumpHome(WidgetTester tester) async {
       overrides: [
         currentUserProvider.overrideWith((ref) => Stream.value(_user)),
         announcementsProvider.overrideWith((ref) => Stream.value(const [])),
+        homeNowProvider.overrideWith((ref) => DateTime(2026, 10, 3, 9)),
         recommendedHomeEventsProvider.overrideWith(
           (ref) => AsyncData([_recommendedEvent]),
         ),
