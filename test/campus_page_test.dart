@@ -56,7 +56,7 @@ void main() {
       'Kampüs Haritası',
       'Kayıp & Buluntu',
       'Kampüs Fotoğrafları',
-      'Acil Numaralar',
+      'Numaralar',
     ]) {
       expect(find.text(title), findsOneWidget);
     }
@@ -71,7 +71,7 @@ void main() {
     router.go('/campus');
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Acil Numaralar'));
+    await tester.tap(find.text('Numaralar'));
     await tester.pumpAndSettle();
     expect(find.text('Şimdi Ara'), findsOneWidget);
 

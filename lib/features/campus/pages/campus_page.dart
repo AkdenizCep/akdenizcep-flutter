@@ -44,7 +44,7 @@ class CampusPage extends ConsumerWidget {
     ];
     final safetyServices = [
       CampusServiceDestination(
-        title: 'Acil Numaralar',
+        title: 'Numaralar',
         description: 'Güvenlik birimleri ve nöbet noktaları',
         icon: Icons.phone_in_talk_outlined,
         tone: CampusServiceTone.alert,
