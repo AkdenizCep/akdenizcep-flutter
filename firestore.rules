@@ -250,36 +250,6 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
-    match /student-events/{seventId} {
-      allow read: if isAdmin() || isVisible();
-      allow create: if canCreateStudentContent() &&
-        request.auth.uid == request.resource.data.authorUid && createsVisibleContent();
-      allow delete: if isAdmin() ||
-        (isAkdenizStudent() && request.auth.uid == resource.data.authorUid);
-      allow update: if isAdminModerationUpdate() ||
-        (isAkdenizStudent() && (
-          (request.auth.uid == resource.data.authorUid &&
-            !request.resource.data.diff(resource.data).affectedKeys().hasAny([
-              'authorUid', 'createdAt', 'moderationStatus', 'moderatedAt', 'moderatedBy'
-            ])) || isValidAttendanceChange(request.auth.uid)
-        ));
-
-      match /comments/{commentId} {
-        allow read: if isAdmin() || (isVisible() &&
-          get(/databases/$(database)/documents/student-events/$(seventId))
-            .data.moderationStatus == 'visible');
-        allow create: if canCreateStudentContent() &&
-          request.auth.uid == request.resource.data.authorUid &&
-          get(/databases/$(database)/documents/student-events/$(seventId))
-            .data.moderationStatus == 'visible' && createsVisibleContent();
-        allow update: if isAdminModerationUpdate() ||
-          (isAkdenizStudent() && request.auth.uid == resource.data.authorUid &&
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text']));
-        allow delete: if isAdmin() ||
-          (isAkdenizStudent() && request.auth.uid == resource.data.authorUid);
-      }
-    }
-
     match /lost_found_items/{itemId} {
       allow read: if isAdmin() || isVisible();
       allow create: if canCreateStudentContent() &&

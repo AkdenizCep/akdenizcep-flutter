@@ -43,11 +43,11 @@ function isModeratedPath(path: string): boolean {
   const parts = path.split("/");
 
   if (parts.length === 2) {
-    return ["board", "student-events", "lost_found_items", "campus_photos"].includes(parts[0]);
+    return ["board", "lost_found_items", "campus_photos"].includes(parts[0]);
   }
 
   if (parts.length === 4 && parts[2] === "comments") {
-    return ["student-events", "campus_photos"].includes(parts[0]);
+    return ["campus_photos"].includes(parts[0]);
   }
 
   if (parts.length === 4 && parts[0] === "clubs" && parts[2] === "club-events") {

@@ -58,12 +58,23 @@ async function seed(restriction: "none" | "indefinite" | "expired") {
       moderationStatus: "visible", moderatedAt: null, moderatedBy: null,
       createdAt: new Date("2026-09-01T00:00:00Z"),
     });
-    await setDoc(doc(adminDb, "student-events/event"), {
-      authorUid: "admin", title: "Etkinlik", attendeeIds: [], attendeeCount: 0,
+    await setDoc(doc(adminDb, "clubs/club"), {
+      name: "Kulüp", adminUid: "admin", adminUids: [], active: true,
+    });
+    await setDoc(doc(adminDb, "clubs/club/club-events/event"), {
+      title: "Etkinlik", attendeeIds: [], attendeeCount: 0,
       moderationStatus: "visible", moderatedAt: null, moderatedBy: null,
       createdAt: new Date("2026-09-01T00:00:00Z"),
     });
   });
+}
+
+function commentPayload() {
+  return {
+    authorUid: "student", authorName: "Student", text: "Yorum",
+    moderationStatus: "visible", moderatedAt: null, moderatedBy: null,
+    createdAt: serverTimestamp(),
+  };
 }
 
 function boardPayload() {
@@ -83,11 +94,16 @@ test("süresiz kısıtlı öğrenci yeni paylaşım ve yorum oluşturamaz", {ski
   await seed("indefinite");
   const student = db("student");
   await assertFails(addDoc(collection(student, "board"), boardPayload()));
-  await assertFails(addDoc(collection(student, "student-events/event/comments"), {
-    authorUid: "student", authorName: "Student", text: "Yorum",
-    moderationStatus: "visible", moderatedAt: null, moderatedBy: null,
-    createdAt: serverTimestamp(),
-  }));
+  await assertFails(addDoc(
+    collection(student, "clubs/club/club-events/event/comments"), commentPayload(),
+  ));
+});
+
+test("kısıtsız öğrenci topluluk etkinliğine yorum yazabilir", {skip: !rulesEnabled}, async () => {
+  await seed("none");
+  await assertSucceeds(addDoc(
+    collection(db("student"), "clubs/club/club-events/event/comments"), commentPayload(),
+  ));
 });
 
 test("süresi geçmiş kısıtlama yeni paylaşıma engel olmaz", {skip: !rulesEnabled}, async () => {
@@ -116,9 +132,30 @@ test("kısıtlama beğeni ve etkinliğe katılım alanlarını engellemez", {ski
   });
   const student = db("student");
   await assertSucceeds(updateDoc(doc(student, "campus_photos/photo"), {likedBy: ["student"]}));
-  await assertSucceeds(updateDoc(doc(student, "student-events/event"), {
+  await assertSucceeds(updateDoc(doc(student, "clubs/club/club-events/event"), {
     attendeeIds: ["student"], attendeeCount: 1,
   }));
+});
+
+test("kaldırılan student-events koleksiyonuna kimse okuma ya da yazma yapamaz", {skip: !rulesEnabled}, async () => {
+  await seed("none");
+  await env.withSecurityRulesDisabled(async (context) => {
+    await setDoc(doc(context.firestore(), "student-events/legacy"), {
+      authorUid: "student", title: "Eski etkinlik", attendeeIds: [], attendeeCount: 0,
+      moderationStatus: "visible", moderatedAt: null, moderatedBy: null,
+      createdAt: new Date("2026-09-01T00:00:00Z"),
+    });
+  });
+  const newEvent = {
+    authorUid: "student", title: "Yeni etkinlik", attendeeIds: [], attendeeCount: 0,
+    moderationStatus: "visible", moderatedAt: null, moderatedBy: null,
+    createdAt: serverTimestamp(),
+  };
+  for (const uid of ["student", "admin"]) {
+    await assertFails(getDoc(doc(db(uid), "student-events/legacy")));
+    await assertFails(addDoc(collection(db(uid), "student-events"), newEvent));
+    await assertFails(updateDoc(doc(db(uid), "student-events/legacy"), {title: "Değişti"}));
+  }
 });
 
 test("öğrenci moderasyon alanını değiştiremez, yönetici metni değiştirmeden gizleyebilir", {skip: !rulesEnabled}, async () => {

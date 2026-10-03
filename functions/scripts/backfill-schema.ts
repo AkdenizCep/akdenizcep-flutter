@@ -18,7 +18,7 @@ import {
 } from "./firebase-script-utils";
 
 const TOP_LEVEL_COLLECTIONS = [
-  "users", "clubs", "announcements", "board", "student-events",
+  "users", "clubs", "announcements", "board",
   "lost_found_items", "campus_photos",
 ];
 const WRITE_BATCH_LIMIT = 400;

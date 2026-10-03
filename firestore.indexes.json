@@ -9,22 +9,6 @@
       ]
     },
     {
-      "collectionGroup": "student-events",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "moderationStatus", "order": "ASCENDING" },
-        { "fieldPath": "date", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "student-events",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "authorUid", "order": "ASCENDING" },
-        { "fieldPath": "moderationStatus", "order": "ASCENDING" }
-      ]
-    },
-    {
       "collectionGroup": "club-events",
       "queryScope": "COLLECTION_GROUP",
       "fields": [
