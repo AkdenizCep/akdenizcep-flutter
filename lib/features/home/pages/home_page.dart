@@ -1,6 +1,8 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../shared/components/akdeniz_cep_logo.dart';
@@ -117,148 +119,152 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
       ),
       child: Padding(
         padding: EdgeInsets.fromLTRB(24, 16, 24, 24 + extraLift),
+        // Dis katman yalnizca golge (elevation) verir; ic katman bulanik cam.
         child: Container(
-          height: 68,
           decoration: BoxDecoration(
-            color: isDark
-                ? theme.colorScheme.surfaceContainerHigh
-                : theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(36),
-            border: Border.all(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.12)
-                  : theme.colorScheme.outlineVariant.withValues(alpha: 0.70),
-              width: 1.2,
-            ),
             boxShadow: [
-              // Soft wide ambient elevation shadow
               BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.38 : 0.08),
-                blurRadius: 20,
+                color: Colors.black.withValues(alpha: isDark ? 0.40 : 0.14),
+                blurRadius: 24,
                 offset: const Offset(0, 8),
-                spreadRadius: 0,
               ),
-              // Directional key shadow giving clear depth/elevation
               BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.22 : 0.04),
+                color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.08),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
-                spreadRadius: 0,
-              ),
-              // Subtle ambient brand glow around the perimeter
-              BoxShadow(
-                color: theme.colorScheme.primary.withValues(
-                  alpha: isDark ? 0.14 : 0.06,
-                ),
-                blurRadius: 16,
-                offset: const Offset(0, 4),
-                spreadRadius: -2,
               ),
             ],
           ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final totalWidth = constraints.maxWidth;
-              const itemCount = 5;
-              final slotWidth = totalWidth / itemCount;
-              const baseIndicatorWidth = 56.0;
-              const indicatorHeight = 48.0;
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(36),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+              child: Container(
+                height: 68,
+                decoration: BoxDecoration(
+                  color:
+                      (isDark
+                              ? theme.colorScheme.surfaceContainerHigh
+                              : theme.colorScheme.surface)
+                          .withValues(alpha: isDark ? 0.45 : 0.55),
+                  borderRadius: BorderRadius.circular(36),
+                  border: Border.all(
+                    color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.12),
+                    width: 1.2,
+                  ),
+                ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final totalWidth = constraints.maxWidth;
+                    const itemCount = 5;
+                    final slotWidth = totalWidth / itemCount;
+                    const baseIndicatorWidth = 56.0;
+                    const indicatorHeight = 48.0;
 
-              return AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  final t = CurvedAnimation(
-                    parent: _controller,
-                    curve: Curves.easeInOutCubic,
-                  ).value;
+                    return AnimatedBuilder(
+                      animation: _controller,
+                      builder: (context, child) {
+                        final t = CurvedAnimation(
+                          parent: _controller,
+                          curve: Curves.easeInOutCubic,
+                        ).value;
 
-                  final currentPos = Tween<double>(
-                    begin: _previousIndex,
-                    end: _currentIndex,
-                  ).transform(t);
+                        final currentPos = Tween<double>(
+                          begin: _previousIndex,
+                          end: _currentIndex,
+                        ).transform(t);
 
-                  final distance = (_currentIndex - _previousIndex).abs();
-                  final maxStretch = distance * 0.28;
-                  final stretch = 1.0 + maxStretch * (4 * t * (1 - t));
+                        final distance = (_currentIndex - _previousIndex).abs();
+                        final maxStretch = distance * 0.28;
+                        final stretch = 1.0 + maxStretch * (4 * t * (1 - t));
 
-                  final width = baseIndicatorWidth * stretch;
-                  final leftOffset =
-                      currentPos * slotWidth + (slotWidth - width) / 2;
-                  final topOffset =
-                      (constraints.maxHeight - indicatorHeight) / 2;
+                        final width = baseIndicatorWidth * stretch;
+                        final leftOffset =
+                            currentPos * slotWidth + (slotWidth - width) / 2;
+                        final topOffset =
+                            (constraints.maxHeight - indicatorHeight) / 2;
 
-                  return Stack(
-                    children: [
-                      // Sliding and stretching active indicator background
-                      Positioned(
-                        left: leftOffset,
-                        top: topOffset,
-                        width: width,
-                        height: indicatorHeight,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.primaryContainer,
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                        ),
-                      ),
-                      // Interactive items layer
-                      Row(
-                        children: [
-                          _navItem(context, Icons.home, Icons.home_outlined, 0),
-                          _navItem(
-                            context,
-                            Icons.restaurant,
-                            Icons.restaurant_outlined,
-                            1,
-                          ),
-                          _navItem(
-                            context,
-                            Icons.directions_bus,
-                            Icons.directions_bus_outlined,
-                            2,
-                          ),
-                          _navSlot(
-                            context,
-                            3,
-                            (color) => FaIcon(
-                              FontAwesomeIcons.peopleGroup,
-                              color: color,
-                              size: 22,
+                        return Stack(
+                          children: [
+                            // Sliding and stretching active indicator background
+                            Positioned(
+                              left: leftOffset,
+                              top: topOffset,
+                              width: width,
+                              height: indicatorHeight,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primaryContainer
+                                      .withValues(alpha: 0.65),
+                                  borderRadius: BorderRadius.circular(24),
+                                  border: Border.all(
+                                    color: Theme.of(context).colorScheme.primary
+                                        .withValues(alpha: 0.45),
+                                    width: 1.2,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                          _navItem(
-                            context,
-                            Icons.location_city_rounded,
-                            Icons.location_city_outlined,
-                            4,
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
+                            // Interactive items layer
+                            Row(
+                              children: [
+                                _navItem(
+                                  context,
+                                  HugeIcons.strokeRoundedHome01,
+                                  0,
+                                ),
+                                _navItem(
+                                  context,
+                                  HugeIcons.strokeRoundedRestaurant01,
+                                  1,
+                                ),
+                                _navItem(
+                                  context,
+                                  HugeIcons.strokeRoundedBus01,
+                                  2,
+                                ),
+                                _navItem(
+                                  context,
+                                  HugeIcons.strokeRoundedUserGroup,
+                                  3,
+                                ),
+                                _navItem(
+                                  context,
+                                  HugeIcons.strokeRoundedUniversity,
+                                  4,
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _navItem(
-    BuildContext context,
-    IconData selectedIcon,
-    IconData icon,
-    int index,
-  ) {
+  // Hugeicons ucretsiz paketi yalnizca stroke stilinde; secili sekme daha
+  // kalin cizgiyle ayirt edilir.
+  Widget _navItem(BuildContext context, List<List<dynamic>> icon, int index) {
     final isSelected = widget.currentIndex == index;
     return _navSlot(
       context,
       index,
-      (color) => Icon(isSelected ? selectedIcon : icon, color: color, size: 24),
+      (color) => HugeIcon(
+        icon: icon,
+        color: color,
+        size: 24,
+        strokeWidth: isSelected ? 2.2 : 1.5,
+      ),
     );
   }
 

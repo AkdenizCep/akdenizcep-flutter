@@ -59,6 +59,7 @@ dependencies:
   mobile_scanner: ^6.0.2
   font_awesome_flutter: ^11.0.0
   flutter_svg: ^2.3.0
+  hugeicons: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +71,18 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: assets/images/app-icon.png
+  adaptive_icon_background: "#223869"
+  adaptive_icon_foreground: assets/images/app-icon-foreground.png
+  web:
+    generate: true
+    image_path: assets/images/app-icon.png
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
