@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Etkinliğe katılma butonunun görsel fazları.
 enum _JoinPhase { idle, loading, success }
@@ -76,6 +77,8 @@ class _JoinButtonState extends State<JoinButton> {
 
   Future<void> _handleTap() async {
     if (_phase != _JoinPhase.idle) return;
+
+    HapticFeedback.lightImpact();
 
     final wasJoined = _displayJoined;
     setState(() => _phase = _JoinPhase.loading);
