@@ -57,6 +57,7 @@ dependencies:
   pointer_interceptor: ^0.10.1+2
   qr_flutter: ^4.1.0
   mobile_scanner: ^6.0.2
+  font_awesome_flutter: ^11.0.0
   flutter_svg: ^2.3.0
 
 dev_dependencies:

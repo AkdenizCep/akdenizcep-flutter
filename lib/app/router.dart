@@ -235,6 +235,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: '/chatbot',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) =>
+            const WebPortalPage(title: 'Chatbot', initialUrl: chatbotPortalUri),
+      ),
+      GoRoute(
+        path: '/mediko',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const WebPortalPage(
+          title: 'Mediko Randevu',
+          initialUrl: medikoPortalUri,
+        ),
+      ),
+      GoRoute(
         path: '/qr',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const MyQrPage(),

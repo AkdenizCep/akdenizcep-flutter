@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../shared/components/akdeniz_cep_logo.dart';
 import '../../../shared/components/app_top_bar.dart';
 import '../../../shared/components/error_view.dart';
 import '../../../shared/components/loading_overlay.dart';
-import '../../../shared/constants/web_portals.dart';
 import '../../../shared/providers/nav_visibility_provider.dart';
 import '../../../shared/providers/user_provider.dart';
 import '../../../shared/utils/error_message.dart';
-import '../../../shared/utils/phone_launcher.dart';
 import '../../../shared/utils/system_nav_inset.dart';
-import '../../../shared/utils/web_launcher.dart';
 import '../providers/home_provider.dart';
+import '../providers/quick_actions_provider.dart';
 import 'components/announcement_slider.dart';
 import 'components/event_card.dart';
+import 'components/quick_action_launcher.dart';
+import 'components/quick_actions_edit_sheet.dart';
+import 'components/quick_actions_grid.dart';
 
 class HomePage extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
@@ -218,11 +220,14 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
                             Icons.directions_bus_outlined,
                             2,
                           ),
-                          _navItem(
+                          _navSlot(
                             context,
-                            Icons.calendar_month,
-                            Icons.calendar_month_outlined,
                             3,
+                            (color) => FaIcon(
+                              FontAwesomeIcons.peopleGroup,
+                              color: color,
+                              size: 22,
+                            ),
                           ),
                           _navItem(
                             context,
@@ -250,6 +255,19 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
     int index,
   ) {
     final isSelected = widget.currentIndex == index;
+    return _navSlot(
+      context,
+      index,
+      (color) => Icon(isSelected ? selectedIcon : icon, color: color, size: 24),
+    );
+  }
+
+  Widget _navSlot(
+    BuildContext context,
+    int index,
+    Widget Function(Color? color) iconBuilder,
+  ) {
+    final isSelected = widget.currentIndex == index;
     return Expanded(
       child: GestureDetector(
         onTap: () => widget.onDestinationSelected(index),
@@ -262,13 +280,7 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
                   ? Theme.of(context).colorScheme.primary
                   : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
-            builder: (context, color, child) {
-              return Icon(
-                isSelected ? selectedIcon : icon,
-                color: color,
-                size: 24,
-              );
-            },
+            builder: (context, color, child) => iconBuilder(color),
           ),
         ),
       ),
@@ -279,22 +291,13 @@ class _FloatingNavBarState extends State<_FloatingNavBar>
 class HomeContentPage extends ConsumerWidget {
   const HomeContentPage({super.key});
 
-  Future<void> _callCampusSecurity(BuildContext context) async {
-    final launched = await launchPhoneCall('02423102222');
-    if (!launched && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Arama uygulaması açılamadı.')),
-      );
-    }
-  }
-
-  Future<void> _openCampusCard(BuildContext context) async {
-    final launched = await launchInAppBrowser(campusCardPortalUri);
-    if (!launched && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('TL yükleme sayfası açılamadı.')),
-      );
-    }
+  Future<void> _editQuickActions(BuildContext context, WidgetRef ref) async {
+    final edited = await showQuickActionsEditSheet(
+      context,
+      ref.read(quickActionsProvider),
+    );
+    if (edited == null || !context.mounted) return;
+    await ref.read(quickActionsProvider.notifier).setActions(edited);
   }
 
   @override
@@ -302,9 +305,13 @@ class HomeContentPage extends ConsumerWidget {
     final userAsync = ref.watch(currentUserProvider);
     final announcementsAsync = ref.watch(announcementsProvider);
     final eventsAsync = ref.watch(recommendedHomeEventsProvider);
+    final quickActions = ref.watch(quickActionsProvider);
     final userInitial = userAsync.valueOrNull?.name.isNotEmpty == true
         ? userAsync.valueOrNull!.name[0].toUpperCase()
         : '?';
+    final greetingStyle = Theme.of(
+      context,
+    ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold);
 
     return Scaffold(
       body: SafeArea(
@@ -342,39 +349,29 @@ class HomeContentPage extends ConsumerWidget {
 
               // Greeting
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+                padding: const EdgeInsets.fromLTRB(20, 6, 20, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     userAsync.when(
                       data: (user) => Text(
                         'Merhaba, ${user?.name.split(' ').first ?? 'Öğrenci'} 👋',
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.bold),
+                        style: greetingStyle,
                       ),
-                      loading: () => Text(
-                        'Merhaba 👋',
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      error: (error, stackTrace) => Text(
-                        'Merhaba 👋',
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
+                      loading: () => Text('Merhaba 👋', style: greetingStyle),
+                      error: (error, stackTrace) =>
+                          Text('Merhaba 👋', style: greetingStyle),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       'Kampüste bugün neler var?',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 14),
 
               // Announcements section header
               Padding(
@@ -423,75 +420,16 @@ class HomeContentPage extends ConsumerWidget {
                 ),
               ),
 
-              const SizedBox(height: 28),
+              const SizedBox(height: 10),
 
-              // Quick Access header
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  'Hızlı Erişim',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Quick Access grid
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: GridView.count(
-                  padding: EdgeInsets.zero,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 1.35,
-                  children: [
-                    _QuickAccessCard(
-                      title: 'OBS',
-                      subtitle: 'Öğrenci Bilgi Sistemi',
-                      icon: Icons.school_outlined,
-                      iconColor: Theme.of(context).colorScheme.primary,
-                      iconBgColor: Theme.of(
-                        context,
-                      ).colorScheme.primaryContainer,
-                      onTap: () => context.push('/obs'),
-                    ),
-                    _QuickAccessCard(
-                      title: 'TL Yükleme',
-                      subtitle: 'Bakiye İşlemleri',
-                      icon: Icons.account_balance_wallet_outlined,
-                      iconColor: Theme.of(context).colorScheme.secondary,
-                      iconBgColor: Theme.of(
-                        context,
-                      ).colorScheme.secondaryContainer,
-                      onTap: () => _openCampusCard(context),
-                    ),
-                    _QuickAccessCard(
-                      title: 'Akademik\nTakvim',
-                      subtitle: 'Önemli Tarihler',
-                      icon: Icons.calendar_month_outlined,
-                      iconColor: Theme.of(context).colorScheme.primary,
-                      iconBgColor: Theme.of(
-                        context,
-                      ).colorScheme.primaryContainer,
-                      onTap: () => context.push('/academic-calendar'),
-                    ),
-                    _QuickAccessCard(
-                      title: 'Kampüs\nGüvenlik',
-                      subtitle: 'Hızlı Arama',
-                      icon: Icons.phone_in_talk_rounded,
-                      iconColor: Theme.of(context).colorScheme.error,
-                      iconBgColor: Theme.of(context).colorScheme.errorContainer,
-                      onTap: () => _callCampusSecurity(context),
-                    ),
-                  ],
-                ),
+              // Quick Access (başlık, "Düzenle" ve kullanıcının seçtiği 3x2 ızgara)
+              QuickActionsGrid(
+                actions: quickActions,
+                onSelected: (action) => openQuickAction(context, action),
+                onEdit: () => _editQuickActions(context, ref),
               ),
 
-              const SizedBox(height: 28),
+              const SizedBox(height: 10),
 
               // Events section header
               Padding(
@@ -559,74 +497,6 @@ class HomeContentPage extends ConsumerWidget {
                 error: (e, _) => Padding(
                   padding: const EdgeInsets.all(20),
                   child: ErrorView(message: errorMessage(e)),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _QuickAccessCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final Color iconColor;
-  final Color iconBgColor;
-  final VoidCallback onTap;
-
-  const _QuickAccessCard({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.iconColor,
-    required this.iconBgColor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: Theme.of(
-            context,
-          ).colorScheme.outlineVariant.withValues(alpha: 0.5),
-        ),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: iconBgColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: iconColor, size: 24),
-              ),
-              const Spacer(),
-              Text(
-                title,
-                maxLines: 1,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                subtitle,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
