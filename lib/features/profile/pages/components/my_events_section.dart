@@ -8,23 +8,19 @@ import '../../../../shared/providers/event_feed_provider.dart';
 import '../../models/profile_event_summary.dart';
 import '../../providers/profile_provider.dart';
 
+/// Kullanıcının katıldığı topluluk etkinlikleri.
 class MyEventsSection extends ConsumerWidget {
-  final bool joined;
   final int? limit;
-  const MyEventsSection({super.key, this.joined = false, this.limit = 2});
+  const MyEventsSection({super.key, this.limit = 2});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final eventsAsync = joined
-        ? ref.watch(joinedEventsProvider)
-        : ref.watch(myEventsProvider);
+    final eventsAsync = ref.watch(joinedEventsProvider);
     return eventsAsync.when(
       data: (events) {
         if (events.isEmpty) {
           return Text(
-            joined
-                ? 'Henüz bir etkinliğe katılmadın.'
-                : 'Henüz etkinlik oluşturmadın.',
+            'Henüz bir etkinliğe katılmadın.',
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
@@ -43,13 +39,7 @@ class MyEventsSection extends ConsumerWidget {
       ),
       error: (_, _) => ErrorView(
         message: 'Etkinlikler yüklenemedi.',
-        onRetry: () {
-          if (joined) {
-            ref.invalidate(eventFeedProvider);
-          } else {
-            ref.invalidate(myEventsProvider);
-          }
-        },
+        onRetry: () => ref.invalidate(eventFeedProvider),
       ),
     );
   }
@@ -66,11 +56,7 @@ class ProfileEventTile extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 16),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => context.push(
-          event.clubId == null
-              ? '/event/${event.id}'
-              : '/club/${event.clubId}/event/${event.id}',
-        ),
+        onTap: () => context.push('/club/${event.clubId}/event/${event.id}'),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(

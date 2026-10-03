@@ -73,12 +73,6 @@ final followedClubsProvider = StreamProvider<List<ProfileClubSummary>>((ref) {
   return ref.watch(profileServiceProvider).getFollowedClubs(user.followedClubs);
 });
 
-final myEventsProvider = StreamProvider<List<ProfileEventSummary>>((ref) {
-  final user = ref.watch(currentUserProvider).valueOrNull;
-  if (user == null) return Stream.value(const []);
-  return ref.watch(profileServiceProvider).getMyEvents(user.id);
-});
-
 final joinedEventsProvider = Provider<AsyncValue<List<ProfileEventSummary>>>((
   ref,
 ) {

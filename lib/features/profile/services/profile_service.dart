@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/profile_club_summary.dart';
-import '../models/profile_event_summary.dart';
 import '../models/profile_rated_meal.dart';
 
 class ProfileService {
@@ -19,21 +18,6 @@ class ProfileService {
               .map((d) => ProfileClubSummary.fromJson(d.data()..['id'] = d.id))
               .toList(),
         );
-  }
-
-  Stream<List<ProfileEventSummary>> getMyEvents(String uid) {
-    return _db
-        .collection('student-events')
-        .where('authorUid', isEqualTo: uid)
-        .where('moderationStatus', isEqualTo: 'visible')
-        .snapshots()
-        .map((snap) {
-          final events = snap.docs
-              .map((d) => ProfileEventSummary.fromJson(d.data()..['id'] = d.id))
-              .toList();
-          events.sort((a, b) => b.date.compareTo(a.date));
-          return events;
-        });
   }
 
   /// [mealDocIds], users/{uid}.ratedMealIds alanindan gelir (her biri bir

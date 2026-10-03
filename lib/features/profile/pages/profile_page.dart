@@ -182,12 +182,6 @@ class ProfilePage extends ConsumerWidget {
                   ProfileSection(
                     title: 'Katıldığım',
                     onViewAll: () => context.push('/profile/joined-events'),
-                    child: const MyEventsSection(joined: true),
-                  ),
-                  const SizedBox(height: 24),
-                  ProfileSection(
-                    title: 'Oluşturduğum',
-                    onViewAll: () => context.push('/profile/created-events'),
                     child: const MyEventsSection(),
                   ),
                 ],

@@ -4,7 +4,6 @@ import 'package:akdenizcep/app/theme.dart';
 import 'package:akdenizcep/features/auth/models/app_user.dart';
 import 'package:akdenizcep/features/auth/providers/auth_provider.dart' as auth;
 import 'package:akdenizcep/features/profile/models/profile_club_summary.dart';
-import 'package:akdenizcep/features/profile/models/profile_event_summary.dart';
 import 'package:akdenizcep/features/profile/pages/components/my_events_section.dart';
 import 'package:akdenizcep/features/profile/pages/profile_list_page.dart';
 import 'package:akdenizcep/features/profile/pages/my_qr_page.dart';
@@ -91,20 +90,11 @@ final _clubs = List.generate(
     category: 'Sanat',
   ),
 );
-final _created = List.generate(
-  4,
-  (i) => ProfileEventSummary(
-    id: 'e$i',
-    title: 'Oluşturulan $i',
-    date: DateTime(2026, 10, 12 + i, 17),
-    location: 'Kampüs',
-  ),
-);
 final _feed = [
   FeedEvent(
-    id: 'student',
-    source: EventSource.student,
-    title: 'Katılınan öğrenci etkinliği',
+    id: 'e1',
+    clubId: 'c',
+    title: 'Katılınan etkinlik 1',
     date: DateTime(2026, 10, 21),
     location: 'Olbia',
     description: '',
@@ -112,10 +102,19 @@ final _feed = [
     attendeeIds: ['u'],
   ),
   FeedEvent(
-    id: 'club',
-    source: EventSource.club,
+    id: 'e2',
     clubId: 'c',
-    title: 'Katılınan topluluk etkinliği',
+    title: 'Katılınan etkinlik 2',
+    date: DateTime(2026, 10, 23),
+    location: 'Kampüs',
+    description: '',
+    createdAt: DateTime(2026),
+    attendeeIds: ['u'],
+  ),
+  FeedEvent(
+    id: 'e3',
+    clubId: 'c',
+    title: 'Katılınan etkinlik 3',
     date: DateTime(2026, 10, 25),
     location: 'Kampüs',
     description: '',
@@ -124,7 +123,7 @@ final _feed = [
   ),
   FeedEvent(
     id: 'other',
-    source: EventSource.student,
+    clubId: 'c',
     title: 'Başkasının etkinliği',
     date: DateTime(2026, 10, 27),
     location: 'Kampüs',
@@ -151,7 +150,6 @@ Future<ProviderContainer> _pump(
       auth.authStateProvider.overrideWith((ref) => Stream.value(_AuthUser())),
       currentUserProvider.overrideWith((ref) => Stream.value(_user)),
       followedClubsProvider.overrideWith((ref) => Stream.value(_clubs)),
-      myEventsProvider.overrideWith((ref) => Stream.value(_created)),
       eventFeedProvider.overrideWith((ref) => Stream.value(_feed)),
       userServiceProvider.overrideWithValue(users ?? _UserService()),
       profileServiceProvider.overrideWithValue(profiles ?? _ProfileService()),
@@ -194,7 +192,10 @@ void main() {
       final container = await _pump(tester);
       final router = container.read(routerProvider);
       expect(find.text('Topluluk 4'), findsNothing);
-      expect(find.text('Oluşturulan 2'), findsNothing);
+      expect(find.text('Katılınan etkinlik 3'), findsOneWidget);
+      expect(find.text('Katılınan etkinlik 2'), findsOneWidget);
+      expect(find.text('Katılınan etkinlik 1'), findsNothing);
+      expect(find.text('Oluşturduğum'), findsNothing);
       expect(find.text('Başkasının etkinliği'), findsNothing);
       expect(find.text('Yemekhane Puanların'), findsNothing);
       expect(find.text(_user.email), findsNothing);
@@ -213,7 +214,7 @@ void main() {
       await tester.tap(find.text('Tümünü gör').last);
       await tester.pumpAndSettle();
       expect(find.byType(ProfileListPage), findsOneWidget);
-      expect(find.text('Oluşturulan 3'), findsOneWidget);
+      expect(find.text('Katılınan etkinlik 1'), findsOneWidget);
       router.pop();
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('QR kodum'));
@@ -233,18 +234,19 @@ void main() {
   );
 
   testWidgets(
-    'joined previews link to the matching student and club detail routes',
+    'joined events are listed newest first and link to the club event route',
     (tester) async {
       final container = await _pump(tester, route: '/profile/joined-events');
       final tiles = tester
           .widgetList<ProfileEventTile>(find.byType(ProfileEventTile))
           .toList();
       expect(tiles.map((t) => t.event.title), [
-        'Katılınan topluluk etkinliği',
-        'Katılınan öğrenci etkinliği',
+        'Katılınan etkinlik 3',
+        'Katılınan etkinlik 2',
+        'Katılınan etkinlik 1',
       ]);
-      expect(tiles.first.event.clubId, 'c');
-      expect(container.read(joinedEventsProvider).requireValue.length, 2);
+      expect(tiles.every((t) => t.event.clubId == 'c'), isTrue);
+      expect(container.read(joinedEventsProvider).requireValue.length, 3);
     },
   );
 
@@ -395,9 +397,9 @@ void main() {
       await Future<void>.delayed(Duration.zero);
       expect(
         container.read(joinedEventsProvider).requireValue.map((e) => e.id),
-        ['club', 'student'],
+        ['e3', 'e2', 'e1'],
       );
-      feed.add([_feed.first.copyWith(attendeeIds: [])]);
+      feed.add([for (final e in _feed) e.copyWith(attendeeIds: [])]);
       await Future<void>.delayed(Duration.zero);
       expect(container.read(joinedEventsProvider).requireValue, isEmpty);
       feed.addError(Exception('offline'));

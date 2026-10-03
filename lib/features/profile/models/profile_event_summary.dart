@@ -3,14 +3,14 @@ class ProfileEventSummary {
   final String title;
   final DateTime date;
   final String location;
-  final String? clubId;
+  final String clubId;
 
   ProfileEventSummary({
     required this.id,
     required this.title,
     required this.date,
     required this.location,
-    this.clubId,
+    required this.clubId,
   });
 
   factory ProfileEventSummary.fromJson(Map<String, dynamic> json) =>
@@ -21,7 +21,7 @@ class ProfileEventSummary {
             ? (json['date'] as dynamic).toDate()
             : DateTime.now(),
         location: json['location'] as String? ?? '',
-        clubId: json['clubId'] as String?,
+        clubId: json['clubId'] as String? ?? '',
       );
 
   Map<String, dynamic> toJson() => {
